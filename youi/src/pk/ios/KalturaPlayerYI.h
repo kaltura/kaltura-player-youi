@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)setVolume:(float)volume;
 
 +(void)setLogLevel:(NSString*)level;
+
 @end
 
 NS_ASSUME_NONNULL_END
