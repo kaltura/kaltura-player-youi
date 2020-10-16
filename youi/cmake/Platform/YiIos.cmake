@@ -13,7 +13,7 @@ endif()
 
 set(YI_DEVELOPMENT_TEAM "${YI_DEVELOPMENT_TEAM}" CACHE STRING "The 10-character alphanumeric string representing the development team. Required for Xcode 8+ builds.")
 
-set(YI_PACKAGE_NAME "com.kaltura.kuxbridge")
+set(YI_PACKAGE_NAME "com.youi.kalturaplayertest")
 set(YI_VERSION_NUMBER "0.0.1")
 
 macro(add_pk_ios_framework FW_NAME)

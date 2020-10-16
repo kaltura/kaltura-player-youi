@@ -1,15 +1,17 @@
 // © You i Labs Inc. 2000-2020. All rights reserved.
 #include "App.h"
 
-#include "utility/ViewUtilities.h"
-#include "youireact/ShadowTree.h"
-#include "youireact/nodes/ShadowRootView.h"
+#include <utility/ViewUtilities.h>
+#include <youireact/ShadowTree.h>
+#include <youireact/nodes/ShadowRootView.h>
+#include <youireact/VideoPlayerFactory.h>
 
-#include "scenetree/YiSceneNode.h"
+#include <scenetree/YiSceneNode.h>
 
 #include "pk/PKPlayer.h"
 #include "pk/PKDownload.h"
 
+#include "player/KalturaVideoPlayer.h"
 
 #include <JSBundlingStrings.h>
 #include <automation/YiWebDriverLocator.h>
@@ -42,6 +44,11 @@ bool App::UserInit()
 #endif
 
     std::unique_ptr<JsBundleLoader> pBundleLoader(GetBundler());
+    
+    VideoPlayerFactory::SetFactoryFunction([]
+    {
+        return std::make_unique<KalturaVideoPlayer>();
+    });
 
     PlatformApp::SetJsBundleLoader(std::move(pBundleLoader));
 
