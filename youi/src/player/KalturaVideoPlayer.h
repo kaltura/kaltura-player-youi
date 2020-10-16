@@ -19,7 +19,7 @@ public:
     void Setup(int32_t partnerId, folly::dynamic options);
     void Load(std::string assetId, folly::dynamic options);
 
-    CYISignal<bool> CustomSignal;
+    CYISignal<folly::dynamic> AdError;
     
     virtual void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle) override;
 

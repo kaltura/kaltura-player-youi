@@ -16,21 +16,21 @@
 YI_RN_INSTANTIATE_MODULE(KalturaVideoNativeModule, yi::react::EventEmitterModule);
 YI_RN_REGISTER_MODULE(KalturaVideoNativeModule);
 
-static const std::string PLAYER_EVENT = "PLAYER_EVENT";
+static const std::string KALTURA_PLAYER_AD_ERROR = "KALTURA_PLAYER_AD_ERROR";
 
 KalturaVideoNativeModule::KalturaVideoNativeModule()
 {
-  SetSupportedEvents
+    SetSupportedEvents
     ({
-       PLAYER_EVENT
+        KALTURA_PLAYER_AD_ERROR
     });
 }
 
 KalturaVideoNativeModule::~KalturaVideoNativeModule() = default;
 
-void KalturaVideoNativeModule::EmitEventPriv(const folly::dynamic &obj)
+void KalturaVideoNativeModule::EmitEventPriv(const std::string& event, const folly::dynamic &obj)
 {
-    EmitEvent(PLAYER_EVENT, obj);
+    EmitEvent(event, obj);
 }
 
 YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t tag)
@@ -42,13 +42,11 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
         yi::react::ShadowVideo *pShadowVideo = dynamic_cast<yi::react::ShadowVideo *>(pComponent);
         if (pShadowVideo)
         {
-//            auto pPlayer = dynamic_cast<KalturaVideoPlayer *>(&pShadowVideo->GetPlayer());
-//            pPlayer->KalturaSignal.Connect(*this, [this](bool bSomething) {
-//
-//              // how to we get this to the JS layer
-//              this->EmitEventPriv(folly::dynamic::object("name", "KalturaSignal")("bSomething", bSomething));
-//            });
-
+            auto pPlayer = dynamic_cast<KalturaVideoPlayer *>(&pShadowVideo->GetPlayer());
+            
+            pPlayer->AdError.Connect(*this, [this](folly::dynamic data) {
+                this->EmitEventPriv(KALTURA_PLAYER_AD_ERROR, data);
+            });
         }
     }
 }

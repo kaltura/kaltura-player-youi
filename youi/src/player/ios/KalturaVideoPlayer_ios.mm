@@ -27,7 +27,6 @@ KalturaVideoPlayer::KalturaVideoPlayer()
 
 KalturaVideoPlayer::~KalturaVideoPlayer()
 {
-    YI_LOGD(TAG, "destroy");
 }
 
 void KalturaVideoPlayer::Setup(int32_t partnerId, folly::dynamic options)
@@ -366,6 +365,11 @@ void KalturaVideoPlayerPriv::Emit_(const std::string &event, const folly::dynami
         const auto currentTime = content["position"].asDouble();
         m_currentTimeMs = static_cast<uint64_t>(currentTime * 1000);
         m_pPub->CurrentTimeUpdated.Emit(m_currentTimeMs);
+    }
+    else if (event == "adError")
+    {
+        YI_LOGD(TAG, "adError %s", JSONFromDynamic(content).c_str());
+        m_pPub->AdError.Emit(content);
     }
     else
     {
