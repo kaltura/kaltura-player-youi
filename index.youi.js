@@ -25,6 +25,9 @@ export default class YiReactApp extends Component {
 
   componentDidMount() {
     this.videoRef.current.setup(OttPartnerId, initOptions)
+  }
+
+  loadBtnPressed = () => {
     this.videoRef.current.load(OttMediaId, asset)
   }
 
@@ -34,7 +37,7 @@ export default class YiReactApp extends Component {
     } else {
       this.videoRef.current.play()
     }
-  }
+  }  
 
   seekBtnPressed = () => {
     this.videoRef.current.seek(this.state.currentTime + 10000)
@@ -64,6 +67,9 @@ export default class YiReactApp extends Component {
         />
 
         <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={this.loadBtnPressed}>
+            <Text style={styles.buttonText}>{'Load'}</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={this.pauseBtnPressed}>
             <Text style={styles.buttonText}>{this.state.isPlaying ? 'Pause' : 'Play'}</Text>
           </TouchableOpacity>
