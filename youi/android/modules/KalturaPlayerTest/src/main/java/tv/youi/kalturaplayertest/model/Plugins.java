@@ -1,4 +1,4 @@
-package tv.youi.myapp.model;
+package tv.youi.kalturaplayertest.model;
 
 public class Plugins {
 

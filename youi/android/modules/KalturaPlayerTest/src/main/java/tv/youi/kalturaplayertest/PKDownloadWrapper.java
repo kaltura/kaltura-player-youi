@@ -1,4 +1,4 @@
-package tv.youi.myapp;
+package tv.youi.kalturaplayertest;
 
 import android.content.Context;
 
@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
-import tv.youi.myapp.model.MediaAsset;
+import tv.youi.kalturaplayertest.model.MediaAsset;
 import tv.youi.youiengine.CYIActivity;
 
 public class PKDownloadWrapper {

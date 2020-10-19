@@ -1,4 +1,4 @@
-package tv.youi.myapp.model.tracks;
+package tv.youi.kalturaplayertest.model.tracks;
 
 import java.util.ArrayList;
 import java.util.List;

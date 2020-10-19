@@ -8,7 +8,6 @@
 
 #include <scenetree/YiSceneNode.h>
 
-#include "pk/PKPlayer.h"
 #include "pk/PKDownload.h"
 
 #include "player/KalturaVideoPlayer.h"

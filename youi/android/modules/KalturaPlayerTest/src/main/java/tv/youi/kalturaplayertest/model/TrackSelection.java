@@ -1,4 +1,4 @@
-package tv.youi.myapp.model;
+package tv.youi.kalturaplayertest.model;
 
 import com.kaltura.playkit.PKTrackConfig;
 

@@ -7,8 +7,6 @@ file(GLOB_RECURSE YI_PROJECT_HEADERS "${_SRC_DIR}/*.h")
 set(PLATFORMS android ios osx tvos)
 list(REMOVE_ITEM PLATFORMS ${YI_PLATFORM_LOWER})
 
-message(STATUS "DIR = ${_SRC_DIR}")
-
 foreach(PLATFORM ${PLATFORMS})
     foreach(YI_SRC_FILE ${YI_PROJECT_SOURCE})
         if("${YI_SRC_FILE}" MATCHES "(.*)/${PLATFORM}/(.*)")

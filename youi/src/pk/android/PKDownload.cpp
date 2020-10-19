@@ -5,7 +5,7 @@ extern JavaVM *cachedJVM;
 extern jobject cachedActivity;
 
 extern "C" {
-    JNIEXPORT void JNICALL Java_tv_youi_myapp_PKDownloadWrapper_nativeSendEvent(JNIEnv *, jclass, jobject, jstring, jstring);
+    JNIEXPORT void JNICALL Java_tv_youi_kalturaplayertest_PKDownloadWrapper_nativeSendEvent(JNIEnv *, jclass, jobject, jstring, jstring);
 }
 
 // Boilerplate
@@ -19,7 +19,7 @@ static JNIEnv *GetEnv()
 YI_RN_INSTANTIATE_MODULE(PKDownloadWrapper, yi::react::EventEmitterModule);
 YI_RN_REGISTER_MODULE(PKDownloadWrapper);
 
-void JNICALL Java_tv_youi_myapp_PKDownloadWrapper_nativeSendEvent(JNIEnv *pEnv, jclass cls, jobject instance, jstring name, jstring payload)
+void JNICALL Java_tv_youi_kalturaplayertest_PKDownloadWrapper_nativeSendEvent(JNIEnv *pEnv, jclass cls, jobject instance, jstring name, jstring payload)
 {
     auto *pBridge = reinterpret_cast<PKDownloadWrapper *>(pEnv->GetDirectBufferAddress(instance));
     const auto std_name = std::string(pEnv->GetStringUTFChars(name, NULL));
@@ -43,7 +43,7 @@ PKDownloadWrapper::~PKDownloadWrapper()
 
 YI_RN_DEFINE_EXPORT_METHOD(PKDownloadWrapper, loadIDs)()
 {
-     jclass tmpBridgeClass = GetEnv()->FindClass("tv/youi/myapp/PKDownloadWrapper");
+     jclass tmpBridgeClass = GetEnv()->FindClass("tv/youi/kalturaplayertest/PKDownloadWrapper");
      downloadWrapperBridgeClass = reinterpret_cast<jclass>(GetEnv()->NewGlobalRef(tmpBridgeClass));
 
     if (!downloadWrapperBridgeClass) {

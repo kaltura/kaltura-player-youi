@@ -1,4 +1,4 @@
-package tv.youi.myapp;
+package tv.youi.kalturaplayertest;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -34,15 +34,15 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import tv.youi.myapp.model.InitOptions;
-import tv.youi.myapp.model.MediaAsset;
-import tv.youi.myapp.model.NetworkSettings;
-import tv.youi.myapp.model.WrapperIMAConfig;
-import tv.youi.myapp.model.WrapperYouboraConfig;
-import tv.youi.myapp.model.tracks.AudioTrack;
-import tv.youi.myapp.model.tracks.TextTrack;
-import tv.youi.myapp.model.tracks.TracksInfo;
-import tv.youi.myapp.model.tracks.VideoTrack;
+import tv.youi.kalturaplayertest.model.InitOptions;
+import tv.youi.kalturaplayertest.model.MediaAsset;
+import tv.youi.kalturaplayertest.model.NetworkSettings;
+import tv.youi.kalturaplayertest.model.WrapperIMAConfig;
+import tv.youi.kalturaplayertest.model.WrapperYouboraConfig;
+import tv.youi.kalturaplayertest.model.tracks.AudioTrack;
+import tv.youi.kalturaplayertest.model.tracks.TextTrack;
+import tv.youi.kalturaplayertest.model.tracks.TracksInfo;
+import tv.youi.kalturaplayertest.model.tracks.VideoTrack;
 import tv.youi.youiengine.CYIActivity;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
