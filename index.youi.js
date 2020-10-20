@@ -65,12 +65,16 @@ export default class YiReactApp extends Component {
           onDurationChanged={(duration) => this.setState({ duration: duration })}
           onAdError={(data) => console.log(data)}
           onAvailableAudioTracksChanged={(tracks) => {
-            console.log("onAvailableAudioTracksChanged " + tracks)
+            console.log("onAvailableAudioTracksChanged")
             console.log(tracks)
           }}
           onAvailableClosedCaptionsTracksChanged={(tracks) => {
-            console.log("onAvailableClosedCaptionsTracksChanged " + tracks)
+            console.log("onAvailableClosedCaptionsTracksChanged")
             console.log(tracks)
+          }}
+          onErrorOccurred={(error) =>  {
+            console.log("onErrorOccurred")
+            console.log(error.nativeEvent.message)
           }}
         />
 
@@ -127,11 +131,19 @@ AppRegistry.registerComponent("YiReactApp", () => YiReactApp);
 
 
 //OTT 3009
-const PhoenixBaseUrl = "https://3207.frs1.ott.kaltura.com/api_v3/";
-const OttPartnerId = 3207;
-const OttMediaId = "2305718";
-const OttMediaFormat = "STB_Devices_Main_HLS";
-const OttMediaProtocol = "https"; // "https"
+
+//not working
+// const PhoenixBaseUrl = "https://3207.frs1.ott.kaltura.com/api_v3/";
+// const OttPartnerId = 3207;
+// const OttMediaId = "2305718";
+// const OttMediaFormat = "STB_Devices_Main_HLS";
+// const OttMediaProtocol = "https"; // "https"
+
+const PhoenixBaseUrl = "https://rest-us.ott.kaltura.com/v4_5/api_v3/";
+const OttPartnerId = 3009;
+const OttMediaId = "548576";
+const OttMediaFormat = "Mobile_Main";
+const OttMediaProtocol = "http"; // "https"
 const OttAssetType = "media";
 const OttPlaybackContextType = "playback";
 
@@ -170,7 +182,7 @@ var asset = {
   "assetType": OttAssetType,
   "protocol": OttMediaProtocol,
   "playbackContextType": OttPlaybackContextType,
-  "urlType": "PLAYMANIFEST",
+  "urlType": "DIRECT",
   "startPosition": 0,
   "plugins": {
     "ima": {

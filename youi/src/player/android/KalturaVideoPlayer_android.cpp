@@ -374,16 +374,18 @@ void KalturaVideoPlayerPriv::HandleEvent(const CYIString& name, folly::dynamic c
     }
     else if (name == "error")
     {
-        YI_LOGD(TAG, "error");
-        // void CYIAVPlayerPriv::OnPlaybackError(const CYIString &errorString, const
-        // CYIString &nativeErrorCode)
-        {
-            // CYIAbstractVideoPlayer::Error error;
-            // error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
-            // error.message = errorString;
-            // error.nativePlayerErrorCode = nativeErrorCode;
-            // m_pPub->ErrorOccurred.Emit();
-        }
+        YI_LOGD(TAG, "error - %s", JSONFromDynamic(content).c_str());
+
+        CYIAbstractVideoPlayer::Error error;
+        error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
+        error.message = JSONFromDynamic(content).c_str();
+
+        CYIString errorType = content["errorType"].asString();
+        error.nativePlayerErrorCode = errorType;
+
+        m_pPub->ErrorOccurred.Emit(error);
+
+        //m_pPub->m_pStateManager->TransitionToMediaUnloaded();
     }
     else if (name == "adProgress")
     {
@@ -440,7 +442,17 @@ void KalturaVideoPlayerPriv::HandleEvent(const CYIString& name, folly::dynamic c
     else if (name == "adError")
     {
         YI_LOGD(TAG, "adError %s", JSONFromDynamic(content).c_str());
-        m_pPub->AdError.Emit(content);
+
+        //m_pPub->AdError.Emit(content);
+
+        CYIAbstractVideoPlayer::Error error;
+        error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
+        error.message = JSONFromDynamic(content).c_str();
+
+        CYIString errorType = content["errorType"].asString();
+        error.nativePlayerErrorCode = errorType;
+
+        m_pPub->ErrorOccurred.Emit(error);
     }
     else
     {

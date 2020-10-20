@@ -337,16 +337,14 @@ public class PKPlayerWrapper {
     }
 
     private static String getErrorJson(PKError error) {
-        String errorCause = (error.exception != null) ? error.exception.getCause() + ""  : "";
-        return "{ " +
-                "\"errorType\": \" " + error.errorType.name() +
-                "\", " +
-                "\"errorSeverity\": \" " + error.severity.name() +
-                "\", " +
-                "\"errorMessage\": \" " + error.message +
-                "\", " +
-                "\"errorCause\": \" " + errorCause +
-                "\" }";
+        String errorCause = (error.exception != null) ? error.exception.getCause() + "" : "";
+        JsonObject errorJson = new JsonObject();
+        errorJson.addProperty("errorType", error.errorType.name());
+        errorJson.addProperty("errorCode", error.errorType.ordinal());
+        errorJson.addProperty("errorSeverity", error.severity.name());
+        errorJson.addProperty("errorMessage", error.message);
+        errorJson.addProperty("errorCause", errorCause);
+        return new Gson().toJson(errorJson);
     }
 
     private static String getCuePointsJson(AdCuePoints adCuePoints) {
