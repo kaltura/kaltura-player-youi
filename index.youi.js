@@ -127,10 +127,10 @@ AppRegistry.registerComponent("YiReactApp", () => YiReactApp);
 
 
 //OTT 3009
-const PhoenixBaseUrl = "https://rest-sgs1.ott.kaltura.com/v5_3_5/api_v3/";
-const OttPartnerId = 225;
-const OttMediaId = "316381";
-const OttMediaFormat = "dash Mobile";
+const PhoenixBaseUrl = "https://3207.frs1.ott.kaltura.com/api_v3/";
+const OttPartnerId = 3207;
+const OttMediaId = "2305718";
+const OttMediaFormat = "STB_Devices_Main_HLS";
 const OttMediaProtocol = "https"; // "https"
 const OttAssetType = "media";
 const OttPlaybackContextType = "playback";
