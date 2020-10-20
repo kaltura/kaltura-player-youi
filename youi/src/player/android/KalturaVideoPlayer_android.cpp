@@ -225,15 +225,9 @@ KalturaVideoPlayerPriv::~KalturaVideoPlayerPriv()
 
 void KalturaVideoPlayerPriv::HandleEvent(const CYIString& name, folly::dynamic content)
 {
-    if (name == "play")
+    if (name == "playerInitialized")
     {
-        YI_LOGD(TAG, "play");
-        m_pPub->m_pStateManager->TransitionToPlaybackPlaying();
-    }
-    else if (name == "pause")
-    {
-        YI_LOGD(TAG, "pause");
-        m_pPub->m_pStateManager->TransitionToPlaybackPaused();
+        YI_LOGD(TAG, "playerInitialized");
     }
     else if (name == "loadMediaSuccess")
     {
@@ -254,6 +248,15 @@ void KalturaVideoPlayerPriv::HandleEvent(const CYIString& name, folly::dynamic c
             m_pPub->m_pStateManager->TransitionToPlaybackBuffering();
         }
     }
+    else if (name == "play")
+    {
+        YI_LOGD(TAG, "play");
+    }
+    else if (name == "pause")
+    {
+        YI_LOGD(TAG, "pause");
+        m_pPub->m_pStateManager->TransitionToPlaybackPaused();
+    }
     else if (name == "durationChanged")
     {
         const auto duration = content["duration"].asDouble();
@@ -265,6 +268,174 @@ void KalturaVideoPlayerPriv::HandleEvent(const CYIString& name, folly::dynamic c
         const auto currentTime = content["position"].asDouble();
         m_currentTimeMs = static_cast<uint64_t>(currentTime * 1000);
         m_pPub->CurrentTimeUpdated.Emit(m_currentTimeMs);
+    }
+    if (name == "canPlay")
+    {
+        YI_LOGD(TAG, "canPlay");
+    }
+    else if (name == "playing")
+    {
+        YI_LOGD(TAG, "playing");
+        m_pPub->m_pStateManager->TransitionToPlaybackPlaying();
+    }
+    else if (name == "ended")
+    {
+        YI_LOGD(TAG, "ended");
+    }
+    else if (name == "stopped")
+    {
+        YI_LOGD(TAG, "stopped");
+    }
+    else if (name == "tracksAvailable")
+    {
+        YI_LOGD(TAG, "tracksAvailable %s", JSONFromDynamic(content).c_str());
+
+        if (!content["audio"].isNull())
+        {
+            auto audioTracks = content["audio"];
+
+            for (const auto& track : audioTracks)
+            {
+                const CYIString uniqueId = track["id"].asString();
+
+                CYIString label;
+                if (track.find("label") != track.items().end() && !track["label"].isNull())
+                {
+                    label = track["label"].asString();
+                }
+
+                CYIString language;
+                if (track.find("language") != track.items().end() && !track["language"].isNull())
+                {
+                    language = track["language"].asString();
+                }
+
+                m_audioTracks.emplace_back(m_audioTracks.size(), uniqueId, label, language);
+
+                bool isSelected = track["isSelected"].asBool();
+                if (isSelected)
+                {
+                    m_selectedAudioTrack = static_cast<int32_t>(m_audioTracks.size());
+                }
+            }
+        }
+
+        if (!content["text"].isNull())
+        {
+            auto textTracks = content["text"];
+
+            for (const auto& track : textTracks)
+            {
+                const CYIString uniqueId = track["id"].asString();
+
+                CYIString label;
+                if (track.find("label") != track.items().end() && !track["label"].isNull())
+                {
+                    label = track["label"].asString();
+                }
+
+                CYIString language;
+                if (track.find("language") != track.items().end() && !track["language"].isNull())
+                {
+                    language = track["language"].asString();
+                }
+
+                m_closedCaptionsTracks.emplace_back(
+                        m_closedCaptionsTracks.size(), uniqueId, label, language);
+
+                bool isSelected = track["isSelected"].asBool();
+                if (isSelected)
+                {
+                    m_selectedClosedCaptionTrack
+                            = static_cast<int32_t>(m_closedCaptionsTracks.size());
+                }
+            }
+        }
+    }
+    else if (name == "videoTrackChanged")
+    {
+        YI_LOGD(TAG, "videoTrackChanged");
+    }
+    else if (name == "audioTrackChanged")
+    {
+        YI_LOGD(TAG, "audioTrackChanged");
+    }
+    else if (name == "textTrackChanged")
+    {
+        YI_LOGD(TAG, "textTrackChanged");
+    }
+    else if (name == "seeking")
+    {
+        YI_LOGD(TAG, "seeking");
+    }
+    else if (name == "seeked")
+    {
+        YI_LOGD(TAG, "seeked");
+    }
+    else if (name == "error")
+    {
+        YI_LOGD(TAG, "error");
+        // void CYIAVPlayerPriv::OnPlaybackError(const CYIString &errorString, const
+        // CYIString &nativeErrorCode)
+        {
+            // CYIAbstractVideoPlayer::Error error;
+            // error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
+            // error.message = errorString;
+            // error.nativePlayerErrorCode = nativeErrorCode;
+            // m_pPub->ErrorOccurred.Emit();
+        }
+    }
+    else if (name == "adProgress")
+    {
+        YI_LOGD(TAG, "adProgress");
+    }
+    else if (name == "adCuepointsChanged")
+    {
+        YI_LOGD(TAG, "adCuepointsChanged");
+    }
+    else if (name == "adStarted")
+    {
+        YI_LOGD(TAG, "adStarted");
+    }
+    else if (name == "adCompleted")
+    {
+        YI_LOGD(TAG, "adCompleted");
+    }
+    else if (name == "adPaused")
+    {
+        YI_LOGD(TAG, "adPaused");
+    }
+    else if (name == "adResumed")
+    {
+        YI_LOGD(TAG, "adResumed");
+    }
+    else if (name == "adBufferStart")
+    {
+        YI_LOGD(TAG, "adBufferStart");
+    }
+    else if (name == "adClicked")
+    {
+        YI_LOGD(TAG, "adClicked");
+    }
+    else if (name == "adSkipped")
+    {
+        YI_LOGD(TAG, "adSkipped");
+    }
+    else if (name == "adRequested")
+    {
+        YI_LOGD(TAG, "adRequested");
+    }
+    else if (name == "adContentPauseRequested")
+    {
+        YI_LOGD(TAG, "adContentPauseRequested");
+    }
+    else if (name == "adContentResumeRequested")
+    {
+        YI_LOGD(TAG, "adContentResumeRequested");
+    }
+    else if (name == "allAdsCompleted")
+    {
+        YI_LOGD(TAG, "allAdsCompleted");
     }
     else if (name == "adError")
     {
@@ -438,17 +609,30 @@ void KalturaVideoPlayerPriv::SetMaxBitrate_(uint64_t uMaxBitrate)
 
 bool KalturaVideoPlayerPriv::SelectAudioTrack_(uint32_t uID)
 {
-    return false;
+    if (!playerWrapperBridgeClass)
+    {
+        return false;
+    }
+
+    const auto &track = m_audioTracks[uID];
+    jstring jUniqueId = GetEnv_KalturaPlayer()->NewStringUTF(track.uniqueId.GetData());
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, changeTrackMethodID, jUniqueId);
+    return true;
 }
 
 std::vector<CYIAbstractVideoPlayer::AudioTrackInfo> KalturaVideoPlayerPriv::GetAudioTracks_() const
 {
-    std::vector<CYIAbstractVideoPlayer::AudioTrackInfo> tracks;
-    return tracks;
+    std::vector<CYIAbstractVideoPlayer::AudioTrackInfo> result(m_audioTracks.begin(), m_audioTracks.end());
+    return result;
 }
 
 CYIAbstractVideoPlayer::AudioTrackInfo KalturaVideoPlayerPriv::GetActiveAudioTrack_() const
 {
+    if (m_selectedAudioTrack >= 0)
+    {
+        return m_audioTracks[m_selectedAudioTrack];
+    }
+
     return CYIAbstractVideoPlayer::AudioTrackInfo();
 }
 
@@ -460,17 +644,30 @@ std::vector<CYIAbstractVideoPlayer::SeekableRange> KalturaVideoPlayerPriv::GetLi
 
 bool KalturaVideoPlayerPriv::SelectClosedCaptionsTrack_(uint32_t uID)
 {
-    return false;
+    if (!playerWrapperBridgeClass)
+    {
+        return false;
+    }
+
+    const auto &track = m_closedCaptionsTracks[uID];
+    jstring jUniqueId = GetEnv_KalturaPlayer()->NewStringUTF(track.uniqueId.GetData());
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, changeTrackMethodID, jUniqueId);
+    return true;
 }
 
 std::vector<CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo> KalturaVideoPlayerPriv::GetClosedCaptionsTracks_() const
 {
-    std::vector<CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo> captions;
-    return captions;
+    std::vector<CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo> result(m_closedCaptionsTracks.begin(), m_closedCaptionsTracks.end());
+    return result;
 }
 
 CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayerPriv::GetActiveClosedCaptionsTrack_() const
 {
+    if (m_selectedClosedCaptionTrack >= 0)
+    {
+        return m_closedCaptionsTracks[m_selectedClosedCaptionTrack];
+    }
+
     return CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo();
 }
 

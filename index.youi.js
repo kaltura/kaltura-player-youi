@@ -64,6 +64,14 @@ export default class YiReactApp extends Component {
           }
           onDurationChanged={(duration) => this.setState({ duration: duration })}
           onAdError={(data) => console.log(data)}
+          onAvailableAudioTracksChanged={(tracks) => {
+            console.log("onAvailableAudioTracksChanged " + tracks)
+            console.log(tracks)
+          }}
+          onAvailableClosedCaptionsTracksChanged={(tracks) => {
+            console.log("onAvailableClosedCaptionsTracksChanged " + tracks)
+            console.log(tracks)
+          }}
         />
 
         <View style={styles.buttonContainer}>
@@ -119,11 +127,11 @@ AppRegistry.registerComponent("YiReactApp", () => YiReactApp);
 
 
 //OTT 3009
-const PhoenixBaseUrl = "https://rest-us.ott.kaltura.com/v4_5/api_v3/";
-const OttPartnerId = 3009;
-const OttMediaId = "548576";
-const OttMediaFormat = "Mobile_Main";
-const OttMediaProtocol = "http"; // "https"
+const PhoenixBaseUrl = "https://rest-sgs1.ott.kaltura.com/v5_3_5/api_v3/";
+const OttPartnerId = 225;
+const OttMediaId = "316381";
+const OttMediaFormat = "dash Mobile";
+const OttMediaProtocol = "https"; // "https"
 const OttAssetType = "media";
 const OttPlaybackContextType = "playback";
 

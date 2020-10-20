@@ -19,6 +19,28 @@ class KalturaVideoPlayer;
 class KalturaVideoPlayerPriv
 {
 public:
+    struct KalturaAudioTrack : public CYIAbstractVideoPlayer::AudioTrackInfo
+    {
+        CYIString uniqueId;
+
+        KalturaAudioTrack(uint32_t id, const CYIString &uID, const CYIString &name, const CYIString &language)
+                : AudioTrackInfo(id, name, language)
+                , uniqueId(uID)
+        {
+        }
+    };
+
+    struct KalturaClosedCaptionTrack : public CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo
+    {
+        CYIString uniqueId;
+
+        KalturaClosedCaptionTrack(uint32_t id, const CYIString &uID, const CYIString &name, const CYIString &language)
+            : ClosedCaptionsTrackInfo(id, name, language)
+            , uniqueId(uID)
+        {
+        }
+    };
+
     KalturaVideoPlayerPriv(KalturaVideoPlayer *pPub);
     virtual ~KalturaVideoPlayerPriv();
 
@@ -62,6 +84,12 @@ public:
 
     uint64_t m_durationMs = 0;
     uint64_t m_currentTimeMs = 0;
+
+    std::vector<KalturaAudioTrack> m_audioTracks;
+    int32_t m_selectedAudioTrack = -1;
+
+    std::vector<KalturaClosedCaptionTrack> m_closedCaptionsTracks;
+    int32_t m_selectedClosedCaptionTrack = -1;
 
 private:
 #ifdef YI_ANDROID
