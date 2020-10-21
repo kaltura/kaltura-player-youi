@@ -1,0 +1,11 @@
+framework module KalturaNetKit {
+  umbrella header "KalturaNetKit-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module KalturaNetKit.Swift {
+    header "KalturaNetKit-Swift.h"
+    requires objc
+}

@@ -1,0 +1,11 @@
+framework module PlayKit {
+  umbrella header "PlayKit-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module PlayKit.Swift {
+    header "PlayKit-Swift.h"
+    requires objc
+}
