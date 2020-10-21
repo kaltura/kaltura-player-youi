@@ -412,11 +412,9 @@ public class PKPlayerWrapper {
                 PKMediaFormat mediaFormat = PKMediaFormat.dash;
                 if ("HLS".equals(mediaAsset.getType())) {
                     mediaFormat = PKMediaFormat.hls;
-                }
-                if ("MP4".equals(mediaAsset.getType())) {
+                } else if ("MP4".equals(mediaAsset.getType())) {
                     mediaFormat = PKMediaFormat.mp4;
-                }
-                if ("MP3".equals(mediaAsset.getType())) {
+                } else if ("MP3".equals(mediaAsset.getType())) {
                     mediaFormat = PKMediaFormat.mp3;
                 }
                 pkMediaSource.setMediaFormat(mediaFormat);
