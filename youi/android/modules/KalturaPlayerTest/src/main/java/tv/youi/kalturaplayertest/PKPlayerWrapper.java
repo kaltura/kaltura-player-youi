@@ -13,6 +13,8 @@ import com.kaltura.netkit.utils.NKLog;
 import com.kaltura.playkit.PKError;
 import com.kaltura.playkit.PKLog;
 import com.kaltura.playkit.PKMediaEntry;
+import com.kaltura.playkit.PKMediaFormat;
+import com.kaltura.playkit.PKMediaSource;
 import com.kaltura.playkit.PKPluginConfigs;
 import com.kaltura.playkit.PlayKitManager;
 import com.kaltura.playkit.PlayerEvent;
@@ -32,6 +34,7 @@ import com.npaw.youbora.lib6.YouboraLog;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import tv.youi.kalturaplayertest.model.InitOptions;
@@ -376,7 +379,6 @@ public class PKPlayerWrapper {
                 " }";
     }
 
-    @SuppressWarnings("unused") // Called from C++
     public static void load(String assetId, String jsonOptionsStr) {
 
         log.d("load assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
@@ -389,6 +391,7 @@ public class PKPlayerWrapper {
 
         runOnUiThread(() -> {
 
+
             if (mediaAsset.getPlugins() != null) {
                 if (mediaAsset.getPlugins().ima != null) {
                     updatgeIMAPlugin(mediaAsset.getPlugins().ima);
@@ -397,6 +400,21 @@ public class PKPlayerWrapper {
                 if (mediaAsset.getPlugins().youbora != null) {
                     updateYouboraPlugin(mediaAsset.getPlugins().youbora);
                 }
+            }
+
+            if (mediaAsset.getMediaEntry() != null) {
+//                PKMediaEntry pkMediaEntry = new PKMediaEntry();
+//                pkMediaEntry.setMediaType(PKMediaEntry.MediaEntryType.Unknown);
+//                pkMediaEntry.setId(assetId);
+//                PKMediaSource pkMediaSource = new PKMediaSource();
+//                pkMediaSource.setId("1");
+//                pkMediaSource.setUrl("https://playertest.longtailvideo.com/adaptive/eleph-audio/playlist.m3u8");
+//                pkMediaSource.setMediaFormat(PKMediaFormat.hls);
+//                pkMediaEntry.setSources(Collections.singletonList(pkMediaSource));
+
+                player.setMedia(mediaAsset.getMediaEntry());
+                sendPlayerEvent("loadMediaSuccess", gson.toJson(mediaAsset.getMediaEntry()));
+                return;
             }
 
             final PKMediaEntry localPlaybackEntry = PKDownloadWrapper.getLocalPlaybackEntry(assetId);
@@ -655,7 +673,7 @@ public class PKPlayerWrapper {
 
     @SuppressWarnings("unused") // Called from C++
     public static void setVolume(float volume) {
-        
+
         log.d("setVolume: " + volume);
         if (volume < 0) {
             volume = 0f;

@@ -1,5 +1,6 @@
 package tv.youi.kalturaplayertest.model;
 
+import com.kaltura.playkit.PKMediaEntry;
 import com.kaltura.playkit.providers.api.phoenix.APIDefines;
 import com.kaltura.playkit.providers.ott.OTTMediaAsset;
 import com.kaltura.playkit.providers.ott.PhoenixMediaProvider;
@@ -8,6 +9,7 @@ import com.kaltura.tvplayer.OTTMediaOptions;
 import java.util.Collections;
 
 public class MediaAsset {
+    private PKMediaEntry mediaEntry;
     private String ks;        // ovp or ott
     private String format;    // ott
     private String fileId;    // ott
@@ -22,6 +24,10 @@ public class MediaAsset {
     private String referrer;
     private Long startPosition;
     private Plugins plugins;
+
+    public PKMediaEntry getMediaEntry() {
+        return mediaEntry;
+    }
 
     private String getKs() {
         return ks;

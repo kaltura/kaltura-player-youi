@@ -52,6 +52,11 @@ export default class YiReactApp extends Component {
         <KalturaVideo
           style={styles.video}
           ref={this.videoRef}
+          source={{
+            // uri: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8',
+            uri : "https://playertest.longtailvideo.com/adaptive/eleph-audio/playlist.m3u8",
+            type: 'HLS'
+          }}
           onPreparing={() => console.log("onPreparing called.") }
 	        onReady={() => console.log("onReady called.")}
           onPlaying={() => this.setState({isPlaying: true})}
