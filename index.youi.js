@@ -46,14 +46,14 @@ export default class YiReactApp extends Component {
           ref={this.videoRef}
           ottPartnerId={OttPartnerId}
           initOptions={initOptions}
-          source={{
-            uri: "https://playertest.longtailvideo.com/adaptive/eleph-audio/playlist.m3u8",
-            type: 'HLS'
-          }}
           // source={{
-          //   id: OttMediaId,
-          //   asset: asset
+          //   uri: "https://playertest.longtailvideo.com/adaptive/eleph-audio/playlist.m3u8",
+          //   type: 'HLS'
           // }}
+          source={{
+            id: OttMediaId,
+            asset: asset
+          }}
           onPreparing={() => console.log("onPreparing called.") }
 	        onReady={() => console.log("onReady called.")}
           onPlaying={() => this.setState({isPlaying: true})}
