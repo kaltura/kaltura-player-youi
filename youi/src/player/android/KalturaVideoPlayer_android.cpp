@@ -304,7 +304,7 @@ void KalturaVideoPlayerPriv::HandleEvent(const CYIString& name, folly::dynamic c
 
        if (!content["video"].isNull())
         {
-            auto audioTracks = content["video"];
+            auto videoTracks = content["video"];
 
             for (const auto& track : videoTracks)
             {
