@@ -402,18 +402,28 @@ public class PKPlayerWrapper {
                 }
             }
 
-            if (mediaAsset.getMediaEntry() != null) {
-//                PKMediaEntry pkMediaEntry = new PKMediaEntry();
-//                pkMediaEntry.setMediaType(PKMediaEntry.MediaEntryType.Unknown);
-//                pkMediaEntry.setId(assetId);
-//                PKMediaSource pkMediaSource = new PKMediaSource();
-//                pkMediaSource.setId("1");
-//                pkMediaSource.setUrl("https://playertest.longtailvideo.com/adaptive/eleph-audio/playlist.m3u8");
-//                pkMediaSource.setMediaFormat(PKMediaFormat.hls);
-//                pkMediaEntry.setSources(Collections.singletonList(pkMediaSource));
+            if (mediaAsset.getUri() != null) {
+                PKMediaEntry pkMediaEntry = new PKMediaEntry();
+                pkMediaEntry.setMediaType(PKMediaEntry.MediaEntryType.Vod);
+                pkMediaEntry.setId(assetId);
+                PKMediaSource pkMediaSource = new PKMediaSource();
+                pkMediaSource.setId("1");
+                pkMediaSource.setUrl(mediaAsset.getUri());
+                PKMediaFormat mediaFormat = PKMediaFormat.dash;
+                if ("HLS".equals(mediaAsset.getType())) {
+                    mediaFormat = PKMediaFormat.hls;
+                }
+                if ("MP4".equals(mediaAsset.getType())) {
+                    mediaFormat = PKMediaFormat.mp4;
+                }
+                if ("MP3".equals(mediaAsset.getType())) {
+                    mediaFormat = PKMediaFormat.mp3;
+                }
+                pkMediaSource.setMediaFormat(mediaFormat);
+                pkMediaEntry.setSources(Collections.singletonList(pkMediaSource));
 
-                player.setMedia(mediaAsset.getMediaEntry());
-                sendPlayerEvent("loadMediaSuccess", gson.toJson(mediaAsset.getMediaEntry()));
+                player.setMedia(pkMediaEntry);
+                sendPlayerEvent("loadMediaSuccess", gson.toJson(pkMediaEntry));
                 return;
             }
 

@@ -9,7 +9,9 @@ import com.kaltura.tvplayer.OTTMediaOptions;
 import java.util.Collections;
 
 public class MediaAsset {
-    private PKMediaEntry mediaEntry;
+    private String uri;
+    private String type;
+
     private String ks;        // ovp or ott
     private String format;    // ott
     private String fileId;    // ott
@@ -25,8 +27,12 @@ public class MediaAsset {
     private Long startPosition;
     private Plugins plugins;
 
-    public PKMediaEntry getMediaEntry() {
-        return mediaEntry;
+    public String getUri() {
+        return uri;
+    }
+
+    public String getType() {
+        return type;
     }
 
     private String getKs() {
