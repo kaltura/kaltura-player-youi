@@ -129,7 +129,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     
     PluginConfig *pc = createPluginConfig(dyn_options[@"plugins"]);
     
-    [KalturaOTTPlayer setupWithPartnerId:pid serverURL:serverUrl];
+    [KalturaOTTPlayer setupWithPartnerId:pid serverURL:serverUrl referrer:dyn_options[@"referrer"]];
     
     PlayerOptions *options = [PlayerOptions new];
     options.pluginConfig = pc;

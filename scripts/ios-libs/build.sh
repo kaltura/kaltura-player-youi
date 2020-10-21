@@ -16,10 +16,11 @@ fi
 rm -rf "$TARGET_DIR" || true
 mkdir "$TARGET_DIR"
 
+pod deintegrate
 rm -rf Pods || true
 rm Podfile.lock || true
 
-pod install
+pod install --repo-update
 
 rsync -av Pods/_Prebuild/GeneratedFrameworks/ "$TARGET_DIR"
 

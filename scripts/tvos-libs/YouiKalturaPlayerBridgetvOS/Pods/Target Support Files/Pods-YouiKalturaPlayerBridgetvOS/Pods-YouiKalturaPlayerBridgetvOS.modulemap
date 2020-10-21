@@ -1,0 +1,6 @@
+framework module Pods_YouiKalturaPlayerBridgetvOS {
+  umbrella header "Pods-YouiKalturaPlayerBridgetvOS-umbrella.h"
+
+  export *
+  module * { export * }
+}

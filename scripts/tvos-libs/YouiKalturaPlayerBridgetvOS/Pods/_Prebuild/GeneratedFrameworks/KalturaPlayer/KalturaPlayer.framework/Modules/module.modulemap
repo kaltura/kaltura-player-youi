@@ -1,0 +1,11 @@
+framework module KalturaPlayer {
+  umbrella header "KalturaPlayer-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module KalturaPlayer.Swift {
+    header "KalturaPlayer-Swift.h"
+    requires objc
+}
