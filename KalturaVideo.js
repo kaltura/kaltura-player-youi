@@ -15,9 +15,9 @@ export default class KalturaVideo extends React.Component {
   componentDidMount() {
     NativeModules.KalturaVideo.ConnectToPlayer(findNodeHandle(this.videoRef.current));
 
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYER_AD_ERROR', (event) => {
-      if (this.props.onAdError) {
-        this.props.onAdError(event);
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED', (event) => {
+      if (this.props.onAvailableVideoTracksChanged) {
+        this.props.onAvailableVideoTracksChanged(event);
       }
     }) 
   }

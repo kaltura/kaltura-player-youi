@@ -33,16 +33,16 @@ void KalturaVideoPlayer::Load(std::string assetId, folly::dynamic options)
     m_pPriv->Load_(assetId, options);
 }
 
-bool SelectVideoTrack_(uint32_t uID) {
+bool KalturaVideoPlayer::SelectVideoTrack(uint32_t uID) {
     return m_pPriv->SelectVideoTrack_(uID);
 }
 
-std::vector<VideoTrackInfo> GetVideoTracks_() {
-    return m_pPriv->GetVideoTracks_(uID);
+std::vector<KalturaVideoPlayer::VideoTrackInfo> KalturaVideoPlayer::GetVideoTracks() {
+    return m_pPriv->GetVideoTracks_();
 }
 
-VideoTrackInfo GetActiveVideoTrack_() {
-    Return m_pPriv->GetActiveVideoTrack_(uID);
+KalturaVideoPlayer::VideoTrackInfo KalturaVideoPlayer::GetActiveVideoTrack() {
+    return m_pPriv->GetActiveVideoTrack_();
 }
 
 CYIString KalturaVideoPlayer::GetName_() const
@@ -302,25 +302,30 @@ void KalturaVideoPlayerPriv::HandleEvent(const CYIString& name, folly::dynamic c
     {
         YI_LOGD(TAG, "tracksAvailable %s", JSONFromDynamic(content).c_str());
 
-       if (!content["video"].isNull())
+        if (!content["video"].isNull())
         {
             auto videoTracks = content["video"];
 
             for (const auto& track : videoTracks)
             {
                 const CYIString uniqueId = track["id"].asString();
-
-                int64_t bitrate = track["bitrate"].asBool();
-                int32_t width = track["width"].asBool();
-                int32_t height = track["height"].asBool();
+                auto bitrate = static_cast<uint64_t>(track["bitrate"].asInt());
+                auto width = static_cast<uint32_t>(track["width"].asInt());
+                auto height = static_cast<uint32_t>(track["height"].asInt());
                 bool isAdaptive = track["isAdaptive"].asBool();
                 bool isSelected = track["isSelected"].asBool();
+
                 if (isSelected)
                 {
                     m_selectedVideoTrack = static_cast<int32_t>(m_videoTracks.size());
                 }
 
-                m_videoTracks.emplace_back(m_videoTracks.size(), uniqueId, label, language);
+                m_videoTracks.emplace_back(m_videoTracks.size(), uniqueId, bitrate, width, height, isAdaptive, isSelected);
+            }
+
+            if (m_videoTracks.size() > 0)
+            {
+                m_pPub->AvailableVideoTracksChanged.Emit(m_videoTracks);
             }
         }
 
@@ -476,8 +481,6 @@ void KalturaVideoPlayerPriv::HandleEvent(const CYIString& name, folly::dynamic c
     else if (name == "adError")
     {
         YI_LOGD(TAG, "adError %s", JSONFromDynamic(content).c_str());
-
-        //m_pPub->AdError.Emit(content);
 
         CYIAbstractVideoPlayer::Error error;
         error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
@@ -666,30 +669,29 @@ bool KalturaVideoPlayerPriv::SelectVideoTrack_(uint32_t uID)
     return true;
 }
 
-std::vector<VideoTrackInfo> KalturaVideoPlayerPriv::GetVideoTracks_() const
+std::vector<KalturaVideoPlayer::VideoTrackInfo> KalturaVideoPlayerPriv::GetVideoTracks_() const
 {
-    std::vector<VideoTrackInfo> result(m_videoTracks.begin(), m_videoTracks.end());
-    return result;
+    return m_videoTracks;
 }
 
-VideorackInfo KalturaVideoPlayerPriv::GetActiveVideoTrack_() const
+KalturaVideoPlayer::VideoTrackInfo KalturaVideoPlayerPriv::GetActiveVideoTrack_() const
 {
     if (m_selectedVideoTrack >= 0)
     {
         return m_videoTracks[m_selectedVideoTrack];
     }
 
-    return VideoTrackInfo();
+    return KalturaVideoPlayer::VideoTrackInfo();
 }
 
-bool KalturaVideoPlayerPriv::SelectVideoTrack_(uint32_t uID)
+bool KalturaVideoPlayerPriv::SelectAudioTrack_(uint32_t uID)
 {
     if (!playerWrapperBridgeClass)
     {
         return false;
     }
 
-    const auto &track = m_videoTracks[uID];
+    const auto &track = m_audioTracks[uID];
     jstring jUniqueId = GetEnv_KalturaPlayer()->NewStringUTF(track.uniqueId.GetData());
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, changeTrackMethodID, jUniqueId);
     return true;

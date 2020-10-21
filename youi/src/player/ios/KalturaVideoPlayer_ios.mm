@@ -39,6 +39,18 @@ void KalturaVideoPlayer::Load(std::string assetId, folly::dynamic options)
     m_pPriv->Load_(assetId, options);
 }
 
+bool KalturaVideoPlayer::SelectVideoTrack(uint32_t uID) {
+    return m_pPriv->SelectVideoTrack_(uID);
+}
+
+std::vector<KalturaVideoPlayer::VideoTrackInfo> KalturaVideoPlayer::GetVideoTracks() {
+    return m_pPriv->GetVideoTracks_();
+}
+
+KalturaVideoPlayer::VideoTrackInfo KalturaVideoPlayer::GetActiveVideoTrack() {
+    return m_pPriv->GetActiveVideoTrack_();
+}
+
 CYIString KalturaVideoPlayer::GetName_() const
 {
     return m_pPriv->GetName_();
@@ -389,6 +401,30 @@ void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic
     else if (name == "tracksAvailable")
     {
         YI_LOGD(TAG, "tracksAvailable %s", JSONFromDynamic(content).c_str());
+        
+        if (!content["video"].isNull())
+        {
+            auto videoTracks = content["video"];
+            
+            for (const auto& track : videoTracks)
+            {
+                const CYIString uniqueId = track["id"].asString();
+                auto bitrate = static_cast<uint64_t>(track["bitrate"].asInt());
+                auto width = static_cast<uint32_t>(track["width"].asInt());
+                auto height = static_cast<uint32_t>(track["height"].asInt());
+                bool isAdaptive = track["isAdaptive"].asBool();
+                bool isSelected = track["isSelected"].asBool();
+                
+                if (isSelected)
+                {
+                    m_selectedVideoTrack = static_cast<int32_t>(m_videoTracks.size());
+                }
+                
+                m_videoTracks.emplace_back(m_videoTracks.size(), uniqueId, bitrate, width, height, isAdaptive, isSelected);
+            }
+            
+            m_pPub->AvailableVideoTracksChanged.Emit(m_videoTracks);
+        }
 
         if (!content["audio"].isNull())
         {
@@ -654,6 +690,25 @@ void KalturaVideoPlayerPriv::Seek_(uint64_t uSeekPositionMs)
 void KalturaVideoPlayerPriv::SetMaxBitrate_(uint64_t uMaxBitrate)
 {
     
+}
+
+bool KalturaVideoPlayerPriv::SelectVideoTrack_(uint32_t uID)
+{
+    YI_UNUSED(uID);
+    YI_LOGW(TAG, "SelectVideoTrack is not available on iOS");
+    return false;
+}
+
+std::vector<KalturaVideoPlayer::VideoTrackInfo> KalturaVideoPlayerPriv::GetVideoTracks_() const
+{
+    YI_LOGW(TAG, "GetVideoTracks is not available on iOS");
+    return std::vector<KalturaVideoPlayer::VideoTrackInfo>();
+}
+
+KalturaVideoPlayer::VideoTrackInfo KalturaVideoPlayerPriv::GetActiveVideoTrack_() const
+{
+    YI_LOGW(TAG, "GetActiveVideoTrack is not available on iOS");
+    return KalturaVideoPlayer::VideoTrackInfo();
 }
 
 bool KalturaVideoPlayerPriv::SelectAudioTrack_(uint32_t uID)
