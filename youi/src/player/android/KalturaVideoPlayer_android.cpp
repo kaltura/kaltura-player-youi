@@ -310,12 +310,6 @@ void KalturaVideoPlayerPriv::HandleEvent(const CYIString& name, folly::dynamic c
             {
                 const CYIString uniqueId = track["id"].asString();
 
-                // CYIString label;
-                // if (track.find("label") != track.items().end() && !track["label"].isNull())
-                // {
-                //     label = track["label"].asString();
-                // }
-
                 int64_t bitrate = track["bitrate"].asBool();
                 int32_t width = track["width"].asBool();
                 int32_t height = track["height"].asBool();
@@ -326,10 +320,7 @@ void KalturaVideoPlayerPriv::HandleEvent(const CYIString& name, folly::dynamic c
                     m_selectedVideoTrack = static_cast<int32_t>(m_videoTracks.size());
                 }
 
-                m_videoTracks.emplace_back(m_audioTracks.size(), uniqueId, label, language);
-
-
-
+                m_videoTracks.emplace_back(m_videoTracks.size(), uniqueId, label, language);
             }
         }
 
