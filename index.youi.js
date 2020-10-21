@@ -23,14 +23,6 @@ export default class YiReactApp extends Component {
   videoRef = React.createRef()
   pauseBtnRef = React.createRef()
 
-  componentDidMount() {
-    this.videoRef.current.setup(OttPartnerId, initOptions)
-  }
-
-  loadBtnPressed = () => {
-    this.videoRef.current.load(OttMediaId, asset)
-  }
-
   pauseBtnPressed = () => {
     if (this.state.isPlaying) {
       this.videoRef.current.pause()
@@ -52,11 +44,16 @@ export default class YiReactApp extends Component {
         <KalturaVideo
           style={styles.video}
           ref={this.videoRef}
+          ottPartnerId={OttPartnerId}
+          initOptions={initOptions}
           source={{
-            // uri: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8',
-            uri : "https://playertest.longtailvideo.com/adaptive/eleph-audio/playlist.m3u8",
+            uri: "https://playertest.longtailvideo.com/adaptive/eleph-audio/playlist.m3u8",
             type: 'HLS'
           }}
+          // source={{
+          //   id: OttMediaId,
+          //   asset: asset
+          // }}
           onPreparing={() => console.log("onPreparing called.") }
 	        onReady={() => console.log("onReady called.")}
           onPlaying={() => this.setState({isPlaying: true})}
@@ -84,9 +81,6 @@ export default class YiReactApp extends Component {
         />
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={this.loadBtnPressed}>
-            <Text style={styles.buttonText}>{'Load'}</Text>
-          </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={this.pauseBtnPressed}>
             <Text style={styles.buttonText}>{this.state.isPlaying ? 'Pause' : 'Play'}</Text>
           </TouchableOpacity>

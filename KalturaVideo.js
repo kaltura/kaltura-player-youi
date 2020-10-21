@@ -10,6 +10,9 @@ export default class KalturaVideo extends React.Component {
     super(props)
     this.playerEventEmitter = null
     this.videoRef = React.createRef()
+
+    this.childProps = { ...props };
+    delete this.childProps.source;
   }
 
   componentDidMount() {
@@ -20,10 +23,20 @@ export default class KalturaVideo extends React.Component {
         this.props.onAdError(event);
       }
     }) 
+
+    this.setup(this.props.ottPartnerId, this.props.initOptions)
+
+    if (this.props.source) {
+      if (this.props.source.id) {
+        this.load(this.props.source.id, this.props.source.asset)
+      } else {
+        this.load('', this.props.source)
+      }
+    }
   }
 
   render() {
-    return <Video ref={this.videoRef} {...this.props} />
+    return <Video ref={this.videoRef} {...this.childProps} />
   }
 
   // Kaltura custom functions

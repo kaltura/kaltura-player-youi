@@ -513,8 +513,9 @@ void KalturaVideoPlayerPriv::Load_(std::string assetId, folly::dynamic options)
 
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
 
-    jstring jAssetId = GetEnv_KalturaPlayer()->NewStringUTF(assetId.c_str());
     auto jsonOptionsStr = folly::toJson(options);
+
+    jstring jAssetId = GetEnv_KalturaPlayer()->NewStringUTF(assetId.c_str());
     jstring optionsStr = GetEnv_KalturaPlayer()->NewStringUTF(jsonOptionsStr.c_str());
 
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, loadMethodID, jAssetId, optionsStr);
@@ -559,54 +560,10 @@ bool KalturaVideoPlayerPriv::SupportsFormat_(CYIAbstractVideoPlayer::StreamingFo
     return true;
 }
 
-//Prepare (const CYIUrl &videoURI, StreamingFormat formatHint, CYIAbstractVideoPlayer::PlaybackState initialState=CYIAbstractVideoPlayer::PlaybackState::Paused, std::unique_ptr< DRMConfiguration > pDRMConfiguration=nullptr, uint64_t startTimeMs=0)
-void KalturaVideoPlayerPriv::Prepare_(const CYIUrl &videoURI, CYIAbstractVideoPlayer::StreamingFormat /*eFormatHint*/)
+void KalturaVideoPlayerPriv::Prepare_(const CYIUrl &videoURI, CYIAbstractVideoPlayer::StreamingFormat eFormatHint)
 {
-
-    folly::dynamic sources = folly::dynamic::array(
-            folly::dynamic::object("id", "1"),
-            folly::dynamic::object("url", videoURI.ToString().GetData()),
-            folly::dynamic::object("mimeType", "application/dash+xml"));
-
-     folly::dynamic value =  folly::dynamic::object
-       ("id", "1")
-       ("mediaType", "Vod")
-       ("name", "pow_patrol")
-       ("sources", sources);
-
-
-    folly::dynamic options = folly::dynamic::object
-        ("pkMediaEntry", value);
-
-    m_pPub->m_pStateManager->TransitionToMediaPreparing();
-
-    jstring jAssetId = GetEnv_KalturaPlayer()->NewStringUTF("1");
-    auto jsonOptionsStr = folly::toJson(options);
-    jstring optionsStr = GetEnv_KalturaPlayer()->NewStringUTF(jsonOptionsStr.c_str());
-
-    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, loadMethodID, jAssetId, optionsStr);
-    GetEnv_KalturaPlayer()->DeleteLocalRef(jAssetId);
-    GetEnv_KalturaPlayer()->DeleteLocalRef(optionsStr);
-//   "pkMediaEntry": {
-//     "duration": 102000,
-//     "id": "0_hbhe2o9x",
-//     "mediaType": "Vod",
-//     "name": "pow_patrol",
-//     "sources": [
-//       {
-//         "id": "0_7o8zceol",
-//         "url": "https://qa-apache-php7.dev.kaltura.com/p/4171/sp/417100/playManifest/entryId/0_7o8zceol/protocol/https/format/mpegdash/flavorIds/0_meyrlsaa,0_hhb56jkz/a.mpd",
-//         "mimeType": "application/dash+xml",
-//         "drmData": [
-//           {
-//             "scheme": "WidevineCENC",
-//             "licenseUri": "https://udrm2.dev.kaltura.com/cenc/widevine/license?custom_data=eyJjYV9zeXN0ZW0iOiJPVlAiLCJ1c2VyX3Rva2VuIjoiTWpjMVpUTmhaREZrT0RjeU9USmhZemc1WXpjeE5EWTRObVJqTURrM1l6Tm1aV1JsWldFMFkzdzBNVGN4T3pReE56RTdNVFUzTWpVd05EVXlNenN3T3pFMU56STBNVGd4TWpNdU1EWXdOanN3TzNacFpYYzZLaXgzYVdSblpYUTZNVHM3IiwiYWNjb3VudF9pZCI6NDE3MSwiY29udGVudF9pZCI6IjBfN284emNlb2wiLCJmaWxlcyI6IjBfbWV5cmxzYWEsMF9oaGI1NmpreiJ9&signature=g9Ipt6XDE0%2FCZJFDCtzM3ARmYVk%3D"
-//           }
-//         ]
-//       }
-//     ]
-//   }
-
+    YI_UNUSED(videoURI);
+    YI_UNUSED(eFormatHint);
 }
 
 void KalturaVideoPlayerPriv::Play_()
