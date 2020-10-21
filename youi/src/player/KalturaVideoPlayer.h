@@ -18,6 +18,11 @@ public:
 
     void Setup(int32_t partnerId, folly::dynamic options);
     void Load(std::string assetId, folly::dynamic options);
+    bool SelectVideoTrack(uint32_t uID);
+    std::vector<VideoTrackInfo> GetVideoTracks();
+    VideoTrackInfo GetActiveVideoTrack();
+
+
 
     CYISignal<folly::dynamic> AdError;
     

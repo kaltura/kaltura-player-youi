@@ -19,6 +19,30 @@ class KalturaVideoPlayer;
 class KalturaVideoPlayerPriv
 {
 public:
+
+//{"id":"Video:0,0,0","height":360,"isAdaptive":false,"isSelected":false,"bitrate":508450,"width":640}
+    struct VideoTrackInfo
+    {
+        uint32_t id;
+        CYIString uniqueId;
+        uint64_t bitrate;
+        uint32_t width;
+        uint32_t height;
+        bool isAdaptive;
+        bool isSelected;
+
+        VideoTrackInfo(uint32_t id, const CYIString &uID, uint64_t bitrate, uint32_t width, uint32_t height, bool isAdaptive, bool isSelected)
+                : id(id)
+                , uniqueId(uID)
+                , bitrate(bitrate)
+                , width(width)
+                , isAdaptive(isAdaptive)
+                , isSelected(isSelected)
+
+        {
+        }
+    };
+
     struct KalturaAudioTrack : public CYIAbstractVideoPlayer::AudioTrackInfo
     {
         CYIString uniqueId;
@@ -46,6 +70,9 @@ public:
 
     void Setup_(int32_t partnerId, folly::dynamic options);
     void Load_(std::string assetId, folly::dynamic options);
+    bool SelectVideoTrack_(uint32_t uID);
+    std::vector<VideoTrackInfo> GetVideoTracks_();
+    VideoTrackInfo GetActiveVideoTrack_();
     void Emit_(const std::string &event, const folly::dynamic &content);
 
     void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle);
@@ -84,6 +111,9 @@ public:
 
     uint64_t m_durationMs = 0;
     uint64_t m_currentTimeMs = 0;
+
+    std::vector<VideoTrackInfo> m_videoTracks;
+    int32_t m_selectedVideoTrack = -1;
 
     std::vector<KalturaAudioTrack> m_audioTracks;
     int32_t m_selectedAudioTrack = -1;
