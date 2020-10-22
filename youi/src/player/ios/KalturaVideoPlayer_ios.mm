@@ -511,7 +511,7 @@ void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic
     else if (name == "volumeChanged")
     {
         YI_LOGD(TAG, "volumeChanged");
-        m_pPub->VolumeChanged.Emit(m_videoTracks);
+        m_pPub->VolumeChanged.Emit(content);
     }
     else if (name == "error")
     {

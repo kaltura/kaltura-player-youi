@@ -414,11 +414,7 @@ void KalturaVideoPlayerPriv::HandleEvent(const CYIString& name, folly::dynamic c
     else if (name == "volumeChanged")
     {
         YI_LOGD(TAG, "volumeChanged");
-    }
-    else if (name == "volumeChanged")
-    {
-        YI_LOGD(TAG, "volumeChanged");
-        m_pPub->VolumeChanged.Emit(m_videoTracks);
+        m_pPub->VolumeChanged.Emit(content);
     }
     else if (name == "error")
     {
