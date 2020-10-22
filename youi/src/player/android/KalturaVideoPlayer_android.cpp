@@ -755,6 +755,11 @@ bool KalturaVideoPlayerPriv::IsMuted_() const
 
 void KalturaVideoPlayerPriv::Mute_(bool bMute)
 {
+    float volume = 1.0;
+    if (bMute == true) {
+        volume = 0;
+    } 
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setVolumeMethodID, volume);
 }
 
 void KalturaVideoPlayerPriv::DisableClosedCaptions_()

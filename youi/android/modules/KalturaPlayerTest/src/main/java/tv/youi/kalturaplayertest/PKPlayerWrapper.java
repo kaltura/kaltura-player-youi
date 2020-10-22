@@ -238,7 +238,9 @@ public class PKPlayerWrapper {
         player.addListener(self, PlayerEvent.durationChanged, event -> sendPlayerEvent("durationChanged", "{ \"duration\": " +  (event.duration / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
         player.addListener(self, PlayerEvent.playheadUpdated, event -> sendPlayerEvent("timeUpdate", "{ \"position\": " + (event.position / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
         player.addListener(self, PlayerEvent.stateChanged, event -> sendPlayerEvent("stateChanged", "{ \"newState\": \"" + event.newState.name() + "\" }"));
+        player.addListener(self, PlayerEvent.volumeChanged, event -> sendPlayerEvent("volumeChanged", "{ \"volume\": \"" + event.volume + "\" }"));
 
+        
         player.addListener(self, PlayerEvent.tracksAvailable, event -> {
             Gson gson = new Gson();
             sendPlayerEvent("tracksAvailable", gson.toJson(getTracksInfo(event.tracksInfo)));
