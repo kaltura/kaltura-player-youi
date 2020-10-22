@@ -13,7 +13,7 @@ target 'YouiKalturaPlayerBridge' do
   pod 'PlayKit/AnalyticsCommon'
   pod 'SwiftyXMLParser'
   pod 'PlayKitKava'
-  pod 'PlayKitProviders'
+  pod 'PlayKitProviders', :git => 'https://github.com/kaltura/playkit-ios-providers', :branch => 'develop' 
   pod 'PlayKit_IMA'
   pod 'PlayKitYoubora'
 
