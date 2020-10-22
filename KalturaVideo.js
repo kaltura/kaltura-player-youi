@@ -15,7 +15,7 @@ export default class KalturaVideo extends React.Component {
   componentDidMount() {
     NativeModules.KalturaVideo.ConnectToPlayer(findNodeHandle(this.videoRef.current));
 
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYER_VOLUME_CHANGED', (event) => {
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_VOLUME_CHANGED', (event) => {
       if (this.props.onVolumeChanged) {
         this.props.onVolumeChanged(event.volume);
       }
