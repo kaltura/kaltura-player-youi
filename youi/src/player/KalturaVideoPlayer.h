@@ -13,13 +13,57 @@ class KalturaVideoPlayer : public CYIAbstractVideoPlayer, IVideoSurfaceListener
     friend class KalturaVideoPlayerPriv;
     
 public:
+    //{"id":"Video:0,0,0","height":360,"isAdaptive":false,"isSelected":false,"bitrate":508450,"width":640}
+    struct VideoTrackInfo
+    {
+        uint32_t id = 0;
+        CYIString uniqueId;
+        uint64_t bitrate = 0;
+        uint32_t width = 0;
+        uint32_t height = 0;
+        bool isAdaptive = false;
+        bool isSelected = false;
+
+        VideoTrackInfo()
+        {
+        }
+
+        VideoTrackInfo(uint32_t id, const CYIString &uID, uint64_t bitrate, uint32_t width, uint32_t height, bool isAdaptive, bool isSelected)
+            : id(id)
+            , uniqueId(uID)
+            , bitrate(bitrate)
+            , width(width)
+            , height(height)
+            , isAdaptive(isAdaptive)
+            , isSelected(isSelected)
+        {
+        }
+        
+        folly::dynamic ToDynamic() const
+        {
+            auto object = folly::dynamic::object
+                ("id", id)
+                ("uniqueId", uniqueId.GetData())
+                ("bitrate", bitrate)
+                ("width", width)
+                ("height", height)
+                ("isAdaptive", isAdaptive)
+                ("isSelected", isSelected);
+            return object;
+        }
+    };
+    
     KalturaVideoPlayer();
     virtual ~KalturaVideoPlayer();
 
     void Setup(int32_t partnerId, folly::dynamic options);
     void Load(std::string assetId, folly::dynamic options);
 
-    CYISignal<folly::dynamic> AdError;
+    bool SelectVideoTrack(uint32_t uID);
+    std::vector<VideoTrackInfo> GetVideoTracks();
+    VideoTrackInfo GetActiveVideoTrack();
+    
+    CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
     
     virtual void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle) override;
 

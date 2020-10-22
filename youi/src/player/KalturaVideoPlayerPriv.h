@@ -46,6 +46,11 @@ public:
 
     void Setup_(int32_t partnerId, folly::dynamic options);
     void Load_(std::string assetId, folly::dynamic options);
+    
+    bool SelectVideoTrack_(uint32_t uID);
+    std::vector<KalturaVideoPlayer::VideoTrackInfo> GetVideoTracks_() const;
+    KalturaVideoPlayer::VideoTrackInfo GetActiveVideoTrack_() const;
+    
     void Emit_(const std::string &event, const folly::dynamic &content);
 
     void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle);
@@ -84,6 +89,9 @@ public:
 
     uint64_t m_durationMs = 0;
     uint64_t m_currentTimeMs = 0;
+
+    std::vector<KalturaVideoPlayer::VideoTrackInfo> m_videoTracks;
+    int32_t m_selectedVideoTrack = -1;
 
     std::vector<KalturaAudioTrack> m_audioTracks;
     int32_t m_selectedAudioTrack = -1;
