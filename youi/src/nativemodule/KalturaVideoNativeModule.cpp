@@ -16,13 +16,13 @@
 YI_RN_INSTANTIATE_MODULE(KalturaVideoNativeModule, yi::react::EventEmitterModule);
 YI_RN_REGISTER_MODULE(KalturaVideoNativeModule);
 
-static const std::string KALTURA_PLAYER_AD_ERROR = "KALTURA_PLAYER_AD_ERROR";
+static const std::string KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED = "KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED";
 
 KalturaVideoNativeModule::KalturaVideoNativeModule()
 {
     SetSupportedEvents
     ({
-        KALTURA_PLAYER_AD_ERROR
+        KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED
     });
 }
 
@@ -43,9 +43,14 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
         if (pShadowVideo)
         {
             auto pPlayer = dynamic_cast<KalturaVideoPlayer *>(&pShadowVideo->GetPlayer());
-
-            pPlayer->AdError.Connect(*this, [this](folly::dynamic data) {
-                this->EmitEventPriv(KALTURA_PLAYER_AD_ERROR, data);
+            
+            pPlayer->AvailableVideoTracksChanged.Connect(*this, [this](std::vector<KalturaVideoPlayer::VideoTrackInfo> tracks) {
+                std::vector<folly::dynamic> dynamicTracks;
+                for (const auto& track : tracks)
+                {
+                    dynamicTracks.push_back(track.ToDynamic());
+                }
+                this->EmitEventPriv(KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED, ToDynamic(dynamicTracks));
             });
         }
     }
