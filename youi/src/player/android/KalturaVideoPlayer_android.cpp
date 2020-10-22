@@ -411,6 +411,10 @@ void KalturaVideoPlayerPriv::HandleEvent(const CYIString& name, folly::dynamic c
     {
         YI_LOGD(TAG, "seeked");
     }
+    else if (name == "volumeChanged")
+    {
+        YI_LOGD(TAG, "volumeChanged");
+    }
     else if (name == "error")
     {
         YI_LOGD(TAG, "error - %s", JSONFromDynamic(content).c_str());
