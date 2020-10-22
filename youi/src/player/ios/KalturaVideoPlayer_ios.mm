@@ -305,7 +305,7 @@ KalturaVideoPlayerPriv::~KalturaVideoPlayerPriv()
 
 void KalturaVideoPlayerPriv::Setup_(int32_t partnerId, folly::dynamic options)
 {
-    NSLog(@"1111111*** setup(%d, %s)", partnerId, JSONFromDynamic(options).c_str());
+    NSLog(@"*** setup(%d, %s)", partnerId, JSONFromDynamic(options).c_str());
 
     if (m_player) {
         return;
