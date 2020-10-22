@@ -28,9 +28,9 @@ void KalturaVideoPlayer::Setup(int32_t partnerId, folly::dynamic options)
     m_pPriv->Setup_(partnerId, options);
 }
 
-void KalturaVideoPlayer::Load(std::string assetId, folly::dynamic options)
+void KalturaVideoPlayer::LoadMedia(std::string assetId, folly::dynamic options)
 {
-    m_pPriv->Load_(assetId, options);
+    m_pPriv->LoadMedia_(assetId, options);
 }
 
 bool KalturaVideoPlayer::SelectVideoTrack(uint32_t uID) {
@@ -541,7 +541,7 @@ void KalturaVideoPlayerPriv::Setup_(int32_t partnerId, folly::dynamic options)
     GetEnv_KalturaPlayer()->DeleteLocalRef(optionsStr);
 }
 
-void KalturaVideoPlayerPriv::Load_(std::string assetId, folly::dynamic options)
+void KalturaVideoPlayerPriv::LoadMedia_(std::string assetId, folly::dynamic options)
 {
     if (!playerWrapperBridgeClass)
     {
