@@ -19,7 +19,8 @@ export default class YiReactApp extends Component {
     duration: 0,
     currentTime: 0,
     sources: null,
-    media: null
+    media: null,
+    isMuted: false
   }
 
   videoRef = React.createRef()
@@ -27,14 +28,14 @@ export default class YiReactApp extends Component {
 
   loadBtnPressed = () => {
     if (this.state.sources) {
-      this.setState({sources: null});
+      this.setState({ sources: null });
     } else {
       this.setState(
-          {
-            sources: {
-              uri: "https://qa-apache-php7.dev.kaltura.com/p/1091/sp/109100/playManifest/entryId/0_wifqaipd/protocol/https/format/applehttp/flavorIds/0_h65mfj7f,0_3flmvnwc,0_m131krws,0_5407xm9j,0_xcrwyk2n/a.m3u8"
-            }
+        {
+          sources: {
+            uri: "https://qa-apache-php7.dev.kaltura.com/p/1091/sp/109100/playManifest/entryId/0_wifqaipd/protocol/https/format/applehttp/flavorIds/0_h65mfj7f,0_3flmvnwc,0_m131krws,0_5407xm9j,0_xcrwyk2n/a.m3u8"
           }
+        }
       );
     }
   }
@@ -58,7 +59,7 @@ export default class YiReactApp extends Component {
         <Text style={styles.header}>Kaltura Video Sample</Text>
         <View style={styles.videoContainer}>
           {this.state.sources ?
-          <KalturaVideo
+            <KalturaVideo
               ottPartnerId={OttPartnerId}
               initOptions={initOptions}
               source={this.state.sources}
@@ -66,33 +67,34 @@ export default class YiReactApp extends Component {
               //   id: OttMediaId,
               //   asset: asset
               // }}
-            style={styles.video}
-            ref={this.videoRef}
-            onPreparing={() => console.log("onPreparing called.") }
+              muted={this.state.isMuted}
+              style={styles.video}
+              ref={this.videoRef}
+              onPreparing={() => console.log("onPreparing called.")}
               onReady={() => console.log("onReady called.")}
-            onPlaying={() => this.setState({isPlaying: true})}
-            onPaused={() => this.setState({isPlaying: false})}
-            onBufferingStarted={() => console.log("onBufferingStarted called.")}
-            onBufferingEnded={() => console.log("onBufferingEnded called.")}
-            onCurrentTimeUpdated={(currentTime) => {
-              console.log("currentTime " + currentTime)
-              this.setState({ currentTime: currentTime })}
-            }
-            onDurationChanged={(duration) => this.setState({ duration: duration })}
-            onAdError={(data) => console.log(data)}
-            onAvailableAudioTracksChanged={(tracks) => {
-              console.log("onAvailableAudioTracksChanged")
-              console.log(tracks)
-            }}
-            onAvailableClosedCaptionsTracksChanged={(tracks) => {
-              console.log("onAvailableClosedCaptionsTracksChanged")
-              console.log(tracks)
-            }}
-            onErrorOccurred={(error) =>  {
-              console.log("onErrorOccurred")
-              console.log(error.nativeEvent.message)
-            }}
-          /> : undefined}
+              onPlaying={() => this.setState({ isPlaying: true })}
+              onPaused={() => this.setState({ isPlaying: false })}
+              onBufferingStarted={() => console.log("onBufferingStarted called.")}
+              onBufferingEnded={() => console.log("onBufferingEnded called.")}
+              onCurrentTimeUpdated={(currentTime) => {
+                console.log("currentTime " + currentTime)
+                this.setState({ currentTime: currentTime })
+              }}
+              onDurationChanged={(duration) => this.setState({ duration: duration })}
+              onAdError={(data) => console.log(data)}
+              onAvailableAudioTracksChanged={(tracks) => {
+                console.log("onAvailableAudioTracksChanged")
+                console.log(tracks)
+              }}
+              onAvailableClosedCaptionsTracksChanged={(tracks) => {
+                console.log("onAvailableClosedCaptionsTracksChanged")
+                console.log(tracks)
+              }}
+              onErrorOccurred={(error) => {
+                console.log("onErrorOccurred")
+                console.log(error.nativeEvent.message)
+              }}
+            /> : undefined}
         </View>
 
         <View style={styles.buttonContainer}>
@@ -101,6 +103,9 @@ export default class YiReactApp extends Component {
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={this.pauseBtnPressed}>
             <Text style={styles.buttonText}>{this.state.isPlaying ? 'Pause' : 'Play'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => this.setState({ 'isMuted': !this.state.isMuted })}>
+            <Text style={styles.buttonText}>{this.state.isMuted ? 'Unmute' : 'Mute'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={this.seekBtnPressed}>
             <Text style={styles.buttonText}>{'Seek +10s'}</Text>
