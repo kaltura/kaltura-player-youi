@@ -43,7 +43,7 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
         if (pShadowVideo)
         {
             auto pPlayer = dynamic_cast<KalturaVideoPlayer *>(&pShadowVideo->GetPlayer());
-            
+
             pPlayer->AdError.Connect(*this, [this](folly::dynamic data) {
                 this->EmitEventPriv(KALTURA_PLAYER_AD_ERROR, data);
             });
@@ -67,7 +67,7 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, setup)(uint64_t tag, int32_
       }
 }
 
-YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, load)(uint64_t tag, std::string assetId, folly::dynamic options)
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, loadMedia)(uint64_t tag, std::string assetId, folly::dynamic options)
 {
       // We need to find the player implementation
       auto &shadowRegistry = GetBridge().GetShadowTree().GetShadowRegistry();
@@ -78,7 +78,23 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, load)(uint64_t tag, std::st
           if (pShadowVideo)
           {
               auto pPlayer = dynamic_cast<KalturaVideoPlayer *>(&pShadowVideo->GetPlayer());
-              pPlayer->Load(assetId, options);
+              pPlayer->LoadMedia(assetId, options);
+          }
+      }
+}
+
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, setMedia)(uint64_t tag, const CYIUrl &videoURI)
+{
+      // We need to find the player implementation
+      auto &shadowRegistry = GetBridge().GetShadowTree().GetShadowRegistry();
+      auto pComponent = shadowRegistry.Get(tag);
+      if (pComponent)
+      {
+          yi::react::ShadowVideo *pShadowVideo = dynamic_cast<yi::react::ShadowVideo *>(pComponent);
+          if (pShadowVideo)
+          {
+              auto pPlayer = dynamic_cast<KalturaVideoPlayer *>(&pShadowVideo->GetPlayer());
+              pPlayer->SetMedia(videoURI);
           }
       }
 }

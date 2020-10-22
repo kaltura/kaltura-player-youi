@@ -45,7 +45,8 @@ public:
     virtual ~KalturaVideoPlayerPriv();
 
     void Setup_(int32_t partnerId, folly::dynamic options);
-    void Load_(std::string assetId, folly::dynamic options);
+    void LoadMedia_(std::string assetId, folly::dynamic options);
+    void SetMedia_(const CYIUrl &videoURI);
     void Emit_(const std::string &event, const folly::dynamic &content);
 
     void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle);

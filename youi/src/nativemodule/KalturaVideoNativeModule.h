@@ -10,13 +10,14 @@ class YI_RN_MODULE(KalturaVideoNativeModule, yi::react::EventEmitterModule)
 public:
     KalturaVideoNativeModule();
     virtual ~KalturaVideoNativeModule() final;
-    
+
     YI_RN_EXPORT_NAME(KalturaVideo);
 
     YI_RN_EXPORT_METHOD(ConnectToPlayer)(uint64_t tag);
-    
+
     YI_RN_EXPORT_METHOD(setup)(uint64_t tag, int32_t partnerId, folly::dynamic options);
-    YI_RN_EXPORT_METHOD(load)(uint64_t tag, std::string assetId, folly::dynamic options);
+    YI_RN_EXPORT_METHOD(loadMedia)(uint64_t tag, std::string assetId, folly::dynamic options);
+    YI_RN_EXPORT_METHOD(setMedia)(uint64_t tag, const CYIUrl &videoURI);
 
   private:
     void EmitEventPriv(const std::string& event, const folly::dynamic &obj);

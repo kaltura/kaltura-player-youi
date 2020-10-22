@@ -9,7 +9,9 @@ export default class KalturaVideo extends React.Component {
   constructor(props) {
     super(props)
     this.playerEventEmitter = null
-    this.videoRef = React.createRef()
+    this.videoRef = React.createRef();
+    this.childProps = { ...props };
+    delete this.childProps.source;
   }
 
   componentDidMount() {
@@ -19,11 +21,17 @@ export default class KalturaVideo extends React.Component {
       if (this.props.onAdError) {
         this.props.onAdError(event);
       }
-    }) 
+    })
+    this.setup(this.props.ottPartnerId, this.props.initOptions)
+    if (this.props.media) {
+      this.loadMedia(this.props.media.id, this.props.media.asset);
+    } else if (this.props.source) {
+      this.setMedia(this.props.source.uri);
+    }
   }
 
   render() {
-    return <Video ref={this.videoRef} {...this.props} />
+    return <Video ref={this.videoRef} {...this.childProps} />
   }
 
   // Kaltura custom functions
@@ -31,8 +39,12 @@ export default class KalturaVideo extends React.Component {
     NativeModules.KalturaVideo.setup(findNodeHandle(this.videoRef.current), partnerId, options)
   }
 
-  load = (assetId, options) => {
-    NativeModules.KalturaVideo.load(findNodeHandle(this.videoRef.current), assetId, options)
+  loadMedia = (assetId, options) => {
+    NativeModules.KalturaVideo.loadMedia(findNodeHandle(this.videoRef.current), assetId, options)
+  }
+
+  setMedia = (url) => {
+    NativeModules.KalturaVideo.setMedia(findNodeHandle(this.videoRef.current), url)
   }
 
   // Passthrough functions

@@ -34,9 +34,14 @@ void KalturaVideoPlayer::Setup(int32_t partnerId, folly::dynamic options)
     m_pPriv->Setup_(partnerId, options);
 }
 
-void KalturaVideoPlayer::Load(std::string assetId, folly::dynamic options)
+void KalturaVideoPlayer::LoadMedia(std::string assetId, folly::dynamic options)
 {
-    m_pPriv->Load_(assetId, options);
+    m_pPriv->LoadMedia_(assetId, options);
+}
+
+void KalturaVideoPlayer::SetMedia(const CYIUrl &videoURI)
+{
+    m_pPriv->SetMedia_(videoURI);
 }
 
 CYIString KalturaVideoPlayer::GetName_() const
@@ -135,7 +140,7 @@ bool KalturaVideoPlayer::SelectClosedCaptionsTrack_(uint32_t uID)
 }
 
 std::vector<CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo> KalturaVideoPlayer::GetClosedCaptionsTracks_() const
-{ 
+{
     return m_pPriv->GetClosedCaptionsTracks_();
 }
 
@@ -169,7 +174,7 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
     // I could imagine an implementation which avoids copies by wrapping the
     // dynamic in a derived class of NSDictionary.  We can do that if profiling
     // implies it will help.
-    
+
     switch (dyn.type()) {
         case folly::dynamic::NULLT:
             return (id)kCFNull;
@@ -228,11 +233,11 @@ folly::dynamic convertIdToFollyDynamic(id json)
             case _C_LNG_LNG:
             case _C_ULNG_LNG:
                 return [json longLongValue];
-                
+
             case _C_FLT:
             case _C_DBL:
                 return [json doubleValue];
-                
+
                 // default:
                 //   fall through
         }
@@ -247,17 +252,16 @@ folly::dynamic convertIdToFollyDynamic(id json)
         return array;
     } else if ([json isKindOfClass:[NSDictionary class]]) {
         __block folly::dynamic object = folly::dynamic::object();
-        
+
         [json enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, __unused BOOL *stop) {
             object.insert(convertIdToFollyDynamic(key), convertIdToFollyDynamic(value));
         }];
-        
+
         return object;
     }
-    
+
     return nil;
 }
-
 
 static NSString* nsstring(folly::dynamic str) {
     if (str.isString()) {
@@ -301,26 +305,34 @@ KalturaVideoPlayerPriv::~KalturaVideoPlayerPriv()
 
 void KalturaVideoPlayerPriv::Setup_(int32_t partnerId, folly::dynamic options)
 {
-    NSLog(@"*** setup(%d, %s)", partnerId, JSONFromDynamic(options).c_str());
-    
+    NSLog(@"1111111*** setup(%d, %s)", partnerId, JSONFromDynamic(options).c_str());
+
     if (m_player) {
         return;
     }
-    
+
     UIView* parentView = YiRootViewController.sharedInstance.view;
     parentView.backgroundColor = UIColor.clearColor;
-    
+
     EventSender* sender = [EventSender newWithWrapper:this];
     m_player = [[KalturaPlayerYI alloc] initWithPartnerId:partnerId options:convertFollyDynamicToId(options)
                                                parentView:parentView eventSender:sender];
 }
 
-void KalturaVideoPlayerPriv::Load_(std::string assetId, folly::dynamic options)
+void KalturaVideoPlayerPriv::LoadMedia_(std::string assetId, folly::dynamic options)
 {
-    NSLog(@"*** load(%s, %s)", assetId.c_str(), JSONFromDynamic(options).c_str());
-    
+    NSLog(@"*** LoadMedia_(%s, %s)", assetId.c_str(), JSONFromDynamic(options).c_str());
+
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
-    [m_player loadAssetId:nsstring(assetId) options:convertFollyDynamicToId(options)];
+    [m_player loadMedia:nsstring(assetId) options:convertFollyDynamicToId(options)];
+}
+
+void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &videoURI)
+{
+    m_pPub->m_pStateManager->TransitionToMediaPreparing();
+    NSURL *url = [NSURL URLWithString:videoURI.ToString().ToNSString()];
+    NSLog(@"*** SetMedia_(%s)", videoURI.ToString().ToStdString().c_str());
+    [m_player setMedia:url];
 }
 
 void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic &content)
@@ -475,13 +487,13 @@ void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic
     else if (name == "error")
     {
         YI_LOGD(TAG, "error - %s", JSONFromDynamic(content).c_str());
-        
+
         CYIAbstractVideoPlayer::Error error;
         error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
         error.message = JSONFromDynamic(content).c_str();
-        
+
         m_pPub->ErrorOccurred.Emit(error);
-        
+
         //m_pPub->m_pStateManager->TransitionToMediaUnloaded();
     }
     else if (name == "adProgress")
@@ -539,11 +551,11 @@ void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic
     else if (name == "adError")
     {
         YI_LOGD(TAG, "adError %s", JSONFromDynamic(content).c_str());
-        
+
         CYIAbstractVideoPlayer::Error error;
         error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
         error.message = JSONFromDynamic(content).c_str();
-        
+
         m_pPub->ErrorOccurred.Emit(error);
     }
     else
@@ -579,21 +591,21 @@ void KalturaVideoPlayerPriv::SetVideoRectangle(const YI_RECT_REL &rVideoRectangl
     // This is not necessarily screen space, because we position the view below the status bar on iOS.
     // We need to adjust the rectangle to actually be in screen space, accounting for the origin point of the renderSurfaceView.
     CGPoint renderSurfaceOrigin = [YiRootViewController sharedInstance].renderSurfaceView.frame.origin;
-    
+
     float fScreenScale = [UIScreen mainScreen].scale;
-    
+
     CGRect frame;
     frame.origin.x = (rVideoRectangle.x / fScreenScale) + renderSurfaceOrigin.x;
     frame.origin.y = (rVideoRectangle.y / fScreenScale) + renderSurfaceOrigin.y;
     frame.size.width = rVideoRectangle.width / fScreenScale;
     frame.size.height = rVideoRectangle.height / fScreenScale;
-    
+
     //we disable animations in this block so the video frame snaps directly where we want it
     [CATransaction begin];
     [CATransaction setAnimationDuration:0.0];
-    
+
     [m_player setFrame:frame];
-    
+
     [CATransaction commit];
 }
 
@@ -653,7 +665,7 @@ void KalturaVideoPlayerPriv::Seek_(uint64_t uSeekPositionMs)
 
 void KalturaVideoPlayerPriv::SetMaxBitrate_(uint64_t uMaxBitrate)
 {
-    
+
 }
 
 bool KalturaVideoPlayerPriv::SelectAudioTrack_(uint32_t uID)
