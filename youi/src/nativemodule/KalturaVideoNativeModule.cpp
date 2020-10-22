@@ -17,12 +17,15 @@ YI_RN_INSTANTIATE_MODULE(KalturaVideoNativeModule, yi::react::EventEmitterModule
 YI_RN_REGISTER_MODULE(KalturaVideoNativeModule);
 
 static const std::string KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED = "KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED";
+static const std::string KALTURA_VOLUME_CHANGED = "KALTURA_VOLUME_CHANGED";
+
 
 KalturaVideoNativeModule::KalturaVideoNativeModule()
 {
     SetSupportedEvents
     ({
-        KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED
+        KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED,
+        KALTURA_VOLUME_CHANGED
     });
 }
 
@@ -51,6 +54,10 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
                     dynamicTracks.push_back(track.ToDynamic());
                 }
                 this->EmitEventPriv(KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED, ToDynamic(dynamicTracks));
+            });
+
+            pPlayer->VolumeChanged.Connect(*this, [this](folly::dynamic data) {
+                this->EmitEventPriv(KALTURA_VOLUME_CHANGED, data);
             });
         }
     }
