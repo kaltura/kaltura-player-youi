@@ -414,7 +414,7 @@ void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic
     {
         YI_LOGD(TAG, "tracksAvailable %s", JSONFromDynamic(content).c_str());
         
-        if (!content["video"].isNull())
+        if (content.find("video") != content.items().end() && !content["video"].isNull())
         {
             auto videoTracks = content["video"];
             
