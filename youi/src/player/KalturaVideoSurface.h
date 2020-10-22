@@ -1,7 +1,8 @@
 #ifndef _KALTURA_VIDEO_SURFACE_H_
 #define _KALTURA_VIDEO_SURFACE_H_
 
-#include "player/YiVideoSurfacePlatform.h"
+#include <player/YiVideoSurfacePlatform.h>
+
 #include "IVideoSurfaceListener.h"
 
 class KalturaVideoSurface : public CYIVideoSurfacePlatform
