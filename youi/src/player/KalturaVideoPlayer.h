@@ -64,7 +64,9 @@ public:
     VideoTrackInfo GetActiveVideoTrack();
     
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
-    
+    CYISignal<folly::dynamic> VolumeChanged;
+
+
     virtual void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle) override;
 
 private:

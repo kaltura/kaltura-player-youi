@@ -17,7 +17,8 @@ export default class YiReactApp extends Component {
   state = {
     isPlaying: false,
     duration: 0,
-    currentTime: 0
+    currentTime: 0,
+    isMuted: false
   }
 
   videoRef = React.createRef()
@@ -52,6 +53,7 @@ export default class YiReactApp extends Component {
         <KalturaVideo
           style={styles.video}
           ref={this.videoRef}
+          muted={this.state.isMuted}
           onPreparing={() => console.log("onPreparing called.") }
 	        onReady={() => console.log("onReady called.")}
           onPlaying={() => this.setState({isPlaying: true})}
@@ -63,6 +65,7 @@ export default class YiReactApp extends Component {
             this.setState({ currentTime: currentTime })}
           }
           onDurationChanged={(duration) => this.setState({ duration: duration })}
+          onVolumeChanged={(volume) => { console.log("onVolumeChanged - " + volume) }}
           onAvailableVideoTracksChanged={(data) => console.log(data)}
           onAvailableAudioTracksChanged={(tracks) => {
             console.log("onAvailableAudioTracksChanged")
@@ -84,6 +87,9 @@ export default class YiReactApp extends Component {
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={this.pauseBtnPressed}>
             <Text style={styles.buttonText}>{this.state.isPlaying ? 'Pause' : 'Play'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => this.setState({'isMuted': !this.state.isMuted})}>
+            <Text style={styles.buttonText}>{this.state.isMuted ? 'Unmute' : 'Mute'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={this.seekBtnPressed}>
             <Text style={styles.buttonText}>{'Seek +10s'}</Text>

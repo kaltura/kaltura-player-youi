@@ -411,6 +411,11 @@ void KalturaVideoPlayerPriv::HandleEvent(const CYIString& name, folly::dynamic c
     {
         YI_LOGD(TAG, "seeked");
     }
+    else if (name == "volumeChanged")
+    {
+        YI_LOGD(TAG, "volumeChanged");
+        m_pPub->VolumeChanged.Emit(content);
+    }
     else if (name == "error")
     {
         YI_LOGD(TAG, "error - %s", JSONFromDynamic(content).c_str());
@@ -755,6 +760,11 @@ bool KalturaVideoPlayerPriv::IsMuted_() const
 
 void KalturaVideoPlayerPriv::Mute_(bool bMute)
 {
+    float volume = 1.0;
+    if (bMute == true) {
+        volume = 0;
+    } 
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setVolumeMethodID, volume);
 }
 
 void KalturaVideoPlayerPriv::DisableClosedCaptions_()
