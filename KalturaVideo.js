@@ -15,6 +15,7 @@ export default class KalturaVideo extends React.Component {
   }
 
   componentDidMount() {
+    // Must be called before any other method on the native module
     NativeModules.KalturaVideo.ConnectToPlayer(findNodeHandle(this.videoRef.current));
 
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_VOLUME_CHANGED', (event) => {
@@ -28,12 +29,19 @@ export default class KalturaVideo extends React.Component {
         this.props.onAvailableVideoTracksChanged(event);
       }
     })
+
+    NativeModules.KalturaVideo.Setup(this.props.ottPartnerId, this.props.initOptions)
     
-    this.setup(this.props.ottPartnerId, this.props.initOptions)
     if (this.props.media) {
       this.loadMedia(this.props.media.id, this.props.media.asset);
     } else if (this.props.source) {
       this.setMedia(this.props.source.uri);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedVideoTrack !== prevProps.selectedVideoTrack) {
+      NativeModules.KalturaVideo.SelectVideoTrack(this.props.selectedVideoTrack);
     }
   }
 
@@ -42,16 +50,12 @@ export default class KalturaVideo extends React.Component {
   }
 
   // Kaltura custom functions
-  setup = (partnerId, options) => {
-    NativeModules.KalturaVideo.setup(findNodeHandle(this.videoRef.current), partnerId, options)
-  }
-
   loadMedia = (assetId, options) => {
-    NativeModules.KalturaVideo.loadMedia(findNodeHandle(this.videoRef.current), assetId, options)
+    NativeModules.KalturaVideo.LoadMedia(assetId, options)
   }
 
   setMedia = (url) => {
-    NativeModules.KalturaVideo.setMedia(findNodeHandle(this.videoRef.current), url)
+    NativeModules.KalturaVideo.SetMedia(url)
   }
 
   // Passthrough functions
