@@ -62,11 +62,11 @@ export default class YiReactApp extends Component {
             <KalturaVideo
               ottPartnerId={OttPartnerId}
               initOptions={initOptions}
-              source={this.state.sources}
-              // media={{
-              //   id: OttMediaId,
-              //   asset: asset
-              // }}
+              //source={this.state.sources}
+              media={{
+                id: OttMediaId,
+                asset: asset
+              }}
               muted={this.state.isMuted}
               style={styles.video}
               ref={this.videoRef}
