@@ -83,15 +83,15 @@ export default class YiReactApp extends Component {
               onDurationChanged={(duration) => this.setState({ duration: duration })}
               onAvailableAudioTracksChanged={(tracks) => {
                 console.log("onAvailableAudioTracksChanged")
-                console.log(tracks)
+                console.log(tracks.nativeEvent)
               }}
               onAvailableClosedCaptionsTracksChanged={(tracks) => {
                 console.log("onAvailableClosedCaptionsTracksChanged")
-                console.log(tracks)
+                console.log(tracks.nativeEvent)
               }}
               onAvailableVideoTracksChanged={(tracks) => {
                 console.log("onAvailableVideoTracksChanged")
-                console.log(tracks)
+                console.log(tracks.nativeEvent)
               }}
               onErrorOccurred={(error) => {
                 console.log("onErrorOccurred")

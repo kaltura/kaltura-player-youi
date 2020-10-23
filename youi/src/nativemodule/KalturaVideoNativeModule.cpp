@@ -64,7 +64,7 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
     }
     else
     {
-        YI_LOGE(TAG, "Invalid tag provided to connectToPlayer - %lld", tag);
+        YI_LOGE(TAG, "Invalid tag provided to connectToPlayer - %" PRIu64, tag);
     }
 }
 
