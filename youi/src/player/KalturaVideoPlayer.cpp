@@ -104,7 +104,10 @@ std::unique_ptr<CYIVideoSurface> KalturaVideoPlayer::CreateSurface_()
 
 void KalturaVideoPlayer::SetVideoRectangle(const YI_RECT_REL &rVideoRectangle)
 {
-    m_pPriv->SetVideoRectangle(rVideoRectangle);
+    if (m_currentVideoRectangle != rVideoRectangle) {
+        m_pPriv->SetVideoRectangle(rVideoRectangle);
+        m_currentVideoRectangle = rVideoRectangle;
+    }
 }
 
 bool KalturaVideoPlayer::SupportsFormat_(CYIAbstractVideoPlayer::StreamingFormat eFormat, CYIAbstractVideoPlayer::DRMScheme eDRMScheme) const

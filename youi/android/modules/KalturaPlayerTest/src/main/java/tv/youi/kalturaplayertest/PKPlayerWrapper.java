@@ -75,11 +75,6 @@ public class PKPlayerWrapper {
     private static Handler mainHandler = new Handler(Looper.getMainLooper());
     private static Class self = PKPlayerWrapper.class;
 
-    private static Integer playerViewWidth;
-    private static Integer playerViewHeight;
-    private static Integer playerViewPosX;
-    private static Integer playerViewPosY;
-
     private static void runOnUiThread(Runnable runnable) {
         if (mainHandler == null) {
             return;
@@ -677,24 +672,6 @@ public class PKPlayerWrapper {
     public static void setFrame(int playerViewWidth, int playerViewHeight, int playerViewPosX, int playerViewPosY) {
 
         log.d("setFrame " + playerViewWidth + "/" + playerViewHeight + " " + playerViewPosX + "/" + playerViewPosY);
-
-        if (PKPlayerWrapper.playerViewWidth == null ||
-                PKPlayerWrapper.playerViewHeight == null ||
-                PKPlayerWrapper.playerViewHeight == null ||
-                PKPlayerWrapper.playerViewHeight == null ||
-                PKPlayerWrapper.playerViewWidth != playerViewWidth ||
-                PKPlayerWrapper.playerViewHeight != playerViewHeight ||
-                PKPlayerWrapper.playerViewPosX != playerViewPosX ||
-                PKPlayerWrapper.playerViewPosY != playerViewPosY) {
-            log.d("setFrame new value - updating frame");
-            PKPlayerWrapper.playerViewWidth = playerViewWidth;
-            PKPlayerWrapper.playerViewHeight = playerViewHeight;
-            PKPlayerWrapper.playerViewPosX = playerViewPosX;
-            PKPlayerWrapper.playerViewPosY = playerViewPosY;
-        } else {
-            log.d("setFrame same value - return");
-            return;
-        }
 
         if (player != null && player.getPlayerView() != null) {
             runOnUiThread(() -> {
