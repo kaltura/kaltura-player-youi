@@ -2,7 +2,6 @@ package tv.youi.kalturaplayertest;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -14,7 +13,6 @@ import com.kaltura.netkit.utils.NKLog;
 import com.kaltura.playkit.PKError;
 import com.kaltura.playkit.PKLog;
 import com.kaltura.playkit.PKMediaEntry;
-import com.kaltura.playkit.PKMediaFormat;
 import com.kaltura.playkit.PKMediaSource;
 import com.kaltura.playkit.PKPluginConfigs;
 import com.kaltura.playkit.PlayKitManager;
@@ -64,11 +62,18 @@ import static com.npaw.youbora.lib6.plugin.Options.KEY_USER_TYPE;
 @SuppressWarnings("unused")
 public class PKPlayerWrapper {
 
+    private static String onLoadMediaEventAssetId;
+    private static String onLoadMediaEventJsonOptionsStr;
+    public static void setOnEventListener(OnEventListener eventListener) {
+        onEventListener = eventListener;
+    }
+
     private static final PKLog log = PKLog.get("PKPlayerWrapper");
     private static final String YOUBORA_ACCOUNT_CODE = "accountCode";
     public static final int MILLIS_IN_FUTURE = 2000;
     public static final int COUNT_DOWN_INTERVAL = 100;
 
+    private static OnEventListener onEventListener;
     private static KalturaPlayer player;   // singleton player
     private static CYIActivity activity = CYIActivity.getCurrentActivity();
     private static CYIActivity.LifecycleListener lifecycleListener;
@@ -200,10 +205,14 @@ public class PKPlayerWrapper {
             addKalturaPlayerListeners();
 
             initialized = true;
+            if (onEventListener != null) {
+                onEventListener.onLoadMediaEvent(onLoadMediaEventAssetId, onLoadMediaEventJsonOptionsStr);
+                onEventListener = null;
+                onLoadMediaEventAssetId = null;
+                onLoadMediaEventJsonOptionsStr = null;
+            }
         });
     }
-
-
 
     private static CYIActivity.LifecycleListener getLifeCycleListener() {
         if (lifecycleListener == null) {
@@ -392,53 +401,54 @@ public class PKPlayerWrapper {
     public static void loadMedia(String assetId, String jsonOptionsStr) {
 
         log.d("loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
+        if (assetId == null || jsonOptionsStr == null) {
+            return;
+        }
+
+        if (!initialized) {
+            onLoadMediaEventAssetId = assetId;
+            onLoadMediaEventJsonOptionsStr = jsonOptionsStr;
+
+            onEventListener = (listenerAssetId, listenerJsonOptionsStr) -> loadMediaInUIThread(listenerAssetId, listenerJsonOptionsStr);
+            return;
+        }
+        loadMediaInUIThread(assetId, jsonOptionsStr);
+    }
+
+    private static void loadMediaInUIThread(String assetId, String jsonOptionsStr) {
         runOnUiThread(() -> {
-            new CountDownTimer(MILLIS_IN_FUTURE, COUNT_DOWN_INTERVAL) {
+            log.d("loadMedia player initialized");
 
-                public void onTick(long millisUntilFinished) {
-                    if (initialized) {
-                        log.d("loadMedia player initialized");
+            Gson gson = new Gson();
+            MediaAsset mediaAsset = gson.fromJson(jsonOptionsStr, MediaAsset.class);
+            if (mediaAsset == null || player == null) {
+                return;
+            }
+            if (mediaAsset.getPlugins() != null) {
+                if (mediaAsset.getPlugins().ima != null) {
+                    updatgeIMAPlugin(mediaAsset.getPlugins().ima);
+                }
 
-                        Gson gson = new Gson();
-                        MediaAsset mediaAsset = gson.fromJson(jsonOptionsStr, MediaAsset.class);
-                        if (mediaAsset == null || player == null) {
-                            return;
-                        }
-                        if (mediaAsset.getPlugins() != null) {
-                            if (mediaAsset.getPlugins().ima != null) {
-                                updatgeIMAPlugin(mediaAsset.getPlugins().ima);
-                            }
+                if (mediaAsset.getPlugins().youbora != null) {
+                    updateYouboraPlugin(mediaAsset.getPlugins().youbora);
+                }
+            }
+            final PKMediaEntry localPlaybackEntry = PKDownloadWrapper.getLocalPlaybackEntry(assetId);
+            if (localPlaybackEntry != null) {
+                player.setMedia(localPlaybackEntry);
+            } else {
+                player.loadMedia(mediaAsset.buildOttMediaOptions(assetId), (entry, error) -> {
+                    if (error != null) {
+                        log.d("ott media load error: " + error);
+                        //code, extra, message, name
+                        sendPlayerEvent("loadMediaFailed", gson.toJson(error));
 
-                            if (mediaAsset.getPlugins().youbora != null) {
-                                updateYouboraPlugin(mediaAsset.getPlugins().youbora);
-                            }
-                        }
-
-                        final PKMediaEntry localPlaybackEntry = PKDownloadWrapper.getLocalPlaybackEntry(assetId);
-                        if (localPlaybackEntry != null) {
-                            player.setMedia(localPlaybackEntry);
-                        } else {
-                            player.loadMedia(mediaAsset.buildOttMediaOptions(assetId), (entry, error) -> {
-                                if (error != null) {
-                                    log.d("ott media load error: " + error);
-                                    //code, extra, message, name
-                                    sendPlayerEvent("loadMediaFailed", gson.toJson(error));
-
-                                } else {
-                                    log.d("ott media load success name = " + entry.getName());
-                                    sendPlayerEvent("loadMediaSuccess", gson.toJson(entry));
-                                }
-                            });
-                        }
-                        this.cancel();
+                    } else {
+                        log.d("ott media load success name = " + entry.getName());
+                        sendPlayerEvent("loadMediaSuccess", gson.toJson(entry));
                     }
-                }
-
-                public void onFinish() {
-                    log.d("loadMedia countDown ended");
-                }
-
-            }.start();
+                });
+            }
         });
     }
 
@@ -635,6 +645,9 @@ public class PKPlayerWrapper {
             }
         });
 
+        onEventListener = null;
+        onLoadMediaEventJsonOptionsStr = null;
+        onLoadMediaEventAssetId = null;
         activity = null;
         mainHandler = null;
         bridgeInstance = null;
