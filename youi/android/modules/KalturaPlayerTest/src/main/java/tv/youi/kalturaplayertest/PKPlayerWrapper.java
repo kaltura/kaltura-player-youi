@@ -2,6 +2,7 @@ package tv.youi.kalturaplayertest;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -65,6 +66,8 @@ public class PKPlayerWrapper {
 
     private static final PKLog log = PKLog.get("PKPlayerWrapper");
     private static final String YOUBORA_ACCOUNT_CODE = "accountCode";
+    public static final int MILLIS_IN_FUTURE = 2000;
+    public static final int COUNT_DOWN_INTERVAL = 100;
 
     private static KalturaPlayer player;   // singleton player
     private static CYIActivity activity = CYIActivity.getCurrentActivity();
@@ -394,40 +397,52 @@ public class PKPlayerWrapper {
     public static void loadMedia(String assetId, String jsonOptionsStr) {
 
         log.d("loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
-
-        Gson gson = new Gson();
-        MediaAsset mediaAsset = gson.fromJson(jsonOptionsStr, MediaAsset.class);
-        if (mediaAsset == null || player == null) {
-            return;
-        }
-
         runOnUiThread(() -> {
+            new CountDownTimer(MILLIS_IN_FUTURE, COUNT_DOWN_INTERVAL) {
 
-            if (mediaAsset.getPlugins() != null) {
-                if (mediaAsset.getPlugins().ima != null) {
-                    updatgeIMAPlugin(mediaAsset.getPlugins().ima);
-                }
+                public void onTick(long millisUntilFinished) {
+                    if (initialized) {
+                        log.d("loadMedia player initialized");
 
-                if (mediaAsset.getPlugins().youbora != null) {
-                    updateYouboraPlugin(mediaAsset.getPlugins().youbora);
-                }
-            }
+                        Gson gson = new Gson();
+                        MediaAsset mediaAsset = gson.fromJson(jsonOptionsStr, MediaAsset.class);
+                        if (mediaAsset == null || player == null) {
+                            return;
+                        }
+                        if (mediaAsset.getPlugins() != null) {
+                            if (mediaAsset.getPlugins().ima != null) {
+                                updatgeIMAPlugin(mediaAsset.getPlugins().ima);
+                            }
 
-            final PKMediaEntry localPlaybackEntry = PKDownloadWrapper.getLocalPlaybackEntry(assetId);
-            if (localPlaybackEntry != null) {
-                player.setMedia(localPlaybackEntry);
-            } else {
-                player.loadMedia(mediaAsset.buildOttMediaOptions(assetId), (entry, error) -> {
-                    if (error != null) {
-                        log.d("ott media load error: " + error);
-                        sendPlayerEvent("loadMediaFailed", gson.toJson(error));
+                            if (mediaAsset.getPlugins().youbora != null) {
+                                updateYouboraPlugin(mediaAsset.getPlugins().youbora);
+                            }
+                        }
 
-                    } else {
-                        log.d("ott media load success name = " + entry.getName());
-                        sendPlayerEvent("loadMediaSuccess", gson.toJson(entry));
+                        final PKMediaEntry localPlaybackEntry = PKDownloadWrapper.getLocalPlaybackEntry(assetId);
+                        if (localPlaybackEntry != null) {
+                            player.setMedia(localPlaybackEntry);
+                        } else {
+                            player.loadMedia(mediaAsset.buildOttMediaOptions(assetId), (entry, error) -> {
+                                if (error != null) {
+                                    log.d("ott media load error: " + error);
+                                    sendPlayerEvent("loadMediaFailed", gson.toJson(error));
+
+                                } else {
+                                    log.d("ott media load success name = " + entry.getName());
+                                    sendPlayerEvent("loadMediaSuccess", gson.toJson(entry));
+                                }
+                            });
+                        }
+                        this.cancel();
                     }
-                });
-            }
+                }
+
+                public void onFinish() {
+                    log.d("loadMedia count down end");
+                }
+
+            }.start();
         });
     }
 
