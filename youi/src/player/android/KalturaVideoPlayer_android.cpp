@@ -62,7 +62,8 @@ KalturaVideoPlayerPriv::~KalturaVideoPlayerPriv()
 
     playerWrapperBridgeClass = NULL;
     setupMethodID = 0;
-    loadMethodID = 0;
+    loadMediaMethodID = 0;
+    setMediaMethodID = 0;
     prepareMethodID = 0;
     playMethodID = 0;
     pauseMethodID = 0;
@@ -91,7 +92,8 @@ void KalturaVideoPlayerPriv::LoadIDs()
     }
 
     setupMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "setup", "(Ljava/nio/ByteBuffer;ILjava/lang/String;)V");
-    loadMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "load", "(Ljava/lang/String;Ljava/lang/String;)V");
+    loadMediaMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "loadMedia", "(Ljava/lang/String;Ljava/lang/String;)V");
+    setMediaMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "setMedia", "(Ljava/lang/String;)V");
     prepareMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "prepare", "()V");
     playMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "play", "()V");
     pauseMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "pause", "()V");
@@ -137,14 +139,24 @@ void KalturaVideoPlayerPriv::LoadMedia_(std::string assetId, folly::dynamic opti
     auto jsonOptionsStr = folly::toJson(options);
     jstring optionsStr = GetEnv_KalturaPlayer()->NewStringUTF(jsonOptionsStr.c_str());
 
-    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, loadMethodID, jAssetId, optionsStr);
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, loadMediaMethodID, jAssetId, optionsStr);
     GetEnv_KalturaPlayer()->DeleteLocalRef(jAssetId);
     GetEnv_KalturaPlayer()->DeleteLocalRef(optionsStr);
 }
 
-void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &videoURI)
+void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
 {
+  if (!playerWrapperBridgeClass)
+    {
+        return;
+    }
 
+    m_pPub->m_pStateManager->TransitionToMediaPreparing();
+
+    jstring url = GetEnv_KalturaPlayer()->NewStringUTF(contentUrl.ToString().GetData());
+
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setMediaMethodID, url);
+    GetEnv_KalturaPlayer()->DeleteLocalRef(url);
 }
 
 CYIString KalturaVideoPlayerPriv::GetName_() const

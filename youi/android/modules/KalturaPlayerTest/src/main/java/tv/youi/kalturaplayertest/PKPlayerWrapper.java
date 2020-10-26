@@ -13,6 +13,8 @@ import com.kaltura.netkit.utils.NKLog;
 import com.kaltura.playkit.PKError;
 import com.kaltura.playkit.PKLog;
 import com.kaltura.playkit.PKMediaEntry;
+import com.kaltura.playkit.PKMediaFormat;
+import com.kaltura.playkit.PKMediaSource;
 import com.kaltura.playkit.PKPluginConfigs;
 import com.kaltura.playkit.PlayKitManager;
 import com.kaltura.playkit.PlayerEvent;
@@ -32,6 +34,7 @@ import com.npaw.youbora.lib6.YouboraLog;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import tv.youi.kalturaplayertest.model.InitOptions;
@@ -68,6 +71,11 @@ public class PKPlayerWrapper {
     private static CYIActivity.LifecycleListener lifecycleListener;
     private static Handler mainHandler = new Handler(Looper.getMainLooper());
     private static Class self = PKPlayerWrapper.class;
+
+    private static Integer playerViewWidth;
+    private static Integer playerViewHeight;
+    private static Integer playerViewPosX;
+    private static Integer playerViewPosY;
 
     private static void runOnUiThread(Runnable runnable) {
         if (mainHandler == null) {
@@ -235,12 +243,16 @@ public class PKPlayerWrapper {
         player.addListener(self, PlayerEvent.pause, event -> sendPlayerEvent("pause"));
         player.addListener(self, PlayerEvent.ended, event -> sendPlayerEvent("ended"));
         player.addListener(self, PlayerEvent.stopped, event -> sendPlayerEvent("stopped"));
+        player.addListener(self, PlayerEvent.replay, event -> sendPlayerEvent("replay"));
+
         player.addListener(self, PlayerEvent.durationChanged, event -> sendPlayerEvent("durationChanged", "{ \"duration\": " +  (event.duration / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
-        player.addListener(self, PlayerEvent.playheadUpdated, event -> sendPlayerEvent("timeUpdate", "{ \"position\": " + (event.position / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
+        player.addListener(self, PlayerEvent.playheadUpdated, event -> sendPlayerEvent("timeUpdate", "{ \"position\": " + (event.position / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
+                ", \"bufferPosition\": " + (event.bufferPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
+                " }"));
         player.addListener(self, PlayerEvent.stateChanged, event -> sendPlayerEvent("stateChanged", "{ \"newState\": \"" + event.newState.name() + "\" }"));
         player.addListener(self, PlayerEvent.volumeChanged, event -> sendPlayerEvent("volumeChanged", "{ \"volume\": \"" + event.volume + "\" }"));
 
-        
+
         player.addListener(self, PlayerEvent.tracksAvailable, event -> {
             Gson gson = new Gson();
             sendPlayerEvent("tracksAvailable", gson.toJson(getTracksInfo(event.tracksInfo)));
@@ -379,9 +391,9 @@ public class PKPlayerWrapper {
     }
 
     @SuppressWarnings("unused") // Called from C++
-    public static void load(String assetId, String jsonOptionsStr) {
+    public static void loadMedia(String assetId, String jsonOptionsStr) {
 
-        log.d("load assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
+        log.d("loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
 
         Gson gson = new Gson();
         MediaAsset mediaAsset = gson.fromJson(jsonOptionsStr, MediaAsset.class);
@@ -417,6 +429,27 @@ public class PKPlayerWrapper {
                 });
             }
         });
+    }
+
+    @SuppressWarnings("unused") // Called from C++
+    public static void setMedia(String contentUrl) {
+
+        log.d("setMedia contentUrl: " + contentUrl);
+
+        PKMediaEntry pkMediaEntry = new PKMediaEntry();
+        pkMediaEntry.setMediaType(PKMediaEntry.MediaEntryType.Vod);
+        pkMediaEntry.setId("1234");
+        PKMediaSource pkMediaSource = new PKMediaSource();
+        pkMediaSource.setId("1234");
+        pkMediaSource.setUrl(contentUrl);
+        pkMediaEntry.setSources(Collections.singletonList(pkMediaSource));
+
+        runOnUiThread(() -> {
+            player.setMedia(pkMediaEntry);
+            sendPlayerEvent("loadMediaSuccess", new Gson().toJson(pkMediaEntry));
+        });
+
+
     }
 
     private static void updatgeIMAPlugin(WrapperIMAConfig wrapperIMAConfig) {
@@ -630,6 +663,24 @@ public class PKPlayerWrapper {
 
         log.d("setFrame " + playerViewWidth + "/" + playerViewHeight + " " + playerViewPosX + "/" + playerViewPosY);
 
+        if (PKPlayerWrapper.playerViewWidth == null ||
+                PKPlayerWrapper.playerViewHeight == null ||
+                PKPlayerWrapper.playerViewHeight == null ||
+                PKPlayerWrapper.playerViewHeight == null ||
+                PKPlayerWrapper.playerViewWidth != playerViewWidth ||
+                PKPlayerWrapper.playerViewHeight != playerViewHeight ||
+                PKPlayerWrapper.playerViewPosX != playerViewPosX ||
+                PKPlayerWrapper.playerViewPosY != playerViewPosY) {
+            log.d("setFrame new value - updating frame");
+            PKPlayerWrapper.playerViewWidth = playerViewWidth;
+            PKPlayerWrapper.playerViewHeight = playerViewHeight;
+            PKPlayerWrapper.playerViewPosX = playerViewPosX;
+            PKPlayerWrapper.playerViewPosY = playerViewPosY;
+        } else {
+            log.d("setFrame same value - return");
+            return;
+        }
+
         if (player != null && player.getPlayerView() != null) {
             runOnUiThread(() -> {
                 ViewGroup.LayoutParams layoutParams = player.getPlayerView().getLayoutParams();
@@ -657,7 +708,7 @@ public class PKPlayerWrapper {
 
     @SuppressWarnings("unused") // Called from C++
     public static void setVolume(float volume) {
-        
+
         log.d("setVolume: " + volume);
         if (volume < 0) {
             volume = 0f;

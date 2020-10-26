@@ -7,6 +7,42 @@
 
 static const CYIString TAG("KalturaVideoPlayer");
 
+static const char *playerInitializedEvent = "playerInitialized";
+static const char *loadMediaSuccessEvent = "loadMediaSuccess";
+static const char *stateChangedEvent = "stateChanged";
+static const char *playEvent = "play";
+static const char *pauseEvent = "pause";
+static const char *durationChangedEvent = "durationChanged";
+static const char *timeUpdateEvent = "timeUpdate";
+static const char *canPlayEvent = "canPlay";
+static const char *playingEvent = "playing";
+static const char *endedEvent = "ended";
+static const char *stoppedEvent = "stopped";
+static const char *replayEvent = "replay";
+static const char *tracksAvailableEvent = "tracksAvailable";
+static const char *videoTrackChangedEvent = "videoTrackChanged";
+static const char *audioTrackChangedEvent = "audioTrackChanged";
+static const char *textTrackChangedEvent = "textTrackChanged";
+static const char *seekingEvent = "seeking";
+static const char *seekedEvent = "seeked";
+static const char *volumeChangedEvent = "volumeChanged";
+static const char *errorEvent = "error";
+static const char *adProgressEvent = "adProgress";
+static const char *adCuepointsChangedEvent = "adCuepointsChanged";
+static const char *adStartedEvent = "adStarted";
+static const char *adCompletedEvent = "adCompleted";
+static const char *adPausedEvent = "adPaused";
+static const char *adResumedEvent = "adResumed";
+static const char *adBufferStartEvent = "adBufferStart";
+static const char *adClickedEvent = "adClicked";
+static const char *adSkippedEvent = "adSkipped";
+static const char *adRequestedEvent = "adRequested";
+static const char *adContentPauseRequestedEvent = "adContentPauseRequested";
+static const char *adContentResumeRequestedEvent = "adContentResumeRequested";
+static const char *allAdsCompletedEvent = "allAdsCompleted";
+static const char *adErrorEvent = "adError";
+
+
 YI_TYPE_DEF(KalturaVideoPlayer, CYIAbstractVideoPlayer)
 
 KalturaVideoPlayer::KalturaVideoPlayer()
@@ -168,16 +204,17 @@ void KalturaVideoPlayer::DisableClosedCaptions_()
 
 void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic content)
 {
-    if (name == "playerInitialized")
+
+    if (name.Compare(playerInitializedEvent) == 0)
     {
         YI_LOGD(TAG, "playerInitialized");
     }
-    else if (name == "loadMediaSuccess")
+    else if (name.Compare(loadMediaSuccessEvent) == 0)
     {
         YI_LOGD(TAG, "loadMediaSuccess");
         m_pStateManager->TransitionToMediaReady();
     }
-    else if (name == "stateChanged")
+    else if (name.Compare(stateChangedEvent) == 0)
     {
         const std::string& state = content["newState"].asString();
         if (state == "READY")
@@ -191,45 +228,50 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             m_pStateManager->TransitionToPlaybackBuffering();
         }
     }
-    else if (name == "play")
+    else if (name.Compare(playEvent) == 0)
     {
         YI_LOGD(TAG, "play");
     }
-    else if (name == "pause")
+    else if (name.Compare(pauseEvent) == 0)
     {
         YI_LOGD(TAG, "pause");
         m_pStateManager->TransitionToPlaybackPaused();
     }
-    else if (name == "durationChanged")
+    else if (name.Compare(durationChangedEvent) == 0)
     {
         const auto duration = content["duration"].asDouble();
         m_durationMs = static_cast<uint64_t>(duration * 1000);
         DurationChanged.Emit(m_durationMs);
     }
-    else if (name == "timeUpdate")
+    else if (name.Compare(timeUpdateEvent) == 0)
     {
         const auto currentTime = content["position"].asDouble();
         m_currentTimeMs = static_cast<uint64_t>(currentTime * 1000);
+        //YI_LOGW(TAG, "timeUpdateEvent - <%lu>", m_currentTimeMs);
         CurrentTimeUpdated.Emit(m_currentTimeMs);
     }
-    if (name == "canPlay")
+    else if (name.Compare(canPlayEvent) == 0)
     {
         YI_LOGD(TAG, "canPlay");
     }
-    else if (name == "playing")
+    else if (name.Compare(playingEvent) == 0)
     {
         YI_LOGD(TAG, "playing");
         m_pStateManager->TransitionToPlaybackPlaying();
     }
-    else if (name == "ended")
+    else if (name.Compare(endedEvent) == 0)
     {
         YI_LOGD(TAG, "ended");
     }
-    else if (name == "stopped")
+    else if (name.Compare(stoppedEvent) == 0)
     {
         YI_LOGD(TAG, "stopped");
     }
-    else if (name == "tracksAvailable")
+    else if (name.Compare(replayEvent) == 0)
+    {
+        YI_LOGD(TAG, "replay");
+    }
+    else if (name.Compare(tracksAvailableEvent) == 0)
     {
         YI_LOGD(TAG, "tracksAvailable %s", JSONFromDynamic(content).c_str());
 
@@ -322,32 +364,32 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             }
         }
     }
-    else if (name == "videoTrackChanged")
+    else if (name.Compare(videoTrackChangedEvent) == 0)
     {
         YI_LOGD(TAG, "videoTrackChanged");
     }
-    else if (name == "audioTrackChanged")
+    else if (name.Compare(audioTrackChangedEvent) == 0)
     {
         YI_LOGD(TAG, "audioTrackChanged");
     }
-    else if (name == "textTrackChanged")
+    else if (name.Compare(textTrackChangedEvent) == 0)
     {
         YI_LOGD(TAG, "textTrackChanged");
     }
-    else if (name == "seeking")
+    else if (name.Compare(seekingEvent) == 0)
     {
         YI_LOGD(TAG, "seeking");
     }
-    else if (name == "seeked")
+    else if (name.Compare(seekedEvent) == 0)
     {
         YI_LOGD(TAG, "seeked");
     }
-    else if (name == "volumeChanged")
+    else if (name.Compare(volumeChangedEvent) == 0)
     {
         YI_LOGD(TAG, "volumeChanged");
         VolumeChanged.Emit(content);
     }
-    else if (name == "error")
+    else if (name.Compare(errorEvent) == 0)
     {
         YI_LOGD(TAG, "error - %s", JSONFromDynamic(content).c_str());
 
@@ -362,59 +404,59 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
 
         //m_pStateManager->TransitionToMediaUnloaded();
     }
-    else if (name == "adProgress")
+    else if (name.Compare(adProgressEvent) == 0)
     {
         YI_LOGD(TAG, "adProgress");
     }
-    else if (name == "adCuepointsChanged")
+    else if (name.Compare(adCuepointsChangedEvent) == 0)
     {
         YI_LOGD(TAG, "adCuepointsChanged");
     }
-    else if (name == "adStarted")
+    else if (name.Compare(adStartedEvent) == 0)
     {
         YI_LOGD(TAG, "adStarted");
     }
-    else if (name == "adCompleted")
+    else if (name.Compare(adCompletedEvent) == 0)
     {
         YI_LOGD(TAG, "adCompleted");
     }
-    else if (name == "adPaused")
+    else if (name.Compare(adPausedEvent) == 0)
     {
         YI_LOGD(TAG, "adPaused");
     }
-    else if (name == "adResumed")
+    else if (name.Compare(adResumedEvent) == 0)
     {
         YI_LOGD(TAG, "adResumed");
     }
-    else if (name == "adBufferStart")
+    else if (name.Compare(adBufferStartEvent) == 0)
     {
         YI_LOGD(TAG, "adBufferStart");
     }
-    else if (name == "adClicked")
+    else if (name.Compare(adClickedEvent) == 0)
     {
         YI_LOGD(TAG, "adClicked");
     }
-    else if (name == "adSkipped")
+    else if (name.Compare(adSkippedEvent) == 0)
     {
         YI_LOGD(TAG, "adSkipped");
     }
-    else if (name == "adRequested")
+    else if (name.Compare(adRequestedEvent) == 0)
     {
         YI_LOGD(TAG, "adRequested");
     }
-    else if (name == "adContentPauseRequested")
+    else if (name.Compare(adContentPauseRequestedEvent) == 0)
     {
         YI_LOGD(TAG, "adContentPauseRequested");
     }
-    else if (name == "adContentResumeRequested")
+    else if (name.Compare(adContentResumeRequestedEvent) == 0)
     {
         YI_LOGD(TAG, "adContentResumeRequested");
     }
-    else if (name == "allAdsCompleted")
+    else if (name.Compare(allAdsCompletedEvent) == 0)
     {
         YI_LOGD(TAG, "allAdsCompleted");
     }
-    else if (name == "adError")
+    else if (name.Compare(adErrorEvent) == 0)
     {
         YI_LOGD(TAG, "adError %s", JSONFromDynamic(content).c_str());
 
@@ -429,6 +471,9 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     }
     else
     {
-        YI_LOGW(TAG, "Unhandled event received - %s", name.GetData());
+        YI_LOGW(TAG, "Unhandled event received - <%s>", name.GetData());
     }
 }
+
+
+
