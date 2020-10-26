@@ -421,6 +421,7 @@ public class PKPlayerWrapper {
                             player.loadMedia(mediaAsset.buildOttMediaOptions(assetId), (entry, error) -> {
                                 if (error != null) {
                                     log.d("ott media load error: " + error);
+                                    //code, extra, message, name
                                     sendPlayerEvent("loadMediaFailed", gson.toJson(error));
 
                                 } else {
