@@ -439,7 +439,7 @@ public class PKPlayerWrapper {
                 }
 
                 public void onFinish() {
-                    log.d("loadMedia count down end");
+                    log.d("loadMedia countDown ended");
                 }
 
             }.start();
