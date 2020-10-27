@@ -449,10 +449,12 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(adPausedEvent) == 0)
     {
         YI_LOGD(TAG, "adPausedEvent");
+        m_pStateManager->TransitionToPlaybackPaused();
     }
     else if (name.Compare(adResumedEvent) == 0)
     {
         YI_LOGD(TAG, "adResumedEvent");
+         m_pStateManager->TransitionToPlaybackPlaying();
     }
     else if (name.Compare(adBufferStartEvent) == 0)
     {
