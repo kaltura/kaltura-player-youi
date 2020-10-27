@@ -24,7 +24,7 @@ public:
     virtual ~KalturaVideoPlayerPriv();
 
     void Setup_(int32_t partnerId, folly::dynamic options);
-    void LoadMedia_(std::string assetId, folly::dynamic options);
+    void LoadMedia_(const CYIString &assetId, folly::dynamic options);
     void SetMedia_(const CYIUrl &videoURI);
     
     bool SelectVideoTrack_(uint32_t uID);

@@ -79,7 +79,7 @@ public:
     virtual ~KalturaVideoPlayer();
 
     void Setup(int32_t partnerId, folly::dynamic options);
-    void LoadMedia(std::string assetId, folly::dynamic options);
+    void LoadMedia(const CYIString &assetId, folly::dynamic options);
     void SetMedia(const CYIUrl &videoURI);
 
     bool SelectVideoTrack(uint32_t uID);
@@ -135,8 +135,6 @@ private:
 
     std::vector<KalturaClosedCaptionTrack> m_closedCaptionsTracks;
     int32_t m_selectedClosedCaptionTrack = -1;
-
-    bool isPlayerPaused = false;
     
     YI_RECT_REL m_currentVideoRectangle;
 

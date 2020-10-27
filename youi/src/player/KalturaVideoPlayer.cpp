@@ -60,7 +60,7 @@ void KalturaVideoPlayer::Setup(int32_t partnerId, folly::dynamic options)
     m_pPriv->Setup_(partnerId, options);
 }
 
-void KalturaVideoPlayer::LoadMedia(std::string assetId, folly::dynamic options)
+void KalturaVideoPlayer::LoadMedia(const CYIString &assetId, folly::dynamic options)
 {
     m_pPriv->LoadMedia_(assetId, options);
 }
@@ -223,6 +223,8 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             const CYIString errorName = content["name"].asString();
             YI_LOGD(TAG, "loadMediaFailedEvent message = <%s>", message.GetData());
         }
+        
+        m_pStateManager->TransitionToMediaUnloaded();
 //Example:
 //        //buffering / playing // paused
 //        if (m_pStateManager->GetPlayerState().playbackState == CYIAbstractVideoPlayer::PlaybackState::Buffering) {
@@ -232,20 +234,13 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
 //        if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Unloaded) {
 //
 //        }
-//        m_pStateManager->TransitionToMediaReady();
     }
     else if (name.Compare(stateChangedEvent) == 0)
     {
-        const std::string& state = content["newState"].asString();
-        YI_LOGD(TAG, "stateChangedEvent %s %d", state.c_str(), isPlayerPaused);
+        const CYIString &state = content["newState"].asString();
+        YI_LOGD(TAG, "stateChangedEvent %s", state.GetData());
 
-        if (state == "READY")
-        {
-            if (isPlayerPaused == true) {
-                m_pStateManager->TransitionToPlaybackPaused();
-            }
-        }
-        else if (state == "BUFFERING")
+        if (state == "BUFFERING")
         {
             m_pStateManager->TransitionToPlaybackBuffering();
         }
@@ -257,7 +252,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(pauseEvent) == 0)
     {
         YI_LOGD(TAG, "pauseEvent");
-        isPlayerPaused = true;
         m_pStateManager->TransitionToPlaybackPaused();
     }
     else if (name.Compare(durationChangedEvent) == 0)
@@ -281,7 +275,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(playingEvent) == 0)
     {
         YI_LOGD(TAG, "playingEvent");
-        isPlayerPaused = false;
         m_pStateManager->TransitionToPlaybackPlaying();
     }
     else if (name.Compare(endedEvent) == 0)
@@ -444,7 +437,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     {
         YI_LOGD(TAG, "adStartedEvent");
         m_pStateManager->TransitionToPlaybackPlaying();
-
     }
     else if (name.Compare(adCompletedEvent) == 0)
     {
@@ -453,7 +445,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(adPausedEvent) == 0)
     {
         YI_LOGD(TAG, "adPausedEvent");
-        isPlayerPaused = true;
         m_pStateManager->TransitionToPlaybackPaused();
     }
     else if (name.Compare(adResumedEvent) == 0)

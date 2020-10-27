@@ -126,7 +126,7 @@ void KalturaVideoPlayerPriv::Setup_(int32_t partnerId, folly::dynamic options)
     GetEnv_KalturaPlayer()->DeleteLocalRef(optionsStr);
 }
 
-void KalturaVideoPlayerPriv::LoadMedia_(std::string assetId, folly::dynamic options)
+void KalturaVideoPlayerPriv::LoadMedia_(const CYIString &assetId, folly::dynamic options)
 {
     if (!playerWrapperBridgeClass)
     {
@@ -135,7 +135,7 @@ void KalturaVideoPlayerPriv::LoadMedia_(std::string assetId, folly::dynamic opti
 
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
 
-    jstring jAssetId = GetEnv_KalturaPlayer()->NewStringUTF(assetId.c_str());
+    jstring jAssetId = GetEnv_KalturaPlayer()->NewStringUTF(assetId.GetData());
     auto jsonOptionsStr = folly::toJson(options);
     jstring optionsStr = GetEnv_KalturaPlayer()->NewStringUTF(jsonOptionsStr.c_str());
 
