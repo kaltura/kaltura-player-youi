@@ -236,17 +236,17 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     }
     else if (name.Compare(stateChangedEvent) == 0)
     {
-        YI_LOGD(TAG, "stateChangedEvent");
-
         const std::string& state = content["newState"].asString();
+        YI_LOGD(TAG, "stateChangedEvent %s %d", state.c_str(), isPlayerPaused);
+
         if (state == "READY")
         {
-            YI_LOGD(TAG, "stateChanged READY");
-            m_pStateManager->TransitionToPlaybackPlaying();
+            if (isPlayerPaused == true) {
+                m_pStateManager->TransitionToPlaybackPaused();
+            }
         }
         else if (state == "BUFFERING")
         {
-            YI_LOGD(TAG, "stateChanged BUFFERING");
             m_pStateManager->TransitionToPlaybackBuffering();
         }
     }
@@ -257,6 +257,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(pauseEvent) == 0)
     {
         YI_LOGD(TAG, "pauseEvent");
+        isPlayerPaused = true;
         m_pStateManager->TransitionToPlaybackPaused();
     }
     else if (name.Compare(durationChangedEvent) == 0)
@@ -280,6 +281,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(playingEvent) == 0)
     {
         YI_LOGD(TAG, "playingEvent");
+        isPlayerPaused = false;
         m_pStateManager->TransitionToPlaybackPlaying();
     }
     else if (name.Compare(endedEvent) == 0)
@@ -441,6 +443,8 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(adStartedEvent) == 0)
     {
         YI_LOGD(TAG, "adStartedEvent");
+        m_pStateManager->TransitionToPlaybackPlaying();
+
     }
     else if (name.Compare(adCompletedEvent) == 0)
     {
@@ -449,6 +453,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(adPausedEvent) == 0)
     {
         YI_LOGD(TAG, "adPausedEvent");
+        isPlayerPaused = true;
         m_pStateManager->TransitionToPlaybackPaused();
     }
     else if (name.Compare(adResumedEvent) == 0)
