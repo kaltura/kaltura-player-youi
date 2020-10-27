@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(instancetype)initWithPartnerId:(UInt32)pid options:(NSDictionary*)options
                       parentView:(UIView*)parentView eventSender:(EventSender*)sender;
--(void)setMedia:(NSURL*)assetId;
+-(void)setMedia:(NSURL*)contentUrl;
 -(void)loadMedia:(NSString*)assetId options:(NSDictionary*)options;
 -(void)prepare;
 -(void)play;

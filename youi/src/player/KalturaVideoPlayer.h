@@ -136,6 +136,10 @@ private:
     std::vector<KalturaClosedCaptionTrack> m_closedCaptionsTracks;
     int32_t m_selectedClosedCaptionTrack = -1;
 
+    bool isPlayerPaused = false;
+    
+    YI_RECT_REL m_currentVideoRectangle;
+
     YI_TYPE_BASES(KalturaVideoPlayer, CYIAbstractVideoPlayer)
 };
 

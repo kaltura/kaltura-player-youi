@@ -49,7 +49,9 @@ export default class YiReactApp extends Component {
   }
 
   seekBtnPressed = () => {
-    this.videoRef.current.seek(this.state.currentTime + 10000);
+    if (this.videoRef.current) {
+      this.videoRef.current.seek(this.state.currentTime + 10000);
+    }
   }
 
   render() {

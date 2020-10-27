@@ -389,8 +389,10 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer loadMediaWithOptions:options callback:^(NSError * _Nullable error) {
         if (error) {
             NSLog(@"Error in loadMedia: %@", error);
+            // TODO -  // send code, extra, message, name
             [weakSender sendEvent:@"loadMediaFailed" payload:nil];
         } else {
+            // TODO send PKMeidaEntry ??
             [weakSender sendEvent:@"loadMediaSuccess" payload:nil];
         }
     }];

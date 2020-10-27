@@ -80,7 +80,8 @@ private:
     jclass playerWrapperBridgeClass = NULL;
     
     jmethodID setupMethodID = 0;
-    jmethodID loadMethodID = 0;
+    jmethodID loadMediaMethodID = 0;
+    jmethodID setMediaMethodID = 0;
     jmethodID prepareMethodID = 0;
     jmethodID playMethodID = 0;
     jmethodID pauseMethodID = 0;
