@@ -272,16 +272,16 @@ public class PKPlayerWrapper {
 
         player.addListener(self, PlayerEvent.audioTrackChanged, event -> {
             final com.kaltura.playkit.player.AudioTrack newTrack = event.newTrack;
-            AudioTrack videoTrack = new AudioTrack(newTrack.getUniqueId(), newTrack.getBitrate(), newTrack.getLanguage(), newTrack.getLabel(), newTrack.getChannelCount(), true);
+            AudioTrack audioTrack = new AudioTrack(newTrack.getUniqueId(), newTrack.getBitrate(), newTrack.getLanguage(), newTrack.getLabel(), newTrack.getChannelCount(), true);
             Gson gson = new Gson();
-            sendPlayerEvent("audioTrackChanged", gson.toJson(videoTrack));
+            sendPlayerEvent("audioTrackChanged", gson.toJson(audioTrack));
         });
 
         player.addListener(self, PlayerEvent.textTrackChanged, event -> {
             final com.kaltura.playkit.player.TextTrack newTrack = event.newTrack;
-            TextTrack videoTrack = new TextTrack(newTrack.getUniqueId(), newTrack.getLanguage(), newTrack.getLabel(), true);
+            TextTrack textTrack = new TextTrack(newTrack.getUniqueId(), newTrack.getLanguage(), newTrack.getLabel(), true);
             Gson gson = new Gson();
-            sendPlayerEvent("textTrackChanged", gson.toJson(videoTrack));
+            sendPlayerEvent("textTrackChanged", gson.toJson(textTrack));
         });
 
         player.addListener(self, PlayerEvent.seeking, event -> sendPlayerEvent("seeking", "{ \"targetPosition\": " + (event.targetPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
