@@ -51,13 +51,36 @@ public:
                 ("isSelected", isSelected);
             return object;
         }
+    };    
+    
+    struct KalturaAudioTrack : public CYIAbstractVideoPlayer::AudioTrackInfo
+    {
+        CYIString uniqueId;
+
+        KalturaAudioTrack(uint32_t id, const CYIString &uID, const CYIString &name, const CYIString &language)
+                : AudioTrackInfo(id, name, language)
+                , uniqueId(uID)
+        {
+        }
+    };
+
+    struct KalturaClosedCaptionTrack : public CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo
+    {
+        CYIString uniqueId;
+
+        KalturaClosedCaptionTrack(uint32_t id, const CYIString &uID, const CYIString &name, const CYIString &language)
+            : ClosedCaptionsTrackInfo(id, name, language)
+            , uniqueId(uID)
+        {
+        }
     };
     
     KalturaVideoPlayer();
     virtual ~KalturaVideoPlayer();
 
     void Setup(int32_t partnerId, folly::dynamic options);
-    void Load(std::string assetId, folly::dynamic options);
+    void LoadMedia(std::string assetId, folly::dynamic options);
+    void SetMedia(const CYIUrl &videoURI);
 
     bool SelectVideoTrack(uint32_t uID);
     std::vector<VideoTrackInfo> GetVideoTracks();
@@ -65,7 +88,6 @@ public:
     
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
     CYISignal<folly::dynamic> VolumeChanged;
-
 
     virtual void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle) override;
 
@@ -97,8 +119,26 @@ private:
     virtual void DisableClosedCaptions_() override;
 
     virtual void SetMaxBitrate_(uint64_t uMaxBitrate) override;
+
+    void HandleEvent(const CYIString& name, folly::dynamic content);
     
     std::unique_ptr<KalturaVideoPlayerPriv> m_pPriv;
+    
+    uint64_t m_durationMs = 0;
+    uint64_t m_currentTimeMs = 0;
+
+    std::vector<KalturaVideoPlayer::VideoTrackInfo> m_videoTracks;
+    int32_t m_selectedVideoTrack = -1;
+
+    std::vector<KalturaAudioTrack> m_audioTracks;
+    int32_t m_selectedAudioTrack = -1;
+
+    std::vector<KalturaClosedCaptionTrack> m_closedCaptionsTracks;
+    int32_t m_selectedClosedCaptionTrack = -1;
+
+    bool isPlayerPaused = false;
+    
+    YI_RECT_REL m_currentVideoRectangle;
 
     YI_TYPE_BASES(KalturaVideoPlayer, CYIAbstractVideoPlayer)
 };
