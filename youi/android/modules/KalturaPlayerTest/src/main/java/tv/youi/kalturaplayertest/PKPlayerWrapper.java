@@ -70,8 +70,6 @@ public class PKPlayerWrapper {
 
     private static final PKLog log = PKLog.get("PKPlayerWrapper");
     private static final String YOUBORA_ACCOUNT_CODE = "accountCode";
-    public static final int MILLIS_IN_FUTURE = 2000;
-    public static final int COUNT_DOWN_INTERVAL = 100;
 
     private static OnEventListener onEventListener;
     private static KalturaPlayer player;   // singleton player
