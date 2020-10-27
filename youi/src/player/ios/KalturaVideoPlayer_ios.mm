@@ -163,12 +163,12 @@ void KalturaVideoPlayerPriv::Setup_(int32_t partnerId, folly::dynamic options)
                                                parentView:parentView eventSender:sender];
 }
 
-void KalturaVideoPlayerPriv::LoadMedia_(std::string assetId, folly::dynamic options)
+void KalturaVideoPlayerPriv::LoadMedia_(const CYIString &assetId, folly::dynamic options)
 {
-    NSLog(@"*** LoadMedia_(%s, %s)", assetId.c_str(), JSONFromDynamic(options).c_str());
+    NSLog(@"*** LoadMedia_(%s, %s)", assetId.GetData(), JSONFromDynamic(options).c_str());
 
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
-    [m_player loadMedia:nsstring(assetId) options:convertFollyDynamicToId(options)];
+    [m_player loadMedia:assetId.ToNSString() options:convertFollyDynamicToId(options)];
 }
 
 void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &videoURI)
