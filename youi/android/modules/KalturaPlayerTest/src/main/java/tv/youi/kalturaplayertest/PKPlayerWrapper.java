@@ -62,9 +62,6 @@ import static com.npaw.youbora.lib6.plugin.Options.KEY_USER_TYPE;
 @SuppressWarnings("unused")
 public class PKPlayerWrapper {
 
-    private static boolean onSetMediaCalledWhileSetup;
-    private static boolean onLoadMediaCalledWhileSetup;
-    private static OnEventListener onEventListener;
     private static final PKLog log = PKLog.get("PKPlayerWrapper");
     private static final String YOUBORA_ACCOUNT_CODE = "accountCode";
 
@@ -74,6 +71,10 @@ public class PKPlayerWrapper {
     private static Handler mainHandler = new Handler(Looper.getMainLooper());
     private static Class self = PKPlayerWrapper.class;
 
+    private static boolean onSetMediaCalledWhileSetup;
+    private static boolean onLoadMediaCalledWhileSetup;
+    private static OnEventListener onEventListener;
+    
     private static void runOnUiThread(Runnable runnable) {
         if (mainHandler == null) {
             return;
