@@ -345,7 +345,7 @@ public class PKPlayerWrapper {
                     textTrack.getLanguage(),
                     textTrack.getLabel(),
                     pkTracksInfo.getDefaultTextTrackIndex() == textTrackIndex));
-            audioTrackIndex++;
+            textTrackIndex++;
         }
 
         TracksInfo tracksInfo = new TracksInfo();
