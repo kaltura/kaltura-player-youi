@@ -8,7 +8,7 @@
 
 class KalturaVideoPlayerPriv;
 
-class KalturaVideoPlayer : public CYIAbstractVideoPlayer, IVideoSurfaceListener
+class KalturaVideoPlayer : public CYIAbstractVideoPlayer, CYIAbstractVideoPlayer::TimedMetadataInterface, IVideoSurfaceListener
 {
     friend class KalturaVideoPlayerPriv;
     
@@ -90,6 +90,7 @@ public:
     CYISignal<folly::dynamic> VolumeChanged;
 
     virtual void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle) override;
+    
 
 private:
     virtual CYIString GetName_() const override;
@@ -119,6 +120,7 @@ private:
     virtual void DisableClosedCaptions_() override;
 
     virtual void SetMaxBitrate_(uint64_t uMaxBitrate) override;
+    CYIAbstractVideoPlayer::TimedMetadataInterface *GetTimedMetadataInterface_() const override;
 
     void HandleEvent(const CYIString& name, folly::dynamic content);
     

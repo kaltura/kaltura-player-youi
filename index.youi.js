@@ -99,6 +99,10 @@ export default class YiReactApp extends Component {
                 console.log("onErrorOccurred")
                 console.log(error.nativeEvent.message)
               }}
+              onTimedMetadata={(metadata) => {
+                console.log("onTimedMetadata")
+                console.log(metadata)
+              }}
             /> : undefined}
         </View>
 

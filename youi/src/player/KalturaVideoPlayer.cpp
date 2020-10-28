@@ -206,6 +206,11 @@ void KalturaVideoPlayer::DisableClosedCaptions_()
     m_pPriv->DisableClosedCaptions_();
 }
 
+CYIAbstractVideoPlayer::TimedMetadataInterface *KalturaVideoPlayer::GetTimedMetadataInterface_() const
+{
+    return const_cast<KalturaVideoPlayer*>(this);
+}
+
 void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic content)
 {
 
@@ -425,6 +430,12 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         } else if (!content["key"].isNull()) {
             timedMetadata.identifier = content["identifier"].asString();
         }
+        
+        // duration is not available from the player.
+//        timedMetadata.duration = std::chrono::microseconds::max();
+//        timedMetadata.timestamp = std::chrono::microseconds((uint64_t)(CMTimeGetSeconds(item.time) * 1000000));
+        
+        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::ID3PrivateFrameOwner] = "";
 
         MetadataAvailable.Emit(timedMetadata);
 
