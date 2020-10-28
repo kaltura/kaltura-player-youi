@@ -269,9 +269,9 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         CurrentTimeUpdated.Emit(m_currentTimeMs);
 
         if (!content["buffer"].isNull()) {
-            const auto currentBuffer = content["buffer"].asDouble();
-            m_currentBufferMs = static_cast<uint64_t>(currentBuffer * 1000);
-            CurrentBufferPositionUpdated.Emit(m_currentBufferMs);
+            const auto currentBufferTime = content["buffer"].asDouble();
+            m_currentBufferTimeMs = static_cast<uint64_t>(currentBufferTime * 1000);
+            CurrentBufferTimeUpdated.Emit(m_currentBufferTimeMs);
         }
 
     }

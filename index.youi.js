@@ -83,6 +83,12 @@ export default class YiReactApp extends Component {
                 this.setState({ currentTime: currentTime })
               }}
               onDurationChanged={(duration) => this.setState({ duration: duration })}
+              
+              onBufferTimeUpdated={(bufferTime) => {
+                console.log("onBufferTimeUpdated")
+                console.log(bufferTime.nativeEvent)
+              }}
+
               onAvailableAudioTracksChanged={(tracks) => {
                 console.log("onAvailableAudioTracksChanged")
                 console.log(tracks.nativeEvent)
