@@ -270,10 +270,9 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
 
         if (!content["buffer"].isNull()) {
             const auto currentBufferTime = content["buffer"].asDouble();
-            m_currentBufferTimeMs = static_cast<uint64_t>(currentBufferTime * 1000);
-            CurrentBufferTimeUpdated.Emit(m_currentBufferTimeMs);
+            uint64_t currentBufferTimeMs = static_cast<uint64_t>(currentBufferTime * 1000);
+            CurrentBufferTimeUpdated.Emit(currentBufferTimeMs);
         }
-
     }
     else if (name.Compare(canPlayEvent) == 0)
     {
@@ -409,10 +408,12 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     {
         YI_LOGD(TAG, "seekedEvent");
     }
-    else if (name.Compare(volumeChangedEvent) == 0)
-    {
-        YI_LOGD(TAG, "volumeChangedEvent");
-        VolumeChanged.Emit(content);
+    else if (name.Compare(volumeChangedEvent) == 0) {
+            YI_LOGD(TAG, "volumeChangedEvent");
+            if (!content["volume"].isNull()) {
+                float volume = static_cast<float>(content["volume"].asDouble());
+                VolumeChanged.Emit(volume);
+            }
     }
     else if (name.Compare(errorEvent) == 0)
     {

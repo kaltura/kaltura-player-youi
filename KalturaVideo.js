@@ -20,13 +20,13 @@ export default class KalturaVideo extends React.Component {
 
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED', (event) => {
       if (this.props.onAvailableVideoTracksChanged) {
-        this.props.onAvailableVideoTracksChanged(event.volume);
+        this.props.onAvailableVideoTracksChanged(event);
       }
     })
 
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_VOLUME_CHANGED', (event) => {
       if (this.props.onVolumeChanged) {
-        this.props.onVolumeChanged(event.volume);
+        this.props.onVolumeChanged(event);
       }
     })
 

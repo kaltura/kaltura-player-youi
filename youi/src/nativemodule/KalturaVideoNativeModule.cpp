@@ -59,12 +59,12 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
                 this->EmitEventPriv(KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED, ToDynamic(dynamicTracks));
             });
             
-            m_pPlayer->VolumeChanged.Connect(*this, [this](folly::dynamic data) {
-                this->EmitEventPriv(KALTURA_VOLUME_CHANGED, data);
+            m_pPlayer->VolumeChanged.Connect(*this, [this](float volume) {
+                this->EmitEventPriv(KALTURA_VOLUME_CHANGED, volume);
             });
 
-            m_pPlayer->CurrentBufferTimeUpdated.Connect(*this, [this](folly::dynamic data) {
-                this->EmitEventPriv(KALTURA_BUFFER_TIME_UPDATED, data);
+            m_pPlayer->CurrentBufferTimeUpdated.Connect(*this, [this](uint64_t bufferTime) {
+                this->EmitEventPriv(KALTURA_BUFFER_TIME_UPDATED, bufferTime);
             });
         }
     }

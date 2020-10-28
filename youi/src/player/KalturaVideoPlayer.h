@@ -87,7 +87,7 @@ public:
     VideoTrackInfo GetActiveVideoTrack();
     
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
-    CYISignal<folly::dynamic> VolumeChanged;
+    CYISignal<float> VolumeChanged;
     CYISignal<uint64_t> CurrentBufferTimeUpdated;
 
     virtual void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle) override;
@@ -127,7 +127,6 @@ private:
     
     uint64_t m_durationMs = 0;
     uint64_t m_currentTimeMs = 0;
-    uint64_t m_currentBufferTimeMs = 0;
 
 
     std::vector<KalturaVideoPlayer::VideoTrackInfo> m_videoTracks;
