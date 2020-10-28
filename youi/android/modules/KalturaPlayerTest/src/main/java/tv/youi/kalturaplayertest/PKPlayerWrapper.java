@@ -396,16 +396,12 @@ public class PKPlayerWrapper {
             return;
         }
 
-        final boolean[] onLoadMediaCalledWhileSetup = {false};
         if (!initialized) {
             onEventListener = () -> {
-                if (onLoadMediaCalledWhileSetup[0]) {
                     log.d("delayed loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
                     loadMediaInUIThread(assetId, jsonOptionsStr);
-                    onLoadMediaCalledWhileSetup[0] = false;
-                }
+
             };
-            onLoadMediaCalledWhileSetup[0] = true;
             return;
         }
 
@@ -459,16 +455,11 @@ public class PKPlayerWrapper {
             return;
         }
 
-        final boolean[] onSetMediaCalledWhileSetup = {false};
         if (!initialized) {
             onEventListener = () -> {
-                if (onSetMediaCalledWhileSetup[0]) {
                     log.d("delayed setMedia contentUrl: " + contentUrl);
                     setMediaInUIThread(contentUrl);
-                    onSetMediaCalledWhileSetup[0] = false;
-                }
             };
-            onSetMediaCalledWhileSetup[0] = true;
             return;
         }
 
