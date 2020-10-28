@@ -34,9 +34,18 @@ KalturaVideoNativeModule::KalturaVideoNativeModule()
 
 KalturaVideoNativeModule::~KalturaVideoNativeModule() = default;
 
-void KalturaVideoNativeModule::EmitEventPriv(const std::string& event, const folly::dynamic &obj)
+void KalturaVideoNativeModule::EmitEventPriv(const std::string& event, const folly::dynamic &value)
 {
-    EmitEvent(event, obj);
+    if (!value.isObject() && !value.isArray())
+    {
+        EmitEvent(event, value);
+    }
+    else
+    {
+        // Wraps the folly object in a nativeEvent to match RN convention.
+        folly::dynamic nativeEvent = folly::dynamic::object("nativeEvent", value);
+        EmitEvent(event, nativeEvent);
+    }
 }
 
 YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t tag)
@@ -56,11 +65,9 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
                 {
                     dynamicTracks.push_back(track.ToDynamic());
                 }
-                
-                auto event = folly::dynamic();
-                event["nativeEvent"] = ToDynamic(dynamicTracks);
-                
-                this->EmitEventPriv(KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED, event);
+
+                auto tracksArray = ToDynamic(dynamicTracks);
+                this->EmitEventPriv(KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED, tracksArray);
             });
             
             m_pPlayer->VolumeChanged.Connect(*this, [this](float volume) {
