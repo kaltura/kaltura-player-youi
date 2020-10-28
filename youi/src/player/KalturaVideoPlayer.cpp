@@ -267,6 +267,13 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         m_currentTimeMs = static_cast<uint64_t>(currentTime * 1000);
         //YI_LOGW(TAG, "timeUpdateEvent - <%lu>", m_currentTimeMs);
         CurrentTimeUpdated.Emit(m_currentTimeMs);
+
+        if (!content["buffer"].isNull()) {
+            const auto currentBuffer = content["buffer"].asDouble();
+            m_currentBufferMs = static_cast<uint64_t>(currentBuffer * 1000);
+            CurrentBufferPositionUpdated.Emit(m_currentBufferMs);
+        }
+
     }
     else if (name.Compare(canPlayEvent) == 0)
     {
@@ -416,12 +423,15 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         error.message = JSONFromDynamic(content).c_str();
 
         CYIString errorType = content["errorType"].asString();
-        CYIString errorSeverity = content["errorSeverity"].asString();
         error.nativePlayerErrorCode = errorType;
-
-        ErrorOccurred.Emit(error);
-        if (errorSeverity == "fatal") {
-            YI_LOGD(TAG, "errorEvent fatal");
+        if (!content["errorSeverity"].isNull()) {
+            CYIString errorSeverity = content["errorSeverity"].asString();
+            ErrorOccurred.Emit(error);
+            if (errorSeverity == "fatal") {
+                YI_LOGD(TAG, "errorEvent fatal");
+                m_pStateManager->TransitionToMediaUnloaded();
+            }
+        } else {
             m_pStateManager->TransitionToMediaUnloaded();
         }
     }

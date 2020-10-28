@@ -20,13 +20,15 @@ YI_RN_REGISTER_MODULE(KalturaVideoNativeModule);
 
 static const std::string KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED = "KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED";
 static const std::string KALTURA_VOLUME_CHANGED = "KALTURA_VOLUME_CHANGED";
+static const std::string KALTURA_BUFFER_POSITION_UPDATED = "KALTURA_BUFFER_POSITION_UPDATED";
 
 KalturaVideoNativeModule::KalturaVideoNativeModule()
 {
     SetSupportedEvents
     ({
         KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED,
-        KALTURA_VOLUME_CHANGED
+        KALTURA_VOLUME_CHANGED,
+        KALTURA_BUFFER_POSITION_UPDATED
     });
 }
 
@@ -59,6 +61,10 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
             
             m_pPlayer->VolumeChanged.Connect(*this, [this](folly::dynamic data) {
                 this->EmitEventPriv(KALTURA_VOLUME_CHANGED, data);
+            });
+
+            m_pPlayer->CurrentBufferPositionUpdated.Connect(*this, [this](folly::dynamic data) {
+                this->EmitEventPriv(KALTURA_BUFFER_POSITION_UPDATED, data);
             });
         }
     }
