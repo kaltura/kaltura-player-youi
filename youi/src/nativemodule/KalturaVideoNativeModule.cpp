@@ -56,7 +56,11 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
                 {
                     dynamicTracks.push_back(track.ToDynamic());
                 }
-                this->EmitEventPriv(KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED, ToDynamic(dynamicTracks));
+                
+                auto event = folly::dynamic();
+                event["nativeEvent"] = ToDynamic(dynamicTracks);
+                
+                this->EmitEventPriv(KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED, event);
             });
             
             m_pPlayer->VolumeChanged.Connect(*this, [this](float volume) {
