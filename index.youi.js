@@ -84,6 +84,11 @@ export default class YiReactApp extends Component {
               }}
               onDurationChanged={(duration) => this.setState({ duration: duration })}
               
+              onVolumeChanged={(volume) => {
+                console.log("onVolumeChanged")
+                console.log(volume)
+              }}
+
               onBufferTimeUpdated={(bufferTime) => {
                 console.log("onBufferTimeUpdated")
                 console.log(bufferTime.nativeEvent)

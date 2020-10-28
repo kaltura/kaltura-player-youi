@@ -265,11 +265,12 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     {
         const auto currentTime = content["position"].asDouble();
         m_currentTimeMs = static_cast<uint64_t>(currentTime * 1000);
-        //YI_LOGW(TAG, "timeUpdateEvent - <%lu>", m_currentTimeMs);
+        //YI_LOGW(TAG, "timeUpdateEvent");
         CurrentTimeUpdated.Emit(m_currentTimeMs);
 
-        if (!content["buffer"].isNull()) {
-            const auto currentBufferTime = content["buffer"].asDouble();
+        if (!content["bufferPosition"].isNull()) {
+            const auto currentBufferTime = content["bufferPosition"].asDouble();
+            //YI_LOGW(TAG, "buffer");
             uint64_t currentBufferTimeMs = static_cast<uint64_t>(currentBufferTime * 1000);
             CurrentBufferTimeUpdated.Emit(currentBufferTimeMs);
         }
