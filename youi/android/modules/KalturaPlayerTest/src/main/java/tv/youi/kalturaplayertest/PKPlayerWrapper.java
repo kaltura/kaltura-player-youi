@@ -477,7 +477,7 @@ public class PKPlayerWrapper {
     }
 
     private static void setMediaInUIThread(String contentUrl) {
-        log.d("setMediaInUIThread");
+        log.d("setMedia in UI thread");
 
         runOnUiThread(() -> {
             PKMediaEntry pkMediaEntry = new PKMediaEntry();
