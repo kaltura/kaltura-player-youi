@@ -485,12 +485,15 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         error.message = JSONFromDynamic(content).c_str();
 
         CYIString errorType = content["errorType"].asString();
-        CYIString errorSeverity = content["errorSeverity"].asString();
         error.nativePlayerErrorCode = errorType;
-
-        ErrorOccurred.Emit(error);
-        if (errorSeverity == "fatal") {
-            YI_LOGD(TAG, "errorEvent fatal");
+        if (!content["errorSeverity"].isNull()) {
+            CYIString errorSeverity = content["errorSeverity"].asString();
+            ErrorOccurred.Emit(error);
+            if (errorSeverity == "fatal") {
+                YI_LOGD(TAG, "errorEvent fatal");
+                m_pStateManager->TransitionToMediaUnloaded();
+            }
+        } else {
             m_pStateManager->TransitionToMediaUnloaded();
         }
     }
