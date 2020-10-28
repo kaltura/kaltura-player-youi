@@ -9,30 +9,53 @@ export default class KalturaVideo extends React.Component {
   constructor(props) {
     super(props)
     this.playerEventEmitter = null
-    this.videoRef = React.createRef()
+    this.videoRef = React.createRef();
+    this.childProps = { ...props };
+    delete this.childProps.source;
   }
 
   componentDidMount() {
+    // Must be called before any other method on the native module
     NativeModules.KalturaVideo.ConnectToPlayer(findNodeHandle(this.videoRef.current));
 
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYER_AD_ERROR', (event) => {
-      if (this.props.onAdError) {
-        this.props.onAdError(event);
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_VOLUME_CHANGED', (event) => {
+      if (this.props.onVolumeChanged) {
+        this.props.onVolumeChanged(event.volume);
       }
-    }) 
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED', (event) => {
+      if (this.props.onAvailableVideoTracksChanged) {
+        this.props.onAvailableVideoTracksChanged(event);
+      }
+    })
+
+    NativeModules.KalturaVideo.Setup(this.props.ottPartnerId, this.props.initOptions)
+    
+    if (this.props.media) {
+      this.loadMedia(this.props.media.id, this.props.media.asset);
+    } else if (this.props.source) {
+      this.setMedia(this.props.source.uri);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedVideoTrack !== prevProps.selectedVideoTrack) {
+      NativeModules.KalturaVideo.SelectVideoTrack(this.props.selectedVideoTrack);
+    }
   }
 
   render() {
-    return <Video ref={this.videoRef} {...this.props} />
+    return <Video ref={this.videoRef} {...this.childProps} />
   }
 
   // Kaltura custom functions
-  setup = (partnerId, options) => {
-    NativeModules.KalturaVideo.setup(findNodeHandle(this.videoRef.current), partnerId, options)
+  loadMedia = (assetId, options) => {
+    NativeModules.KalturaVideo.LoadMedia(assetId, options)
   }
 
-  load = (assetId, options) => {
-    NativeModules.KalturaVideo.load(findNodeHandle(this.videoRef.current), assetId, options)
+  setMedia = (url) => {
+    NativeModules.KalturaVideo.SetMedia(url)
   }
 
   // Passthrough functions

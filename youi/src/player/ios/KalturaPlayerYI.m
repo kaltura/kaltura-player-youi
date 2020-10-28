@@ -352,7 +352,19 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     }];
 }
 
--(void)loadAssetId:(NSString *)assetId options:(NSDictionary *)dyn_options {
+-(void)setMedia:(NSURL *)contentUrl {
+    PKMediaSource* source = [[PKMediaSource alloc] init:@"1234" contentUrl:contentUrl mimeType:nil drmData:nil mediaFormat:MediaFormatHls];
+    NSArray<PKMediaSource*>* sources = [[NSArray alloc] initWithObjects:source, nil];
+    // setup media entry
+    PKMediaEntry *mediaEntry = [[PKMediaEntry alloc] init:@"1234" sources:sources duration:-1];
+
+    __weak EventSender *weakSender = self.eventSender;
+    [self.kalturaPlayer setMedia:mediaEntry options:nil];
+    [weakSender sendEvent:@"loadMediaSuccess" payload:nil];
+
+}
+
+-(void)loadMedia:(NSString *)assetId options:(NSDictionary *)dyn_options {
     OTTMediaOptions *options = [OTTMediaOptions new];
     options.assetId = assetId;
     options.ks = dyn_options[@"ks"];
@@ -377,8 +389,10 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer loadMediaWithOptions:options callback:^(NSError * _Nullable error) {
         if (error) {
             NSLog(@"Error in loadMedia: %@", error);
+            // TODO -  // send code, extra, message, name
             [weakSender sendEvent:@"loadMediaFailed" payload:nil];
         } else {
+            // TODO send PKMeidaEntry ??
             [weakSender sendEvent:@"loadMediaSuccess" payload:nil];
         }
     }];

@@ -13,6 +13,7 @@ import com.kaltura.netkit.utils.NKLog;
 import com.kaltura.playkit.PKError;
 import com.kaltura.playkit.PKLog;
 import com.kaltura.playkit.PKMediaEntry;
+import com.kaltura.playkit.PKMediaSource;
 import com.kaltura.playkit.PKPluginConfigs;
 import com.kaltura.playkit.PlayKitManager;
 import com.kaltura.playkit.PlayerEvent;
@@ -32,6 +33,7 @@ import com.npaw.youbora.lib6.YouboraLog;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import tv.youi.kalturaplayertest.model.InitOptions;
@@ -68,6 +70,8 @@ public class PKPlayerWrapper {
     private static CYIActivity.LifecycleListener lifecycleListener;
     private static Handler mainHandler = new Handler(Looper.getMainLooper());
     private static Class self = PKPlayerWrapper.class;
+
+    private static OnEventListener onEventListener;
 
     private static void runOnUiThread(Runnable runnable) {
         if (mainHandler == null) {
@@ -194,10 +198,11 @@ public class PKPlayerWrapper {
             addKalturaPlayerListeners();
 
             initialized = true;
+            if (onEventListener != null) {
+                onEventListener.onKalturaPlayerInitialized();
+            }
         });
     }
-
-
 
     private static CYIActivity.LifecycleListener getLifeCycleListener() {
         if (lifecycleListener == null) {
@@ -235,9 +240,15 @@ public class PKPlayerWrapper {
         player.addListener(self, PlayerEvent.pause, event -> sendPlayerEvent("pause"));
         player.addListener(self, PlayerEvent.ended, event -> sendPlayerEvent("ended"));
         player.addListener(self, PlayerEvent.stopped, event -> sendPlayerEvent("stopped"));
+        player.addListener(self, PlayerEvent.replay, event -> sendPlayerEvent("replay"));
+
         player.addListener(self, PlayerEvent.durationChanged, event -> sendPlayerEvent("durationChanged", "{ \"duration\": " +  (event.duration / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
-        player.addListener(self, PlayerEvent.playheadUpdated, event -> sendPlayerEvent("timeUpdate", "{ \"position\": " + (event.position / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
+        player.addListener(self, PlayerEvent.playheadUpdated, event -> sendPlayerEvent("timeUpdate", "{ \"position\": " + (event.position / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
+                ", \"bufferPosition\": " + (event.bufferPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
+                " }"));
         player.addListener(self, PlayerEvent.stateChanged, event -> sendPlayerEvent("stateChanged", "{ \"newState\": \"" + event.newState.name() + "\" }"));
+        player.addListener(self, PlayerEvent.volumeChanged, event -> sendPlayerEvent("volumeChanged", "{ \"volume\": \"" + event.volume + "\" }"));
+
 
         player.addListener(self, PlayerEvent.tracksAvailable, event -> {
             Gson gson = new Gson();
@@ -253,16 +264,16 @@ public class PKPlayerWrapper {
 
         player.addListener(self, PlayerEvent.audioTrackChanged, event -> {
             final com.kaltura.playkit.player.AudioTrack newTrack = event.newTrack;
-            AudioTrack videoTrack = new AudioTrack(newTrack.getUniqueId(), newTrack.getBitrate(), newTrack.getLanguage(), newTrack.getLabel(), newTrack.getChannelCount(), true);
+            AudioTrack audioTrack = new AudioTrack(newTrack.getUniqueId(), newTrack.getBitrate(), newTrack.getLanguage(), newTrack.getLabel(), newTrack.getChannelCount(), true);
             Gson gson = new Gson();
-            sendPlayerEvent("audioTrackChanged", gson.toJson(videoTrack));
+            sendPlayerEvent("audioTrackChanged", gson.toJson(audioTrack));
         });
 
         player.addListener(self, PlayerEvent.textTrackChanged, event -> {
             final com.kaltura.playkit.player.TextTrack newTrack = event.newTrack;
-            TextTrack videoTrack = new TextTrack(newTrack.getUniqueId(), newTrack.getLanguage(), newTrack.getLabel(), true);
+            TextTrack textTrack = new TextTrack(newTrack.getUniqueId(), newTrack.getLanguage(), newTrack.getLabel(), true);
             Gson gson = new Gson();
-            sendPlayerEvent("textTrackChanged", gson.toJson(videoTrack));
+            sendPlayerEvent("textTrackChanged", gson.toJson(textTrack));
         });
 
         player.addListener(self, PlayerEvent.seeking, event -> sendPlayerEvent("seeking", "{ \"targetPosition\": " + (event.targetPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
@@ -326,7 +337,7 @@ public class PKPlayerWrapper {
                     textTrack.getLanguage(),
                     textTrack.getLabel(),
                     pkTracksInfo.getDefaultTextTrackIndex() == textTrackIndex));
-            audioTrackIndex++;
+            textTrackIndex++;
         }
 
         TracksInfo tracksInfo = new TracksInfo();
@@ -377,18 +388,36 @@ public class PKPlayerWrapper {
     }
 
     @SuppressWarnings("unused") // Called from C++
-    public static void load(String assetId, String jsonOptionsStr) {
+    public static void loadMedia(final String assetId, final String jsonOptionsStr) {
 
-        log.d("load assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
+        log.d("loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
 
-        Gson gson = new Gson();
-        MediaAsset mediaAsset = gson.fromJson(jsonOptionsStr, MediaAsset.class);
-        if (mediaAsset == null || player == null) {
+        if (TextUtils.isEmpty(assetId) || TextUtils.isEmpty(jsonOptionsStr)) {
             return;
         }
 
-        runOnUiThread(() -> {
+        if (!initialized) {
+            onEventListener = () -> {
+                    log.d("delayed loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
+                    loadMediaInUIThread(assetId, jsonOptionsStr);
 
+            };
+            return;
+        }
+
+        log.d("regular loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
+        loadMediaInUIThread(assetId, jsonOptionsStr);
+    }
+
+    private static void loadMediaInUIThread(String assetId, String jsonOptionsStr) {
+        runOnUiThread(() -> {
+            log.d("load media in UI thread");
+
+            Gson gson = new Gson();
+            MediaAsset mediaAsset = gson.fromJson(jsonOptionsStr, MediaAsset.class);
+            if (mediaAsset == null || player == null) {
+                return;
+            }
             if (mediaAsset.getPlugins() != null) {
                 if (mediaAsset.getPlugins().ima != null) {
                     updatgeIMAPlugin(mediaAsset.getPlugins().ima);
@@ -398,7 +427,6 @@ public class PKPlayerWrapper {
                     updateYouboraPlugin(mediaAsset.getPlugins().youbora);
                 }
             }
-
             final PKMediaEntry localPlaybackEntry = PKDownloadWrapper.getLocalPlaybackEntry(assetId);
             if (localPlaybackEntry != null) {
                 player.setMedia(localPlaybackEntry);
@@ -406,6 +434,7 @@ public class PKPlayerWrapper {
                 player.loadMedia(mediaAsset.buildOttMediaOptions(assetId), (entry, error) -> {
                     if (error != null) {
                         log.d("ott media load error: " + error);
+                        //code, extra, message, name
                         sendPlayerEvent("loadMediaFailed", gson.toJson(error));
 
                     } else {
@@ -414,6 +443,43 @@ public class PKPlayerWrapper {
                     }
                 });
             }
+        });
+    }
+
+    @SuppressWarnings("unused") // Called from C++
+    public static void setMedia(final String contentUrl) {
+
+        log.d("setMedia contentUrl: " + contentUrl);
+
+        if (TextUtils.isEmpty(contentUrl)) {
+            return;
+        }
+
+        if (!initialized) {
+            onEventListener = () -> {
+                    log.d("delayed setMedia contentUrl: " + contentUrl);
+                    setMediaInUIThread(contentUrl);
+            };
+            return;
+        }
+
+        log.d("regular setMedia contentUrl: " + contentUrl);
+        setMediaInUIThread(contentUrl);
+    }
+
+    private static void setMediaInUIThread(String contentUrl) {
+        log.d("setMedia in UI thread");
+
+        runOnUiThread(() -> {
+            PKMediaEntry pkMediaEntry = new PKMediaEntry();
+            pkMediaEntry.setMediaType(PKMediaEntry.MediaEntryType.Vod);
+            pkMediaEntry.setId("1234");
+            PKMediaSource pkMediaSource = new PKMediaSource();
+            pkMediaSource.setId("1234");
+            pkMediaSource.setUrl(contentUrl);
+            pkMediaEntry.setSources(Collections.singletonList(pkMediaSource));
+            player.setMedia(pkMediaEntry);
+            sendPlayerEvent("loadMediaSuccess", new Gson().toJson(pkMediaEntry));
         });
     }
 
@@ -589,6 +655,7 @@ public class PKPlayerWrapper {
             }
         });
 
+        onEventListener = null;
         activity = null;
         mainHandler = null;
         bridgeInstance = null;
@@ -655,7 +722,7 @@ public class PKPlayerWrapper {
 
     @SuppressWarnings("unused") // Called from C++
     public static void setVolume(float volume) {
-        
+
         log.d("setVolume: " + volume);
         if (volume < 0) {
             volume = 0f;

@@ -19,9 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface KalturaPlayerYI : NSObject
 
--(instancetype)initWithPartnerId:(UInt32)pid options:(NSDictionary*)options 
+-(instancetype)initWithPartnerId:(UInt32)pid options:(NSDictionary*)options
                       parentView:(UIView*)parentView eventSender:(EventSender*)sender;
--(void)loadAssetId:(NSString*)assetId options:(NSDictionary*)options;
+-(void)setMedia:(NSURL*)contentUrl;
+-(void)loadMedia:(NSString*)assetId options:(NSDictionary*)options;
 -(void)prepare;
 -(void)play;
 -(void)pause;
