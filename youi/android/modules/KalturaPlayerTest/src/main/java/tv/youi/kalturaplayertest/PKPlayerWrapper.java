@@ -416,7 +416,7 @@ public class PKPlayerWrapper {
 
     private static void loadMediaInUIThread(String assetId, String jsonOptionsStr) {
         runOnUiThread(() -> {
-            log.d("loadMediaInUIThread");
+            log.d("load media in UI thread");
 
             Gson gson = new Gson();
             MediaAsset mediaAsset = gson.fromJson(jsonOptionsStr, MediaAsset.class);
