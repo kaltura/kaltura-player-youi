@@ -71,10 +71,8 @@ public class PKPlayerWrapper {
     private static Handler mainHandler = new Handler(Looper.getMainLooper());
     private static Class self = PKPlayerWrapper.class;
 
-    private static boolean onSetMediaCalledWhileSetup;
-    private static boolean onLoadMediaCalledWhileSetup;
     private static OnEventListener onEventListener;
-    
+
     private static void runOnUiThread(Runnable runnable) {
         if (mainHandler == null) {
             return;
@@ -398,15 +396,16 @@ public class PKPlayerWrapper {
             return;
         }
 
+        final boolean[] onLoadMediaCalledWhileSetup = {false};
         if (!initialized) {
             onEventListener = () -> {
-                if (onLoadMediaCalledWhileSetup) {
+                if (onLoadMediaCalledWhileSetup[0]) {
                     log.d("delayed loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
                     loadMediaInUIThread(assetId, jsonOptionsStr);
-                    onLoadMediaCalledWhileSetup = false;
+                    onLoadMediaCalledWhileSetup[0] = false;
                 }
             };
-            onLoadMediaCalledWhileSetup = true;
+            onLoadMediaCalledWhileSetup[0] = true;
             return;
         }
 
@@ -460,15 +459,16 @@ public class PKPlayerWrapper {
             return;
         }
 
+        final boolean[] onSetMediaCalledWhileSetup = {false};
         if (!initialized) {
             onEventListener = () -> {
-                if (onSetMediaCalledWhileSetup) {
+                if (onSetMediaCalledWhileSetup[0]) {
                     log.d("delayed setMedia contentUrl: " + contentUrl);
                     setMediaInUIThread(contentUrl);
-                    onSetMediaCalledWhileSetup = false;
+                    onSetMediaCalledWhileSetup[0] = false;
                 }
             };
-            onSetMediaCalledWhileSetup = true;
+            onSetMediaCalledWhileSetup[0] = true;
             return;
         }
 
@@ -665,8 +665,6 @@ public class PKPlayerWrapper {
         });
 
         onEventListener = null;
-        onLoadMediaCalledWhileSetup = false;
-        onSetMediaCalledWhileSetup = false;
         activity = null;
         mainHandler = null;
         bridgeInstance = null;
