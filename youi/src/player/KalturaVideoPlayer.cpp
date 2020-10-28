@@ -413,6 +413,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             YI_LOGD(TAG, "volumeChangedEvent");
             if (!content["volume"].isNull()) {
                 float volume = static_cast<float>(content["volume"].asDouble());
+                m_currentVolume = volume;
                 VolumeChanged.Emit(volume);
             }
     }

@@ -201,6 +201,7 @@ public class PKPlayerWrapper {
             if (onEventListener != null) {
                 onEventListener.onKalturaPlayerInitialized();
             }
+            player.setVolume(1.0f);
         });
     }
 
