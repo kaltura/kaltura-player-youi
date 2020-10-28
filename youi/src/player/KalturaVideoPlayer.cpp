@@ -435,7 +435,8 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         }
 
         if (!content["duration"].isNull()) {
-            const CYIString duration = content["duation"].asString();
+            const CYIString duration = content["duration"].asString();
+            const CYIString duration = content["duration"].asString();
             YI_LOGD(TAG, "timedMetadata duration = %s", duration.GetData());
 
             if (duration != "{INVALID}") {
@@ -447,15 +448,14 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             //timedMetadata.timestamp = std::chrono::microseconds((uint64_t)(CMTimeGetSeconds(item.time) * 1000000));
         }
 
-        
-        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::ID3PrivateFrameOwner] = "";
-        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageId] = "";
-        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageDuration] = "";
-        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessagePTSDelta] = "";
-        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageTimescale] = "";
-        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageValue] = "";
-        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageMessageData] = "";
-        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageSchemeId] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::ID3PrivateFrameOwner] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageId] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageDuration] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessagePTSDelta] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageTimescale] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageValue] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageMessageData] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageSchemeId] = "";
 
 
         MetadataAvailable.Emit(timedMetadata);
