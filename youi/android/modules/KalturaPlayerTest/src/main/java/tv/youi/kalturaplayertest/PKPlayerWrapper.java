@@ -311,36 +311,6 @@ public class PKPlayerWrapper {
             Gson gson = new Gson();
             for (PKMetadata pkMetadata : event.metadataList){
                 sendPlayerEvent("timedMetadata", gson.toJson(pkMetadata));
-
-//                if (pkMetadata instanceof PKApicFrame) {
-//
-//                } else if (pkMetadata instanceof PKBinaryFrame) {
-//
-//                } else if (pkMetadata instanceof PKChapterFrame) {
-//
-//                } else if (pkMetadata instanceof PKChapterTocFrame) {
-//
-//                } else if (pkMetadata instanceof PKCommentFrame) {
-//
-//                } else if (pkMetadata instanceof PKGeobFrame) {
-//
-//                } else if (pkMetadata instanceof PKPrivFrame) {
-//
-//                } else if (pkMetadata instanceof PKTextInformationFrame) {
-//
-//                } else if (pkMetadata instanceof PKUrlLinkFrame) {
-//
-//                } else if (pkMetadata instanceof PKEventMessage) {
-//
-//                }
-//
-//                if (pkMetadata instanceof PKTextInformationFrame) {
-//                    PKTextInformationFrame textFrame = (PKTextInformationFrame) pkMetadata;
-//                    if ("TXXX".equals(textFrame.id)) {
-//                        log.d("Received user text: " + textFrame.value);
-//                        sendPlayerEvent("timedMetadata", "{ \"textFrame\": \"" + textFrame.value + "\" }");
-//                    }
-//                }
             }
         });
         player.addListener(self, AdEvent.adProgress, event -> sendPlayerEvent("adProgress", "{ \"currentAdPosition\": " + (event.currentAdPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));

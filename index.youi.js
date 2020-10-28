@@ -101,7 +101,7 @@ export default class YiReactApp extends Component {
               }}
               onTimedMetadata={(metadata) => {
                 console.log("onTimedMetadata")
-                console.log(metadata)
+                console.log(metadata.identifier)
               }}
             /> : undefined}
         </View>

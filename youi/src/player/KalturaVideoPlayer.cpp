@@ -427,40 +427,55 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
 
         if (!content["id"].isNull()) {
             timedMetadata.identifier = content["id"].asString();
+            YI_LOGD(TAG, "timedMetadata identifier = %s", timedMetadata.identifier.GetData());
+
         } else if (!content["key"].isNull()) {
             timedMetadata.identifier = content["identifier"].asString();
+            YI_LOGD(TAG, "timedMetadata identifier = %s", timedMetadata.identifier.GetData());
         }
-        
-        // duration is not available from the player.
-//        timedMetadata.duration = std::chrono::microseconds::max();
-//        timedMetadata.timestamp = std::chrono::microseconds((uint64_t)(CMTimeGetSeconds(item.time) * 1000000));
+
+        if (!content["duration"].isNull()) {
+            const CYIString duration = content["duation"].asString();
+            YI_LOGD(TAG, "timedMetadata duration = %s", duration.GetData());
+
+            if (duration != "{INVALID}") {
+               //timedMetadata.duration = std::chrono::microseconds::max();
+            }
+        }
+
+        if (!content["startDate"].isNull()) {
+            //timedMetadata.timestamp = std::chrono::microseconds((uint64_t)(CMTimeGetSeconds(item.time) * 1000000));
+        }
+
         
         timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::ID3PrivateFrameOwner] = "";
+        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageId] = "";
+        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageDuration] = "";
+        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessagePTSDelta] = "";
+        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageTimescale] = "";
+        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageValue] = "";
+        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageMessageData] = "";
+        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageSchemeId] = "";
+
 
         MetadataAvailable.Emit(timedMetadata);
 
-//android
-//                {"description":"","id":"TXXX","value":"google_2886880465115528457"}
-//ios
-//                identifier=id3/TXXX,
-//                keySpace=org.id3,
-//                key class = NSTaggedPointerString,
-//                key=TXXX,
-//                commonKey=(null),
-//                extendedLanguageTag=(null),
-//                dataType=(null),
-//                time={294000/4410000 = 0.067},
-//                duration={INVALID},
-//                startDate=(null),
-//                extras={\n    info = \"\";\n}, value class=__NSCFString,
-//                value=google_2886880465115528457
+        //android
+        //                {"description":"","id":"TXXX","value":"google_2886880465115528457"}
+        //ios
+        //                identifier=id3/TXXX,
+        //                keySpace=org.id3,
+        //                key class = NSTaggedPointerString,
+        //                key=TXXX,
+        //                commonKey=(null),
+        //                extendedLanguageTag=(null),
+        //                dataType=(null),
+        //                time={294000/4410000 = 0.067},
+        //                duration={INVALID},ssr
+        //                startDate=(null),
+        //                extras={\n    info = \"\";\n}, value class=__NSCFString,
+        //                value=google_2886880465115528457
 
-        //TimedMetadata();
-        //CYIString identifier; /*!< Identifies the metadata value contents. For example when the metadata is of the ID3 format this may be a frame type such as TXXX or PRIV. When the metadata is a DASH Event Message the identifier will be EMSG. */
-        //CYIString value; /*!< The metadata value. The value contents will match that described by the identifier. */
-        //std::chrono::microseconds timestamp; /*!< The presentation time at which the metadata is located within the media. */
-        //std::chrono::microseconds duration; /*!< The time duration for which the metadata is relevant within the media. \note If the duration of the metadata is not available this will be set to std::chrono::duration::max. */
-        //std::map<CYIString, CYIString> additionalData; /*!< Provides additional data associated with the timed metadata. This data is contextual to the identifier. \sa #CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys */
     }
     else if (name.Compare(errorEvent) == 0)
     {
