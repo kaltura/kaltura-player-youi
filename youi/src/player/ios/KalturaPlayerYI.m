@@ -273,6 +273,12 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         [weakSender sendEvent:@"textTrackChanged"
                       payload:trackToDict(event.selectedTrack, event.selectedTrack.id)];
     }];
+    
+    [self.kalturaPlayer addObserver:self event:PlayerEvent.timedMetadata block:^(PKEvent * _Nonnull event) {
+        NSLog(@"Gilad : %@", event.timedMetadata);
+        [weakSender sendEvent:@"timedMetadata" payload:@{@"textFrame": event.timedMetadata}];
+    }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.error block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"error" payload:@{@"errorType": @(event.error.code)}];   // TODO more details
     }];
