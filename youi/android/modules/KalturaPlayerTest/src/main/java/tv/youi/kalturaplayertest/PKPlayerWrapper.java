@@ -62,21 +62,16 @@ import static com.npaw.youbora.lib6.plugin.Options.KEY_USER_TYPE;
 @SuppressWarnings("unused")
 public class PKPlayerWrapper {
 
-    private static String onLoadMediaEventAssetId;
-    private static String onLoadMediaEventJsonOptionsStr;
-    public static void setOnEventListener(OnEventListener eventListener) {
-        onEventListener = eventListener;
-    }
-
     private static final PKLog log = PKLog.get("PKPlayerWrapper");
     private static final String YOUBORA_ACCOUNT_CODE = "accountCode";
 
-    private static OnEventListener onEventListener;
     private static KalturaPlayer player;   // singleton player
     private static CYIActivity activity = CYIActivity.getCurrentActivity();
     private static CYIActivity.LifecycleListener lifecycleListener;
     private static Handler mainHandler = new Handler(Looper.getMainLooper());
     private static Class self = PKPlayerWrapper.class;
+
+    private static OnEventListener onEventListener;
 
     private static void runOnUiThread(Runnable runnable) {
         if (mainHandler == null) {
@@ -204,10 +199,7 @@ public class PKPlayerWrapper {
 
             initialized = true;
             if (onEventListener != null) {
-                onEventListener.onLoadMediaEvent(onLoadMediaEventAssetId, onLoadMediaEventJsonOptionsStr);
-                onEventListener = null;
-                onLoadMediaEventAssetId = null;
-                onLoadMediaEventJsonOptionsStr = null;
+                onEventListener.onKalturaPlayerInitialized();
             }
         });
     }
@@ -396,26 +388,30 @@ public class PKPlayerWrapper {
     }
 
     @SuppressWarnings("unused") // Called from C++
-    public static void loadMedia(String assetId, String jsonOptionsStr) {
+    public static void loadMedia(final String assetId, final String jsonOptionsStr) {
 
         log.d("loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
-        if (assetId == null || jsonOptionsStr == null) {
+
+        if (TextUtils.isEmpty(assetId) || TextUtils.isEmpty(jsonOptionsStr)) {
             return;
         }
 
         if (!initialized) {
-            onLoadMediaEventAssetId = assetId;
-            onLoadMediaEventJsonOptionsStr = jsonOptionsStr;
+            onEventListener = () -> {
+                    log.d("delayed loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
+                    loadMediaInUIThread(assetId, jsonOptionsStr);
 
-            onEventListener = (listenerAssetId, listenerJsonOptionsStr) -> loadMediaInUIThread(listenerAssetId, listenerJsonOptionsStr);
+            };
             return;
         }
+
+        log.d("regular loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
         loadMediaInUIThread(assetId, jsonOptionsStr);
     }
 
     private static void loadMediaInUIThread(String assetId, String jsonOptionsStr) {
         runOnUiThread(() -> {
-            log.d("loadMedia player initialized");
+            log.d("load media in UI thread");
 
             Gson gson = new Gson();
             MediaAsset mediaAsset = gson.fromJson(jsonOptionsStr, MediaAsset.class);
@@ -451,24 +447,40 @@ public class PKPlayerWrapper {
     }
 
     @SuppressWarnings("unused") // Called from C++
-    public static void setMedia(String contentUrl) {
+    public static void setMedia(final String contentUrl) {
 
         log.d("setMedia contentUrl: " + contentUrl);
 
-        PKMediaEntry pkMediaEntry = new PKMediaEntry();
-        pkMediaEntry.setMediaType(PKMediaEntry.MediaEntryType.Vod);
-        pkMediaEntry.setId("1234");
-        PKMediaSource pkMediaSource = new PKMediaSource();
-        pkMediaSource.setId("1234");
-        pkMediaSource.setUrl(contentUrl);
-        pkMediaEntry.setSources(Collections.singletonList(pkMediaSource));
+        if (TextUtils.isEmpty(contentUrl)) {
+            return;
+        }
+
+        if (!initialized) {
+            onEventListener = () -> {
+                    log.d("delayed setMedia contentUrl: " + contentUrl);
+                    setMediaInUIThread(contentUrl);
+            };
+            return;
+        }
+
+        log.d("regular setMedia contentUrl: " + contentUrl);
+        setMediaInUIThread(contentUrl);
+    }
+
+    private static void setMediaInUIThread(String contentUrl) {
+        log.d("setMedia in UI thread");
 
         runOnUiThread(() -> {
+            PKMediaEntry pkMediaEntry = new PKMediaEntry();
+            pkMediaEntry.setMediaType(PKMediaEntry.MediaEntryType.Vod);
+            pkMediaEntry.setId("1234");
+            PKMediaSource pkMediaSource = new PKMediaSource();
+            pkMediaSource.setId("1234");
+            pkMediaSource.setUrl(contentUrl);
+            pkMediaEntry.setSources(Collections.singletonList(pkMediaSource));
             player.setMedia(pkMediaEntry);
             sendPlayerEvent("loadMediaSuccess", new Gson().toJson(pkMediaEntry));
         });
-
-
     }
 
     private static void updatgeIMAPlugin(WrapperIMAConfig wrapperIMAConfig) {
@@ -644,8 +656,6 @@ public class PKPlayerWrapper {
         });
 
         onEventListener = null;
-        onLoadMediaEventJsonOptionsStr = null;
-        onLoadMediaEventAssetId = null;
         activity = null;
         mainHandler = null;
         bridgeInstance = null;
