@@ -100,6 +100,23 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     return dict;
 }
 
+static NSDictionary* avMetadataItemToDict(AVMetadataItem *avMetadataItem) {
+
+    return @{
+        @"identifier": safeJsonValue(avMetadataItem.identifier),
+        @"keySpace": safeJsonValue(avMetadataItem.keySpace),
+        @"key": safeJsonValue(avMetadataItem.key),
+        @"commonKey": safeJsonValue(avMetadataItem.commonKey),
+        @"extendedLanguageTag": safeJsonValue(avMetadataItem.extendedLanguageTag),
+        @"dataType": safeJsonValue(avMetadataItem.dataType),
+        //@"time": avMetadataItem.time.epoch,
+        //@"duration": avMetadataItem.duration.epoch,
+        //@"startDate": avMetadataItem.startDate.timeIntervalSince1970,
+        @"value": safeJsonValue(avMetadataItem.value),
+        @"extraAttributes": safeJsonValue(avMetadataItem.extraAttributes)
+    };
+}
+
 #pragma mark - KalturaPlayerYI
 
 @interface KalturaPlayerYI ()
@@ -275,8 +292,10 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     }];
     
     [self.kalturaPlayer addObserver:self event:PlayerEvent.timedMetadata block:^(PKEvent * _Nonnull event) {
-        NSLog(@"Gilad : %@", event.timedMetadata);
-        [weakSender sendEvent:@"timedMetadata" payload:@{@"textFrame": event.timedMetadata}];
+        NSLog(@"timedMetadata : %@", event.timedMetadata);
+        for (id timedMetadataItem in event.timedMetadata) {
+            [weakSender sendEvent:@"timedMetadata" payload:avMetadataItemToDict(timedMetadataItem)];
+        }
     }];
     
     [self.kalturaPlayer addObserver:self event:PlayerEvent.error block:^(PKEvent * _Nonnull event) {

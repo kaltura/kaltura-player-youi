@@ -430,12 +430,11 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             YI_LOGD(TAG, "timedMetadata identifier = %s", timedMetadata.identifier.GetData());
 
         } else if (!content["key"].isNull()) {
-            timedMetadata.identifier = content["identifier"].asString();
+            timedMetadata.identifier = content["key"].asString();
             YI_LOGD(TAG, "timedMetadata identifier = %s", timedMetadata.identifier.GetData());
         }
 
         if (!content["duration"].isNull()) {
-            const CYIString duration = content["duration"].asString();
             const CYIString duration = content["duration"].asString();
             YI_LOGD(TAG, "timedMetadata duration = %s", duration.GetData());
 
