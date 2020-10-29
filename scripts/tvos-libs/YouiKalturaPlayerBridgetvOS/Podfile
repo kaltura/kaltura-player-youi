@@ -6,7 +6,7 @@ all_binary!
 
 target 'YouiKalturaPlayerBridgetvOS' do
 
-  pod 'KalturaPlayer/OTT', :git => 'https://github.com/kaltura/kaltura-player-ios', :branch => 'KUX-v4.0.0.1'
+  pod 'KalturaPlayer/OTT', :git => 'https://github.com/kaltura/kaltura-player-ios', :branch => 'KUX-v4.0.0.2'
   pod 'PlayKit'
   pod 'PlayKitUtils'
   pod 'PlayKit/AnalyticsCommon'
