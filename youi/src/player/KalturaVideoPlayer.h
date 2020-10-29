@@ -82,11 +82,14 @@ public:
     void LoadMedia(const CYIString &assetId, folly::dynamic options);
     void SetMedia(const CYIUrl &videoURI);
     void SetZIndex(const float zIndex);
+    void SetIsAutoZIndex(const bool isAutoZIndex);
 
     bool SelectVideoTrack(uint32_t uID);
     std::vector<VideoTrackInfo> GetVideoTracks();
     VideoTrackInfo GetActiveVideoTrack();
     
+    CYISignal<> AdContentPauseRequested;
+    CYISignal<> AdContentResumeRequested;
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
     CYISignal<folly::dynamic> VolumeChanged;
 
@@ -136,7 +139,8 @@ private:
 
     std::vector<KalturaClosedCaptionTrack> m_closedCaptionsTracks;
     int32_t m_selectedClosedCaptionTrack = -1;
-    
+
+    bool m_isAutoZIndex = false;
     YI_RECT_REL m_currentVideoRectangle;
 
     YI_TYPE_BASES(KalturaVideoPlayer, CYIAbstractVideoPlayer)

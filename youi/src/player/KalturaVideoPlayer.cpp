@@ -79,6 +79,11 @@ void KalturaVideoPlayer::SetZIndex(float zIndex)
     m_pPriv->SetZIndex_(zIndex);
 }
 
+void KalturaVideoPlayer::SetIsAutoZIndex(bool isAutoZIndex)
+{
+    m_isAutoZIndex = isAutoZIndex;
+}
+
 std::vector<KalturaVideoPlayer::VideoTrackInfo> KalturaVideoPlayer::GetVideoTracks() {
     return m_pPriv->GetVideoTracks_();
 }
@@ -476,10 +481,18 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(adContentPauseRequestedEvent) == 0)
     {
         YI_LOGD(TAG, "adContentPauseRequested");
+        if (m_isAutoZIndex == true) {
+            m_pPriv->SetZIndex_(1.0f);
+        }
+        AdContentPauseRequested.Emit();
     }
     else if (name.Compare(adContentResumeRequestedEvent) == 0)
     {
         YI_LOGD(TAG, "adContentResumeRequestedEvent");
+        if (m_isAutoZIndex == true) {
+           m_pPriv->SetZIndex_(0.0f);
+        }
+        AdContentResumeRequested.Emit();
     }
     else if (name.Compare(allAdsCompletedEvent) == 0)
     {
