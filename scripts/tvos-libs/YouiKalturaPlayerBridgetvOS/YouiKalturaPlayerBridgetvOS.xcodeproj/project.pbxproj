@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		067FDC7E99897222377DB6F8 /* Pods_YouiKalturaPlayerBridgetvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3E13A119F1579225F2BC402 /* Pods_YouiKalturaPlayerBridgetvOS.framework */; };
+		A412141507AE8E37384B7816 /* Pods_YouiKalturaPlayerBridgetvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1E2D70B17B3995D829A9DA6 /* Pods_YouiKalturaPlayerBridgetvOS.framework */; };
 		D2A3CDA2251C9691002C61F8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A3CDA1251C9691002C61F8 /* AppDelegate.swift */; };
 		D2A3CDA4251C9691002C61F8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A3CDA3251C9691002C61F8 /* ViewController.swift */; };
 		D2A3CDA7251C9691002C61F8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D2A3CDA5251C9691002C61F8 /* Main.storyboard */; };
@@ -16,8 +16,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1859528777711F04AEA7D974 /* Pods-YouiKalturaPlayerBridgetvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouiKalturaPlayerBridgetvOS.release.xcconfig"; path = "Target Support Files/Pods-YouiKalturaPlayerBridgetvOS/Pods-YouiKalturaPlayerBridgetvOS.release.xcconfig"; sourceTree = "<group>"; };
-		40E8CC8F8DFBEAAF98E35D3B /* Pods-YouiKalturaPlayerBridgetvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouiKalturaPlayerBridgetvOS.debug.xcconfig"; path = "Target Support Files/Pods-YouiKalturaPlayerBridgetvOS/Pods-YouiKalturaPlayerBridgetvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		AC7358E79BFB7F62D152F1C2 /* Pods-YouiKalturaPlayerBridgetvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouiKalturaPlayerBridgetvOS.debug.xcconfig"; path = "Target Support Files/Pods-YouiKalturaPlayerBridgetvOS/Pods-YouiKalturaPlayerBridgetvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		D1E2D70B17B3995D829A9DA6 /* Pods_YouiKalturaPlayerBridgetvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouiKalturaPlayerBridgetvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2A3CD9E251C9691002C61F8 /* YouiKalturaPlayerBridgetvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YouiKalturaPlayerBridgetvOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2A3CDA1251C9691002C61F8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D2A3CDA3251C9691002C61F8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -25,7 +25,7 @@
 		D2A3CDA8251C9697002C61F8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D2A3CDAB251C9697002C61F8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D2A3CDAD251C9697002C61F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D3E13A119F1579225F2BC402 /* Pods_YouiKalturaPlayerBridgetvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouiKalturaPlayerBridgetvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE5D42304E18B50B2D347CB3 /* Pods-YouiKalturaPlayerBridgetvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouiKalturaPlayerBridgetvOS.release.xcconfig"; path = "Target Support Files/Pods-YouiKalturaPlayerBridgetvOS/Pods-YouiKalturaPlayerBridgetvOS.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,18 +33,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				067FDC7E99897222377DB6F8 /* Pods_YouiKalturaPlayerBridgetvOS.framework in Frameworks */,
+				A412141507AE8E37384B7816 /* Pods_YouiKalturaPlayerBridgetvOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		10DFA16137D97D56BDD69FAD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D1E2D70B17B3995D829A9DA6 /* Pods_YouiKalturaPlayerBridgetvOS.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		73C4742F3B65C049440F31B0 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				40E8CC8F8DFBEAAF98E35D3B /* Pods-YouiKalturaPlayerBridgetvOS.debug.xcconfig */,
-				1859528777711F04AEA7D974 /* Pods-YouiKalturaPlayerBridgetvOS.release.xcconfig */,
+				AC7358E79BFB7F62D152F1C2 /* Pods-YouiKalturaPlayerBridgetvOS.debug.xcconfig */,
+				EE5D42304E18B50B2D347CB3 /* Pods-YouiKalturaPlayerBridgetvOS.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -55,7 +63,7 @@
 				D2A3CDA0251C9691002C61F8 /* YouiKalturaPlayerBridgetvOS */,
 				D2A3CD9F251C9691002C61F8 /* Products */,
 				73C4742F3B65C049440F31B0 /* Pods */,
-				FBF178EDA092C794D43BE972 /* Frameworks */,
+				10DFA16137D97D56BDD69FAD /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -80,14 +88,6 @@
 			path = YouiKalturaPlayerBridgetvOS;
 			sourceTree = "<group>";
 		};
-		FBF178EDA092C794D43BE972 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				D3E13A119F1579225F2BC402 /* Pods_YouiKalturaPlayerBridgetvOS.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -95,11 +95,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D2A3CDC6251C9698002C61F8 /* Build configuration list for PBXNativeTarget "YouiKalturaPlayerBridgetvOS" */;
 			buildPhases = (
-				CB0E59105D3A5B38A0107395 /* [CP] Check Pods Manifest.lock */,
+				3521E057A59E2185B2ECBB65 /* [CP] Check Pods Manifest.lock */,
 				D2A3CD9A251C9691002C61F8 /* Sources */,
 				D2A3CD9B251C9691002C61F8 /* Frameworks */,
 				D2A3CD9C251C9691002C61F8 /* Resources */,
-				4997BA65FE679E171B9A2C1C /* [CP] Embed Pods Frameworks */,
+				B8955CE08FFB97C13C677795 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -156,24 +156,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		4997BA65FE679E171B9A2C1C /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-YouiKalturaPlayerBridgetvOS/Pods-YouiKalturaPlayerBridgetvOS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-YouiKalturaPlayerBridgetvOS/Pods-YouiKalturaPlayerBridgetvOS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-YouiKalturaPlayerBridgetvOS/Pods-YouiKalturaPlayerBridgetvOS-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		CB0E59105D3A5B38A0107395 /* [CP] Check Pods Manifest.lock */ = {
+		3521E057A59E2185B2ECBB65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -193,6 +176,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B8955CE08FFB97C13C677795 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-YouiKalturaPlayerBridgetvOS/Pods-YouiKalturaPlayerBridgetvOS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-YouiKalturaPlayerBridgetvOS/Pods-YouiKalturaPlayerBridgetvOS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-YouiKalturaPlayerBridgetvOS/Pods-YouiKalturaPlayerBridgetvOS-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -347,7 +347,7 @@
 		};
 		D2A3CDC7251C9698002C61F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 40E8CC8F8DFBEAAF98E35D3B /* Pods-YouiKalturaPlayerBridgetvOS.debug.xcconfig */;
+			baseConfigurationReference = AC7358E79BFB7F62D152F1C2 /* Pods-YouiKalturaPlayerBridgetvOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -368,7 +368,7 @@
 		};
 		D2A3CDC8251C9698002C61F8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1859528777711F04AEA7D974 /* Pods-YouiKalturaPlayerBridgetvOS.release.xcconfig */;
+			baseConfigurationReference = EE5D42304E18B50B2D347CB3 /* Pods-YouiKalturaPlayerBridgetvOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
