@@ -74,6 +74,11 @@ bool KalturaVideoPlayer::SelectVideoTrack(uint32_t uID) {
     return m_pPriv->SelectVideoTrack_(uID);
 }
 
+void KalturaVideoPlayer::SetFrame(int playerViewWidth, int playerViewHeight, int playerViewPosX, int playerViewPosY)
+{
+    m_pPriv->SetFrame_(playerViewWidth, playerViewHeight, playerViewPosX, playerViewPosY);
+}
+
 std::vector<KalturaVideoPlayer::VideoTrackInfo> KalturaVideoPlayer::GetVideoTracks() {
     return m_pPriv->GetVideoTracks_();
 }

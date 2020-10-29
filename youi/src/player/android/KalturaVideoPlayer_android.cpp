@@ -159,6 +159,17 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
     GetEnv_KalturaPlayer()->DeleteLocalRef(url);
 }
 
+
+void KalturaVideoPlayerPriv::SetFrame_(int playerViewWidth, int playerViewHeight, int playerViewPosX, int playerViewPosY)
+{
+    if (!playerWrapperBridgeClass)
+    {
+        return;
+    }
+
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setFrameMethodID, playerViewWidth, playerViewHeight, playerViewPosX, playerViewPosY);
+}
+
 CYIString KalturaVideoPlayerPriv::GetName_() const
 {
     return "Kaltura Video Player";

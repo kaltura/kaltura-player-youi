@@ -99,3 +99,11 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SelectVideoTrack)(uint32_t 
         m_pPlayer->SelectVideoTrack(trackId);
     }
 }
+
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SetFrame)(int playerViewWidth, int playerViewHeight, int playerViewPosX, int playerViewPosY)
+{
+    if (m_pPlayer)
+    {
+        m_pPlayer->SetFrame(playerViewWidth, playerViewHeight, playerViewPosX, playerViewPosY);
+    }
+}

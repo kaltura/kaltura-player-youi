@@ -81,6 +81,7 @@ public:
     void Setup(int32_t partnerId, folly::dynamic options);
     void LoadMedia(const CYIString &assetId, folly::dynamic options);
     void SetMedia(const CYIUrl &videoURI);
+    void SetFrame(const int playerViewWidth, const int playerViewHeight, const int playerViewPosX, const int playerViewPosY);
 
     bool SelectVideoTrack(uint32_t uID);
     std::vector<VideoTrackInfo> GetVideoTracks();

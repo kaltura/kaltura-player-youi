@@ -179,6 +179,19 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &videoURI)
     [m_player setMedia:url];
 }
 
+void KalturaVideoPlayerPriv::SetFrame_(const int playerViewWidth, const int playerViewHeight, const int playerViewPosX, const int playerViewPosY)
+{
+    NSLog(@"*** SetFrame_ %d, %d, %d, %d", playerViewWidth, playerViewHeight, playerViewPosX, playerViewPosY);
+
+    CGRect frame;
+    frame.origin.x = playerViewPosX;
+    frame.origin.y = playerViewPosY;
+    frame.size.width = playerViewWidth;
+    frame.size.height = playerViewHeight;
+
+    [m_player setFrame:frame];
+}
+
 void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic &content)
 {
     m_pPub->HandleEvent(name, content);
