@@ -113,10 +113,10 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
 
 @implementation KalturaPlayerYI
 
--(instancetype)initWithPartnerId:(UInt32)pid
-                         options:(NSDictionary *)dyn_options
-                      parentView:(UIView *)parentView
-                     eventSender:(EventSender *)sender {
+- (instancetype)initWithPartnerId:(UInt32)pid
+                          options:(NSDictionary *)dyn_options
+                       parentView:(UIView *)parentView
+                      eventSender:(EventSender *)sender {
     
     self = [super init];
     if (!self) return nil;
@@ -221,7 +221,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     return self;
 }
 
--(void)observeAllEvents {
+- (void)observeAllEvents {
     __weak EventSender *weakSender = self.eventSender;
     __weak KalturaPlayer *weakPlayer = self.kalturaPlayer;
     
@@ -352,19 +352,22 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     }];
 }
 
--(void)setMedia:(NSURL *)contentUrl {
-    PKMediaSource* source = [[PKMediaSource alloc] init:@"1234" contentUrl:contentUrl mimeType:nil drmData:nil mediaFormat:MediaFormatHls];
-    NSArray<PKMediaSource*>* sources = [[NSArray alloc] initWithObjects:source, nil];
+- (void)setMedia:(NSURL *)contentUrl {
+    PKMediaSource *source = [[PKMediaSource alloc] init:@"1234"
+                                             contentUrl:contentUrl
+                                               mimeType:nil
+                                                drmData:nil
+                                            mediaFormat:MediaFormatHls];
+    NSArray<PKMediaSource*> *sources = [[NSArray alloc] initWithObjects:source, nil];
     // setup media entry
     PKMediaEntry *mediaEntry = [[PKMediaEntry alloc] init:@"1234" sources:sources duration:-1];
 
     __weak EventSender *weakSender = self.eventSender;
     [self.kalturaPlayer setMedia:mediaEntry options:nil];
     [weakSender sendEvent:@"loadMediaSuccess" payload:nil];
-
 }
 
--(void)loadMedia:(NSString *)assetId options:(NSDictionary *)dyn_options {
+- (void)loadMedia:(NSString *)assetId options:(NSDictionary *)dyn_options {
     OTTMediaOptions *options = [OTTMediaOptions new];
     options.assetId = assetId;
     options.ks = dyn_options[@"ks"];
@@ -373,7 +376,6 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     options.networkProtocol = dyn_options[@"protocol"];
     options.playbackContextType = getPlaybackContextType(dyn_options[@"playbackContextType"]);
     options.startTime = [dyn_options[@"startPosition"] doubleValue];
-    
     
     id youboraConfig = dyn_options[@"plugins"][@"youbora"];
     if (youboraConfig) {
@@ -400,67 +402,67 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     // Player will automatically prepare and play on success
 }
 
--(void)prepare {
+- (void)prepare {
     [self.kalturaPlayer prepare];
 }
 
--(void)play {
+- (void)play {
     [self.kalturaPlayer play];
 }
 
--(void)pause {
+- (void)pause {
     [self.kalturaPlayer pause];
 }
 
--(void)replay {
+- (void)replay {
     [self.kalturaPlayer replay];
 }
 
--(void)destroy {
+- (void)destroy {
     [self.kalturaPlayer removeObserver:self events:PlayerEvent.allEventTypes];
     [self.kalturaPlayer removeObserver:self events:AdEvent.allEventTypes];
     [self.kalturaPlayer destroy];
 }
 
--(void)stop {
+- (void)stop {
     [self.kalturaPlayer stop];
 }
 
--(void)seekTo:(NSTimeInterval)position {
+- (void)seekTo:(NSTimeInterval)position {
     [self.kalturaPlayer seekTo:position];
 }
 
--(void)selectTrackWithTrackId:(NSString *)uniqueId {
+- (void)selectTrackWithTrackId:(NSString *)uniqueId {
     [self.kalturaPlayer selectTrackWithTrackId:uniqueId];
 }
 
--(void)changePlaybackRate:(float)playbackRate {
+- (void)changePlaybackRate:(float)playbackRate {
     self.kalturaPlayer.rate = playbackRate;
 }
 
--(void)setAutoplay:(bool)autoplay {
+- (void)setAutoplay:(bool)autoplay {
     self.playerOptions.autoPlay = autoplay;
     [self.kalturaPlayer updatePlayerOptions:self.playerOptions];
 }
 
--(void)setKS:(NSString *)ks {
+- (void)setKS:(NSString *)ks {
     self.playerOptions.ks = ks;
     [self.kalturaPlayer updatePlayerOptions:self.playerOptions];
 }
 
--(void)setZIndex:(float)index {
+- (void)setZIndex:(float)index {
     self.kalturaPlayer.view.layer.zPosition = index;
 }
 
--(void)setFrame:(CGRect)frame {
+- (void)setFrame:(CGRect)frame {
     self.kalturaPlayer.view.frame = frame;
 }
 
--(void)setVolume:(float)volume {
+- (void)setVolume:(float)volume {
     //[self.kalturaPlayer setVolume:volume];
 }
 
-+(void)setLogLevel:(NSString *)logLevel {
++ (void)setLogLevel:(NSString *)logLevel {
     PKLogLevel level = PKLogLevelError;
     
     if ([logLevel  isEqual: @"verbose"]) {
