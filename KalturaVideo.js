@@ -59,7 +59,7 @@ export default class KalturaVideo extends React.Component {
   }
 
   setZIndex = (zIndex) => {
-    NativeModules.KalturaVideo.setZIndex(zIndex)
+    NativeModules.KalturaVideo.SetZIndex(zIndex)
   }
   
   // Passthrough functions

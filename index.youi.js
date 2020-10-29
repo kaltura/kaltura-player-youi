@@ -20,7 +20,8 @@ export default class YiReactApp extends Component {
     currentTime: 0,
     sources: null,
     media: null,
-    isMuted: false
+    isMuted: false,
+    zIndexOn: false
   }
 
   videoRef = React.createRef()
@@ -54,6 +55,19 @@ export default class YiReactApp extends Component {
     }
   }
 
+  zIndexBtnPressed = () => {
+    if (this.videoRef.current) {
+      if (this.state.zIndexOn) {
+        this.videoRef.current.setZIndex(0.0);
+        this.setState({zIndexOn: false});
+      } else {
+        this.videoRef.current.setZIndex(1.0);
+        this.setState({zIndexOn: true});
+      }
+      
+    }
+  }
+  
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -109,11 +123,14 @@ export default class YiReactApp extends Component {
           <TouchableOpacity style={styles.button} onPress={this.pauseBtnPressed}>
             <Text style={styles.buttonText}>{this.state.isPlaying ? 'Pause' : 'Play'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => this.setState({ 'isMuted': !this.state.isMuted })}>
+          <TouchableOpacity style={styles.button} onPress={() => this.setState({ isMuted: !this.state.isMuted })}>
             <Text style={styles.buttonText}>{this.state.isMuted ? 'Unmute' : 'Mute'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={this.seekBtnPressed}>
             <Text style={styles.buttonText}>{'Seek +10s'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={this.zIndexBtnPressed}>
+            <Text style={styles.buttonText}>{this.state.zIndexOn ? 'zOn' : 'zOff'}</Text>
           </TouchableOpacity>
         </View>
 
