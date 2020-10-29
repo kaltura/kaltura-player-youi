@@ -57,6 +57,12 @@ export default class KalturaVideo extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
+    //Pass along updated props
+    newChildProps = {...this.props};
+    delete newChildProps.source;
+    this.childProps = {...newChildProps};
+
+    //Handle custom props
     if (this.props.selectedVideoTrack !== prevProps.selectedVideoTrack) {
       NativeModules.KalturaVideo.SelectVideoTrack(this.props.selectedVideoTrack);
     }
