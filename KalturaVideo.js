@@ -58,8 +58,8 @@ export default class KalturaVideo extends React.Component {
     NativeModules.KalturaVideo.SetMedia(url)
   }
 
-  setFrame = (playerViewWidth, playerViewHeight, playerViewPosX, playerViewPosY) => {
-    NativeModules.KalturaVideo.SetFrame(playerViewWidth, playerViewHeight, playerViewPosX, playerViewPosY)
+  setZIndex = (zIndex) => {
+    NativeModules.KalturaVideo.setZIndex(zIndex)
   }
   
   // Passthrough functions

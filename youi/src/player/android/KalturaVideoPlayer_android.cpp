@@ -160,14 +160,14 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
 }
 
 
-void KalturaVideoPlayerPriv::SetFrame_(int playerViewWidth, int playerViewHeight, int playerViewPosX, int playerViewPosY)
+void KalturaVideoPlayerPriv::SetZIndex_(float zIndex)
 {
     if (!playerWrapperBridgeClass)
     {
         return;
     }
 
-    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setFrameMethodID, playerViewWidth, playerViewHeight, playerViewPosX, playerViewPosY);
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setZIndexMethodID, zIndex);
 }
 
 CYIString KalturaVideoPlayerPriv::GetName_() const
