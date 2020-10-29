@@ -70,7 +70,8 @@ void KalturaVideoPlayer::SetMedia(const CYIUrl &videoURI)
     m_pPriv->SetMedia_(videoURI);
 }
 
-bool KalturaVideoPlayer::SelectVideoTrack(uint32_t uID) {
+bool KalturaVideoPlayer::SelectVideoTrack(uint32_t uID)
+{
     return m_pPriv->SelectVideoTrack_(uID);
 }
 
@@ -84,7 +85,8 @@ void KalturaVideoPlayer::SetIsAutoZIndex(bool isAutoZIndex)
     m_isAutoZIndex = isAutoZIndex;
 }
 
-std::vector<KalturaVideoPlayer::VideoTrackInfo> KalturaVideoPlayer::GetVideoTracks() {
+std::vector<KalturaVideoPlayer::VideoTrackInfo> KalturaVideoPlayer::GetVideoTracks()
+{
     return m_pPriv->GetVideoTracks_();
 }
 

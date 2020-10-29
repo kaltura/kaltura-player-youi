@@ -18,15 +18,15 @@ export default class KalturaVideo extends React.Component {
     // Must be called before any other method on the native module
     NativeModules.KalturaVideo.ConnectToPlayer(findNodeHandle(this.videoRef.current));
 
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_CONTENT_PAUSE_REQUESTED', (event) => {
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_CONTENT_PAUSE_REQUESTED', () => {
       if (this.props.onAdContentPauseRequested) {
-        this.props.onAdContentPauseRequested(event);
+        this.props.onAdContentPauseRequested();
       }
     })
 
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_CONTENT_RESUME_REQUESTED', (event) => {
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_CONTENT_RESUME_REQUESTED', () => {
       if (this.props.onAdContentResumeRequested) {
-        this.props.onAdContentResumeRequested(event);
+        this.props.onAdContentResumeRequested();
       }
     })
 
@@ -44,6 +44,11 @@ export default class KalturaVideo extends React.Component {
 
     NativeModules.KalturaVideo.Setup(this.props.ottPartnerId, this.props.initOptions)
     
+    // Custom prop init
+    if (this.props.zIndex) {
+      NativeModules.KalturaVideo.SetZIndex(this.props.zIndex)
+    }
+    
     if (this.props.media) {
       this.loadMedia(this.props.media.id, this.props.media.asset);
     } else if (this.props.source) {
@@ -54,6 +59,18 @@ export default class KalturaVideo extends React.Component {
   componentDidUpdate(prevProps) {
     if (this.props.selectedVideoTrack !== prevProps.selectedVideoTrack) {
       NativeModules.KalturaVideo.SelectVideoTrack(this.props.selectedVideoTrack);
+    }
+
+    if (this.props.zIndex !== prevProps.zIndex) {
+      NativeModules.KalturaVideo.SetZIndex(this.props.zIndex)
+    }
+
+    if (this.props.media !== prevProps.media) {
+      this.loadMedia(this.props.media.id, this.props.media.asset);
+    }
+
+    if (this.props.source !== prevProps.source) {
+      this.setMedia(this.props.source.uri);
     }
   }
 

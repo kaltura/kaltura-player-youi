@@ -20,7 +20,8 @@ export default class YiReactApp extends Component {
     currentTime: 0,
     sources: null,
     media: null,
-    isMuted: false
+    isMuted: false,
+    zIndex: 0.0
   }
 
   videoRef = React.createRef()
@@ -53,23 +54,25 @@ export default class YiReactApp extends Component {
       this.videoRef.current.seek(this.state.currentTime + 10000);
     }
   }
-  
+
+  setMediaAssetId = (assetId) => {
+    this.setState({ media: { id: assetId, asset: asset } });
+  }
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
 
         <Text style={styles.header}>Kaltura Video Sample</Text>
         <View style={styles.videoContainer}>
-          {this.state.sources ?
+          {this.state.sources || this.state.media ?
             <KalturaVideo
               ottPartnerId={OttPartnerId}
               initOptions={initOptions}
               //source={this.state.sources}
-              media={{
-                id: OttMediaId,
-                asset: asset
-              }}
+              media={this.state.media}
               muted={this.state.isMuted}
+              zIndex={this.state.zIndex}
               style={styles.video}
               ref={this.videoRef}
               onPreparing={() => console.log("onPreparing called.")}
@@ -83,21 +86,17 @@ export default class YiReactApp extends Component {
                 this.setState({ currentTime: currentTime })
               }}
               onDurationChanged={(duration) => this.setState({ duration: duration })}
-              
+
               onAdContentPauseRequested={(data) => {
                 console.log("onAdContentPauseRequested")
-                if (this.videoRef.current) {
-                  this.videoRef.current.setZIndex(1.0);
-                }
+                this.setState({ zIndex: 1.0 })
               }}
 
               onAdContentResumeRequested={(data) => {
                 console.log("onAdContentResumeRequested")
-                if (this.videoRef.current) {
-                  this.videoRef.current.setZIndex(0.0);
-                }
+                this.setState({ zIndex: 0.0 })
               }}
-              
+
               onAvailableAudioTracksChanged={(tracks) => {
                 console.log("onAvailableAudioTracksChanged")
                 console.log(tracks.nativeEvent)
@@ -118,9 +117,15 @@ export default class YiReactApp extends Component {
         </View>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={this.loadBtnPressed}>
-            <Text style={styles.buttonText}>{this.state.sources || this.state.media ? 'Unload' : 'Load'}</Text>
+          <TouchableOpacity style={styles.button} onPress={() => this.setMediaAssetId('548576')}>
+            <Text style={styles.buttonText}>{'Media 1'}</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => this.setMediaAssetId('548571')}>
+            <Text style={styles.buttonText}>{'Media 2'}</Text>
+          </TouchableOpacity>
+          {/* <TouchableOpacity style={styles.button} onPress={this.loadBtnPressed}>
+            <Text style={styles.buttonText}>{this.state.sources || this.state.media ? 'Unload' : 'Load'}</Text>
+          </TouchableOpacity> */}
           <TouchableOpacity style={styles.button} onPress={this.pauseBtnPressed}>
             <Text style={styles.buttonText}>{this.state.isPlaying ? 'Pause' : 'Play'}</Text>
           </TouchableOpacity>
@@ -129,6 +134,9 @@ export default class YiReactApp extends Component {
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={this.seekBtnPressed}>
             <Text style={styles.buttonText}>{'Seek +10s'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => this.setState({ zIndex: this.state.zIndex > 0 ? 0.0 : 1.0 })}>
+            <Text style={styles.buttonText}>{'Z-Index ' + this.state.zIndex}</Text>
           </TouchableOpacity>
         </View>
 
@@ -158,7 +166,7 @@ const styles = StyleSheet.create({
     height: "100%"
   },
   buttonContainer: {
-    flex: 2,
+    flex: 1.5,
     flexDirection: 'row',
     zIndex: 1000000
   },
@@ -172,6 +180,7 @@ const styles = StyleSheet.create({
     maxWidth: 100
   },
   buttonText: {
+    fontSize: 9
   }
 })
 
@@ -189,7 +198,6 @@ AppRegistry.registerComponent("YiReactApp", () => YiReactApp);
 
 const PhoenixBaseUrl = "https://rest-us.ott.kaltura.com/v4_5/api_v3/";
 const OttPartnerId = 3009;
-const OttMediaId = "548576";
 const OttMediaFormat = "Mobile_Main";
 const OttMediaProtocol = "http"; // "https"
 const OttAssetType = "media";
