@@ -192,7 +192,7 @@ CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayer::GetActiveClo
 
 bool KalturaVideoPlayer::IsMuted_() const
 {
-    return m_pPriv->IsMuted_();
+    return m_isMuted; //m_pPriv->IsMuted_();
 }
 
 void KalturaVideoPlayer::Mute_(bool bMute)
@@ -412,8 +412,14 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(volumeChangedEvent) == 0) {
             YI_LOGD(TAG, "volumeChangedEvent");
             if (!content["volume"].isNull()) {
-                float volume = static_cast<float>(content["volume"].asDouble());
-                m_currentVolume = volume;
+                const auto currentVolume = content["volume"].asDouble();
+                float volume = static_cast<float>(currentVolume);
+
+                if (volume <= 0.0f) {
+                    m_isMuted = true;
+                } else {
+                    m_isMuted = false;
+                }
                 VolumeChanged.Emit(volume);
             }
     }
@@ -440,7 +446,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     }
     else if (name.Compare(adProgressEvent) == 0)
     {
-        YI_LOGD(TAG, "adProgressEvent");
+        //YI_LOGD(TAG, "adProgressEvent");
     }
     else if (name.Compare(adCuepointsChangedEvent) == 0)
     {

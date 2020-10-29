@@ -85,13 +85,11 @@ export default class YiReactApp extends Component {
               onDurationChanged={(duration) => this.setState({ duration: duration })}
               
               onVolumeChanged={(volume) => {
-                console.log("onVolumeChanged")
-                console.log(volume)
+                console.log("onVolumeChanged " + volume)
               }}
 
               onBufferTimeUpdated={(bufferTime) => {
-                console.log("onBufferTimeUpdated")
-                console.log(bufferTime.nativeEvent)
+                console.log("onBufferTimeUpdated " + bufferTime)
               }}
 
               onAvailableAudioTracksChanged={(tracks) => {
@@ -120,7 +118,7 @@ export default class YiReactApp extends Component {
           <TouchableOpacity style={styles.button} onPress={this.pauseBtnPressed}>
             <Text style={styles.buttonText}>{this.state.isPlaying ? 'Pause' : 'Play'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => this.setState({ 'isMuted': !this.state.isMuted })}>
+          <TouchableOpacity style={styles.button} onPress={() => this.setState({ isMuted: !this.state.isMuted })}>
             <Text style={styles.buttonText}>{this.state.isMuted ? 'Unmute' : 'Mute'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={this.seekBtnPressed}>

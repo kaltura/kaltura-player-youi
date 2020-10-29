@@ -87,6 +87,7 @@ public:
     VideoTrackInfo GetActiveVideoTrack();
     
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
+    //CYISignal<folly::dynamic> VolumeChanged;
     CYISignal<float> VolumeChanged;
     CYISignal<uint64_t> CurrentBufferTimeUpdated;
 
@@ -127,7 +128,7 @@ private:
     
     uint64_t m_durationMs = 0;
     uint64_t m_currentTimeMs = 0;
-    float m_currentVolume = 1.0;
+    bool m_isMuted = false;
 
     std::vector<KalturaVideoPlayer::VideoTrackInfo> m_videoTracks;
     int32_t m_selectedVideoTrack = -1;
