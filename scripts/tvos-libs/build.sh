@@ -2,9 +2,9 @@
 
 set -ex
 
-cd "$(dirname $0)"/YouiKalturaPlayerBridge
+cd "$(dirname $0)"/YouiKalturaPlayerBridgetvOS
 
-TARGET_DIR="$(cd ../../../youi; pwd)"/ios-libs
+TARGET_DIR="$(cd ../../../youi; pwd)"/tvos-libs
 
 read -p "Remove '$TARGET_DIR'?" Y
 
@@ -26,4 +26,4 @@ rsync -av Pods/_Prebuild/GeneratedFrameworks/ "$TARGET_DIR"
 
 cd "$TARGET_DIR"
 
-mv GoogleAds-IMA-iOS-SDK GoogleInteractiveMediaAds
+mv GoogleAds-IMA-tvOS-SDK GoogleInteractiveMediaAds

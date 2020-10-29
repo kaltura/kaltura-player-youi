@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		86EBDC6A234581073FC4F477 /* Pods_YouiKalturaPlayerBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D52B914F0F0113D697666D29 /* Pods_YouiKalturaPlayerBridge.framework */; };
+		F2A4459A3547BE49059C54B7 /* Pods_YouiKalturaPlayerBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46C42B8E002F4672C2AA5EC4 /* Pods_YouiKalturaPlayerBridge.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		35D141F9E111757A560EB8EE /* Pods-YouiKalturaPlayerBridge.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouiKalturaPlayerBridge.release.xcconfig"; path = "Target Support Files/Pods-YouiKalturaPlayerBridge/Pods-YouiKalturaPlayerBridge.release.xcconfig"; sourceTree = "<group>"; };
+		46C42B8E002F4672C2AA5EC4 /* Pods_YouiKalturaPlayerBridge.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouiKalturaPlayerBridge.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		74D7649B511A61F7D2470F57 /* Pods-YouiKalturaPlayerBridge.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouiKalturaPlayerBridge.release.xcconfig"; path = "Target Support Files/Pods-YouiKalturaPlayerBridge/Pods-YouiKalturaPlayerBridge.release.xcconfig"; sourceTree = "<group>"; };
 		CAD67AAE24924B120060922A /* YouiKalturaPlayerBridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YouiKalturaPlayerBridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D52B914F0F0113D697666D29 /* Pods_YouiKalturaPlayerBridge.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouiKalturaPlayerBridge.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F71D0F7E0F19605C7BB18FAD /* Pods-YouiKalturaPlayerBridge.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouiKalturaPlayerBridge.debug.xcconfig"; path = "Target Support Files/Pods-YouiKalturaPlayerBridge/Pods-YouiKalturaPlayerBridge.debug.xcconfig"; sourceTree = "<group>"; };
+		F56BA686F0DB40CF670DAE61 /* Pods-YouiKalturaPlayerBridge.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouiKalturaPlayerBridge.debug.xcconfig"; path = "Target Support Files/Pods-YouiKalturaPlayerBridge/Pods-YouiKalturaPlayerBridge.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -22,28 +22,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				86EBDC6A234581073FC4F477 /* Pods_YouiKalturaPlayerBridge.framework in Frameworks */,
+				F2A4459A3547BE49059C54B7 /* Pods_YouiKalturaPlayerBridge.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0EBAEC79D0B659040E0E9AC1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				46C42B8E002F4672C2AA5EC4 /* Pods_YouiKalturaPlayerBridge.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		36D5D8ADAB36F06EABB5DFF2 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				F71D0F7E0F19605C7BB18FAD /* Pods-YouiKalturaPlayerBridge.debug.xcconfig */,
-				35D141F9E111757A560EB8EE /* Pods-YouiKalturaPlayerBridge.release.xcconfig */,
+				F56BA686F0DB40CF670DAE61 /* Pods-YouiKalturaPlayerBridge.debug.xcconfig */,
+				74D7649B511A61F7D2470F57 /* Pods-YouiKalturaPlayerBridge.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		A5114CCE4C9DC5AD3C084C8F /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				D52B914F0F0113D697666D29 /* Pods_YouiKalturaPlayerBridge.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		CAD67AA524924B120060922A = {
@@ -52,7 +52,7 @@
 				CAD67AB024924B120060922A /* YouiKalturaPlayerBridge */,
 				CAD67AAF24924B120060922A /* Products */,
 				36D5D8ADAB36F06EABB5DFF2 /* Pods */,
-				A5114CCE4C9DC5AD3C084C8F /* Frameworks */,
+				0EBAEC79D0B659040E0E9AC1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -78,11 +78,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CAD67AC224924B140060922A /* Build configuration list for PBXNativeTarget "YouiKalturaPlayerBridge" */;
 			buildPhases = (
-				838200D7BBEB42BD98FC73D2 /* [CP] Check Pods Manifest.lock */,
+				289B4517AEFCC729E506ED96 /* [CP] Check Pods Manifest.lock */,
 				CAD67AAA24924B120060922A /* Sources */,
 				CAD67AAB24924B120060922A /* Frameworks */,
 				CAD67AAC24924B120060922A /* Resources */,
-				B1C50AA13010F9B27255DA04 /* [CP] Embed Pods Frameworks */,
+				38DFD30E3DB68A33CEDED793 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -137,7 +137,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		838200D7BBEB42BD98FC73D2 /* [CP] Check Pods Manifest.lock */ = {
+		289B4517AEFCC729E506ED96 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -159,7 +159,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B1C50AA13010F9B27255DA04 /* [CP] Embed Pods Frameworks */ = {
+		38DFD30E3DB68A33CEDED793 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -305,7 +305,7 @@
 		};
 		CAD67AC324924B140060922A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F71D0F7E0F19605C7BB18FAD /* Pods-YouiKalturaPlayerBridge.debug.xcconfig */;
+			baseConfigurationReference = F56BA686F0DB40CF670DAE61 /* Pods-YouiKalturaPlayerBridge.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -327,7 +327,7 @@
 		};
 		CAD67AC424924B140060922A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 35D141F9E111757A560EB8EE /* Pods-YouiKalturaPlayerBridge.release.xcconfig */;
+			baseConfigurationReference = 74D7649B511A61F7D2470F57 /* Pods-YouiKalturaPlayerBridge.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
