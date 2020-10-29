@@ -1,22 +1,19 @@
-
-platform :ios, '10.0'
+platform :tvos, '10.0'
 use_frameworks!
 
 plugin 'cocoapods-binary'
 all_binary!
 
-target 'YouiKalturaPlayerBridge' do
-  
+target 'YouiKalturaPlayerBridgetvOS' do
+
   pod 'KalturaPlayer/OTT', :git => 'https://github.com/kaltura/kaltura-player-ios', :branch => 'KUX-v4.0.0.2'
   pod 'PlayKit'
   pod 'PlayKitUtils'
   pod 'PlayKit/AnalyticsCommon'
   pod 'SwiftyXMLParser'
   pod 'PlayKitKava'
-  pod 'PlayKitProviders' 
+  pod 'PlayKitProviders'
   pod 'PlayKit_IMA'
   pod 'PlayKitYoubora'
 
 end
-
-

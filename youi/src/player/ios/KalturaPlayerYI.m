@@ -26,7 +26,7 @@ static PlaybackContextType getPlaybackContextType(NSString *str) {
     if ([str caseInsensitiveCompare:@"catchup"] == NSOrderedSame) return PlaybackContextTypeCatchup;
     if ([str caseInsensitiveCompare:@"trailer"] == NSOrderedSame) return PlaybackContextTypeTrailer;
     if ([str caseInsensitiveCompare:@"startOver"] == NSOrderedSame) return PlaybackContextTypeStartOver;
-
+    
     return PlaybackContextTypeUnset;
 }
 
@@ -34,7 +34,7 @@ static PlaybackContextType getAssetType(NSString *str) {
     if ([str caseInsensitiveCompare:@"media"] == NSOrderedSame) return AssetTypeMedia;
     if ([str caseInsensitiveCompare:@"recording"] == NSOrderedSame) return AssetTypeEpg;
     if ([str caseInsensitiveCompare:@"epg"] == NSOrderedSame) return AssetTypeEpg;
-
+    
     return AssetTypeUnset;
 }
 
@@ -43,30 +43,30 @@ static IMAConfig* getImaConfig(NSDictionary *dyn_config) {
     config.adTagUrl = dyn_config[@"adTagUrl"];
     config.alwaysStartWithPreroll = [dyn_config[@"alwaysStartWithPreroll"] boolValue];
     config.enableDebugMode = [dyn_config[@"enableDebugMode"] boolValue];
-
+    
     return config;
 }
 
 static PluginConfig* createPluginConfig(NSDictionary *options) {
     NSMutableDictionary *pluginConfigDict = [NSMutableDictionary new];
-
+    
     NSDictionary *dyn_imaConfig = options[@"ima"];
     NSDictionary *dyn_youboraConfig = options[@"youbora"];
-
+    
     IMAConfig *imaConfig = getImaConfig(dyn_imaConfig);
-
+    
     pluginConfigDict[IMAPlugin.pluginName] = imaConfig;
     pluginConfigDict[YouboraPlugin.pluginName] = dyn_youboraConfig;
-
+    
     return [[PluginConfig alloc] initWithConfig:pluginConfigDict];
 }
 
 static void warmupUrl(NSString *str) {
     if (!str) return;
-
+    
     NSURL *url = [NSURL URLWithString:str];
     if (!url) return;
-
+    
     [[NSURLSession.sharedSession dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         // Ignore the response
     }] resume];
@@ -74,7 +74,7 @@ static void warmupUrl(NSString *str) {
 
 static void warmupUrls(NSString *backendUrl, NSArray<NSString*> *urls) {
     warmupUrl(backendUrl);
-
+    
     for (NSString *str in urls) {
         warmupUrl(str);
     }
@@ -96,7 +96,7 @@ static NSDictionary* trackToDict(Track *track, NSString *selectedId) {
 
 static NSDictionary* entryToDict(PKMediaEntry *entry) {
     NSMutableDictionary *dict = [NSMutableDictionary new];
-
+    
     return dict;
 }
 
@@ -130,50 +130,50 @@ static NSDictionary* avMetadataItemToDict(AVMetadataItem *avMetadataItem) {
 
 @implementation KalturaPlayerYI
 
--(instancetype)initWithPartnerId:(UInt32)pid
-                         options:(NSDictionary *)dyn_options
-                      parentView:(UIView *)parentView
-                     eventSender:(EventSender *)sender {
-
+- (instancetype)initWithPartnerId:(UInt32)pid
+                          options:(NSDictionary *)dyn_options
+                       parentView:(UIView *)parentView
+                      eventSender:(EventSender *)sender {
+    
     self = [super init];
     if (!self) return nil;
-
+    
     self.partnerId = pid;
     self.eventSender = sender;
-
+    
     NSString *serverUrl = dyn_options[@"serverUrl"];
     NSLog(@"serverUrl: %@", serverUrl);
-
+    
     PluginConfig *pc = createPluginConfig(dyn_options[@"plugins"]);
-
-    [KalturaOTTPlayer setupWithPartnerId:pid serverURL:serverUrl referrer: dyn_options[@"referrer"]];
-
+    
+    [KalturaOTTPlayer setupWithPartnerId:pid serverURL:serverUrl referrer:dyn_options[@"referrer"]];
+    
     PlayerOptions *options = [PlayerOptions new];
     options.pluginConfig = pc;
     options.preload = [dyn_options[@"preload"] boolValue];
     options.autoPlay = [dyn_options[@"autoplay"] boolValue];
     options.ks = dyn_options[@"ks"];
-
+    
     warmupUrls(serverUrl, dyn_options[@"warmupUrls"]);
-
+    
     self.playerOptions = options;
-
+    
     KalturaOTTPlayer *player = [[KalturaOTTPlayer alloc] initWithOptions:options];
-
+    
     if (dyn_options[@"allowFairPlayOnExternalScreens"] != nil) {
         player.settings.allowFairPlayOnExternalScreens = [dyn_options[@"allowFairPlayOnExternalScreens"] boolValue];
     }
-
+    
     if (dyn_options[@"shouldPlayImmediately"] != nil) {
         player.settings.shouldPlayImmediately = [dyn_options[@"shouldPlayImmediately"] boolValue];
     }
-
+    
     NSDictionary *trackSelectionDictionary = dyn_options[@"trackSelection"];
     if (trackSelectionDictionary != nil) {
         if (trackSelectionDictionary[@"textLanguage"] != nil && trackSelectionDictionary[@"textMode"] != nil) {
             NSString *textMode = trackSelectionDictionary[@"textMode"];
             NSInteger textModeType = TrackSelectionModeOff;
-
+            
             if ([textMode isEqualToString:@"OFF"]) {
                 textModeType = TrackSelectionModeOff;
             } else if ([textMode isEqualToString:@"AUTO"]) {
@@ -181,15 +181,15 @@ static NSDictionary* avMetadataItemToDict(AVMetadataItem *avMetadataItem) {
             } else if ([textMode isEqualToString:@"SELECTION"]) {
                 textModeType = TrackSelectionModeSelection;
             }
-
+            
             [player.settings.trackSelection setTextSelectionMode: textModeType];
             [player.settings.trackSelection setTextSelectionLanguage: trackSelectionDictionary[@"textLanguage"]];
         }
-
+        
         if (trackSelectionDictionary[@"audioMode"] != nil && trackSelectionDictionary[@"audioLanguage"] != nil) {
             NSString *audioMode = trackSelectionDictionary[@"audioMode"];
             NSInteger audioModeType = TrackSelectionModeOff;
-
+            
             if ([audioMode isEqualToString:@"OFF"]) {
                 audioModeType = TrackSelectionModeOff;
             } else if ([audioMode isEqualToString:@"AUTO"]) {
@@ -197,51 +197,51 @@ static NSDictionary* avMetadataItemToDict(AVMetadataItem *avMetadataItem) {
             } else if ([audioMode isEqualToString:@"SELECTION"]) {
                 audioModeType = TrackSelectionModeSelection;
             }
-
+            
             [player.settings.trackSelection setAudioSelectionMode: audioModeType];
             [player.settings.trackSelection setAudioSelectionLanguage: trackSelectionDictionary[@"audioLanguage"]];
         }
     }
-
+    
     NSDictionary *abrSettingsDictionary = dyn_options[@"abrSettings"];
     if (abrSettingsDictionary != nil) {
         if (abrSettingsDictionary[@"maxVideoBitrate"] != nil) {
             [player.settings.network setPreferredPeakBitRate: [abrSettingsDictionary[@"maxVideoBitrate"] doubleValue]];
         }
     }
-
+    
     NSDictionary *networkDictionary = dyn_options[@"networkSettings"];
     if (networkDictionary != nil) {
         if (networkDictionary[@"autoBuffer"] != nil) {
             [player.settings.network setAutoBuffer: [networkDictionary[@"autoBuffer"] boolValue]];
         }
-
+        
         if (networkDictionary[@"preferredForwardBufferDuration"] != nil) {
             [player.settings.network setPreferredForwardBufferDuration: [networkDictionary[@"preferredForwardBufferDuration"] doubleValue]];
         }
-
+        
         if (networkDictionary[@"automaticallyWaitsToMinimizeStalling"] != nil) {
             [player.settings.network setAutomaticallyWaitsToMinimizeStalling: [networkDictionary[@"automaticallyWaitsToMinimizeStalling"] boolValue]];
         }
     }
-
+    
     KalturaPlayerView *playerView = [[KalturaPlayerView alloc] initWithFrame:parentView.bounds];
     playerView.contentMode = UIViewContentModeScaleAspectFit;
     playerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [parentView insertSubview:playerView atIndex:0];
     player.view = playerView;
-
+    
     self.kalturaPlayer = player;
-
+    
     [self observeAllEvents];
-
+    
     return self;
 }
 
--(void)observeAllEvents {
+- (void)observeAllEvents {
     __weak EventSender *weakSender = self.eventSender;
     __weak KalturaPlayer *weakPlayer = self.kalturaPlayer;
-
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.canPlay block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"canPlay" payload:@{}];
     }];
@@ -257,7 +257,7 @@ static NSDictionary* avMetadataItemToDict(AVMetadataItem *avMetadataItem) {
     [self.kalturaPlayer addObserver:self event:PlayerEvent.stopped block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"stopped" payload:@{}];
     }];
-
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.durationChanged block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"durationChanged" payload:@{@"duration": event.duration}];
     }];
@@ -265,7 +265,7 @@ static NSDictionary* avMetadataItemToDict(AVMetadataItem *avMetadataItem) {
         [weakSender sendEvent:@"timeUpdate" payload:@{@"position": event.currentTime}];
     }];
     [self.kalturaPlayer addObserver:self event:PlayerEvent.tracksAvailable block:^(PKEvent * _Nonnull event) {
-
+        
         NSMutableArray *audioTracks = [NSMutableArray array];
         NSString *selectedAudioTrackId = [weakPlayer currentAudioTrack];
         for (Track *track in event.tracks.audioTracks) {
@@ -276,7 +276,7 @@ static NSDictionary* avMetadataItemToDict(AVMetadataItem *avMetadataItem) {
         for (Track *track in event.tracks.textTracks) {
             [textTracks addObject:trackToDict(track, selectedTextTrackId)];
         }
-
+        
         [weakSender sendEvent:@"tracksAvailable" payload:@{@"audio": audioTracks.copy, @"text": textTracks.copy}];
     }];
     [self.kalturaPlayer addObserver:self event:PlayerEvent.videoTrackChanged block:^(PKEvent * _Nonnull event) {
@@ -325,7 +325,7 @@ static NSDictionary* avMetadataItemToDict(AVMetadataItem *avMetadataItem) {
     [self.kalturaPlayer addObserver:self event:PlayerEvent.seeked block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"seeked" payload:@{}];
     }];
-
+    
     [self.kalturaPlayer addObserver:self event:AdEvent.adDidProgressToTime block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"adProgress" payload:@{@"currentAdPosition": event.adMediaTime}];
     }];
@@ -377,19 +377,22 @@ static NSDictionary* avMetadataItemToDict(AVMetadataItem *avMetadataItem) {
     }];
 }
 
--(void)setMedia:(NSURL *)contentUrl {
-    PKMediaSource* source = [[PKMediaSource alloc] init:@"1234" contentUrl:contentUrl mimeType:nil drmData:nil mediaFormat:MediaFormatHls];
-    NSArray<PKMediaSource*>* sources = [[NSArray alloc] initWithObjects:source, nil];
+- (void)setMedia:(NSURL *)contentUrl {
+    PKMediaSource *source = [[PKMediaSource alloc] init:@"1234"
+                                             contentUrl:contentUrl
+                                               mimeType:nil
+                                                drmData:nil
+                                            mediaFormat:MediaFormatHls];
+    NSArray<PKMediaSource*> *sources = [[NSArray alloc] initWithObjects:source, nil];
     // setup media entry
     PKMediaEntry *mediaEntry = [[PKMediaEntry alloc] init:@"1234" sources:sources duration:-1];
 
     __weak EventSender *weakSender = self.eventSender;
     [self.kalturaPlayer setMedia:mediaEntry options:nil];
     [weakSender sendEvent:@"loadMediaSuccess" payload:nil];
-
 }
 
--(void)loadMedia:(NSString *)assetId options:(NSDictionary *)dyn_options {
+- (void)loadMedia:(NSString *)assetId options:(NSDictionary *)dyn_options {
     OTTMediaOptions *options = [OTTMediaOptions new];
     options.assetId = assetId;
     options.ks = dyn_options[@"ks"];
@@ -398,18 +401,17 @@ static NSDictionary* avMetadataItemToDict(AVMetadataItem *avMetadataItem) {
     options.networkProtocol = dyn_options[@"protocol"];
     options.playbackContextType = getPlaybackContextType(dyn_options[@"playbackContextType"]);
     options.startTime = [dyn_options[@"startPosition"] doubleValue];
-
-
+    
     id youboraConfig = dyn_options[@"plugins"][@"youbora"];
     if (youboraConfig) {
         [self.kalturaPlayer updatePluginConfigWithPluginName:YouboraPlugin.pluginName config:youboraConfig];
     }
-
+    
     id imaConfig = dyn_options[@"plugins"][@"ima"];
     if (imaConfig) {
         [self.kalturaPlayer updatePluginConfigWithPluginName:IMAPlugin.pluginName config:getImaConfig(imaConfig)];
     }
-
+    
     __weak EventSender *weakSender = self.eventSender;
     [self.kalturaPlayer loadMediaWithOptions:options callback:^(NSError * _Nullable error) {
         if (error) {
@@ -421,73 +423,73 @@ static NSDictionary* avMetadataItemToDict(AVMetadataItem *avMetadataItem) {
             [weakSender sendEvent:@"loadMediaSuccess" payload:nil];
         }
     }];
-
+    
     // Player will automatically prepare and play on success
 }
 
--(void)prepare {
+- (void)prepare {
     [self.kalturaPlayer prepare];
 }
 
--(void)play {
+- (void)play {
     [self.kalturaPlayer play];
 }
 
--(void)pause {
+- (void)pause {
     [self.kalturaPlayer pause];
 }
 
--(void)replay {
+- (void)replay {
     [self.kalturaPlayer replay];
 }
 
--(void)destroy {
+- (void)destroy {
     [self.kalturaPlayer removeObserver:self events:PlayerEvent.allEventTypes];
     [self.kalturaPlayer removeObserver:self events:AdEvent.allEventTypes];
     [self.kalturaPlayer destroy];
 }
 
--(void)stop {
+- (void)stop {
     [self.kalturaPlayer stop];
 }
 
--(void)seekTo:(NSTimeInterval)position {
+- (void)seekTo:(NSTimeInterval)position {
     [self.kalturaPlayer seekTo:position];
 }
 
--(void)selectTrackWithTrackId:(NSString *)uniqueId {
+- (void)selectTrackWithTrackId:(NSString *)uniqueId {
     [self.kalturaPlayer selectTrackWithTrackId:uniqueId];
 }
 
--(void)changePlaybackRate:(float)playbackRate {
+- (void)changePlaybackRate:(float)playbackRate {
     self.kalturaPlayer.rate = playbackRate;
 }
 
--(void)setAutoplay:(bool)autoplay {
+- (void)setAutoplay:(bool)autoplay {
     self.playerOptions.autoPlay = autoplay;
     [self.kalturaPlayer updatePlayerOptions:self.playerOptions];
 }
 
--(void)setKS:(NSString *)ks {
+- (void)setKS:(NSString *)ks {
     self.playerOptions.ks = ks;
     [self.kalturaPlayer updatePlayerOptions:self.playerOptions];
 }
 
--(void)setZIndex:(float)index {
+- (void)setZIndex:(float)index {
     self.kalturaPlayer.view.layer.zPosition = index;
 }
 
--(void)setFrame:(CGRect)frame {
+- (void)setFrame:(CGRect)frame {
     self.kalturaPlayer.view.frame = frame;
 }
 
--(void)setVolume:(float)volume {
+- (void)setVolume:(float)volume {
     //[self.kalturaPlayer setVolume:volume];
 }
 
-+(void)setLogLevel:(NSString *)logLevel {
++ (void)setLogLevel:(NSString *)logLevel {
     PKLogLevel level = PKLogLevelError;
-
+    
     if ([logLevel  isEqual: @"verbose"]) {
         level = PKLogLevelVerbose;
     } else if ([logLevel  isEqual: @"debug"]) {
@@ -501,7 +503,7 @@ static NSDictionary* avMetadataItemToDict(AVMetadataItem *avMetadataItem) {
     } else {
         NSLog(@"*** Unknown log level: %@", logLevel);
     }
-
+    
     PlayKitManager.logLevel = level;
 }
 
