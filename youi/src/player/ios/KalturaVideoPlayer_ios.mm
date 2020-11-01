@@ -376,6 +376,11 @@ bool KalturaVideoPlayerPriv::IsMuted_() const
 
 void KalturaVideoPlayerPriv::Mute_(bool bMute)
 {
+    if (bMute) {
+        [m_player setVolume:0];
+    } else {
+        [m_player setVolume:1];
+    }
 }
 
 void KalturaVideoPlayerPriv::DisableClosedCaptions_()

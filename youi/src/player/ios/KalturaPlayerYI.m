@@ -482,7 +482,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
 }
 
 - (void)setVolume:(float)volume {
-    //[self.kalturaPlayer setVolume:volume];
+    [self.kalturaPlayer setVolume:volume];
 }
 
 + (void)setLogLevel:(NSString *)logLevel {
