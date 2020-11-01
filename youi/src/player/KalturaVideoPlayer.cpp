@@ -448,7 +448,9 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(adStartedEvent) == 0)
     {
         YI_LOGD(TAG, "adStartedEvent");
-        m_pStateManager->TransitionToPlaybackPlaying();
+        if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready) {
+            m_pStateManager->TransitionToPlaybackPlaying();
+        }
     }
     else if (name.Compare(adCompletedEvent) == 0)
     {
