@@ -118,20 +118,24 @@ static NSString* nsstring(std::string str) {
     return [NSString stringWithUTF8String:str.c_str()];
 }
 
+#pragma mark -
+
 @implementation EventSender
 
-+(instancetype)newWithWrapper:(KalturaVideoPlayerPriv*)wrapper {
-    EventSender* sender = [EventSender new];
++ (instancetype)newWithWrapper:(KalturaVideoPlayerPriv *)wrapper {
+    EventSender *sender = [EventSender new];
     sender->wrapper = wrapper;
     return sender;
 }
 
--(void)sendEvent:(NSString*)name payload:(id _Nullable)payload {
+- (void)sendEvent:(NSString *)name payload:(id _Nullable)payload {
     folly::dynamic dynPayload = convertIdToFollyDynamic(payload);
     reinterpret_cast<KalturaVideoPlayerPriv*>(wrapper)->Emit_(name.UTF8String, dynPayload);
 }
 
 @end
+
+#pragma mark - KalturaVideoPlayerPriv
 
 KalturaVideoPlayerPriv::KalturaVideoPlayerPriv(KalturaVideoPlayer *pPub)
 : m_pPub(pPub)
@@ -155,12 +159,14 @@ void KalturaVideoPlayerPriv::Setup_(int32_t partnerId, folly::dynamic options)
         return;
     }
 
-    UIView* parentView = YiRootViewController.sharedInstance.view;
+    UIView *parentView = YiRootViewController.sharedInstance.view;
     parentView.backgroundColor = UIColor.clearColor;
 
-    EventSender* sender = [EventSender newWithWrapper:this];
-    m_player = [[KalturaPlayerYI alloc] initWithPartnerId:partnerId options:convertFollyDynamicToId(options)
-                                               parentView:parentView eventSender:sender];
+    EventSender *sender = [EventSender newWithWrapper:this];
+    m_player = [[KalturaPlayerYI alloc] initWithPartnerId:partnerId
+                                                  options:convertFollyDynamicToId(options)
+                                               parentView:parentView
+                                              eventSender:sender];
 }
 
 void KalturaVideoPlayerPriv::LoadMedia_(const CYIString &assetId, folly::dynamic options)
