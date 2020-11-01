@@ -371,11 +371,34 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     OTTMediaOptions *options = [OTTMediaOptions new];
     options.assetId = assetId;
     options.ks = dyn_options[@"ks"];
-    options.formats = @[dyn_options[@"format"]];
     options.assetType = getAssetType(dyn_options[@"assetType"]);
-    options.networkProtocol = dyn_options[@"protocol"];
     options.playbackContextType = getPlaybackContextType(dyn_options[@"playbackContextType"]);
     options.startTime = [dyn_options[@"startPosition"] doubleValue];
+    
+    NSString *networkProtocol = dyn_options[@"protocol"];
+    if (networkProtocol) {
+        options.networkProtocol = networkProtocol;
+    }
+    
+    NSString *format = dyn_options[@"format"];
+    if (format) {
+        options.formats = @[format];
+    }
+    
+    NSString *urlType = dyn_options[@"urlType"];
+    if (urlType) {
+        options.urlType = urlType;
+    }
+    
+    NSString *assetFileId = dyn_options[@"fileId"];
+    if (assetFileId) {
+        options.fileIds = @[assetFileId];
+    }
+    
+    NSString *streamerType = dyn_options[@"streamerType"];
+    if (streamerType) {
+        options.streamerType = streamerType;
+    }
     
     id youboraConfig = dyn_options[@"plugins"][@"youbora"];
     if (youboraConfig) {
