@@ -133,6 +133,11 @@ void KalturaVideoPlayerPriv::LoadMedia_(const CYIString &assetId, folly::dynamic
         return;
     }
 
+    if (m_pPub->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready)
+    {
+        m_pPub->m_pStateManager->TransitionToMediaUnloaded();
+    }
+
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
 
     jstring jAssetId = GetEnv_KalturaPlayer()->NewStringUTF(assetId.GetData());
@@ -149,6 +154,11 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
   if (!playerWrapperBridgeClass)
     {
         return;
+    }
+
+    if (m_pPub->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready)
+    {
+        m_pPub->m_pStateManager->TransitionToMediaUnloaded();
     }
 
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
