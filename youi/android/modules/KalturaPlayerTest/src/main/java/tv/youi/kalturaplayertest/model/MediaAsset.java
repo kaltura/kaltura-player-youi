@@ -19,6 +19,8 @@ public class MediaAsset {
 
     private Boolean useApiCaptions = false; // ovp
     private String urlType;
+    private String streamerType;
+
     private String referrer;
     private Long startPosition;
     private Plugins plugins;
@@ -138,8 +140,25 @@ public class MediaAsset {
         }
         return null;
     }
+    private APIDefines.KalturaStreamerType getStreamerType() {
+        if (streamerType == null) {
+            return null;
+        }
+        if (APIDefines.KalturaStreamerType.Mpegdash.value.toLowerCase().equals(streamerType.toLowerCase())) {
+            return APIDefines.KalturaStreamerType.Mpegdash;
+        } else if (APIDefines.KalturaStreamerType.Applehttp.value.toLowerCase().equals(streamerType.toLowerCase())) {
+            return APIDefines.KalturaStreamerType.Applehttp;
+        } else if (APIDefines.KalturaStreamerType.Url.value.toLowerCase().equals(streamerType.toLowerCase())) {
+            return APIDefines.KalturaStreamerType.Url;
+        } else if (APIDefines.KalturaStreamerType.Smothstreaming.value.toLowerCase().equals(streamerType.toLowerCase())) {
+            return APIDefines.KalturaStreamerType.Smothstreaming;
+        } else if (APIDefines.KalturaStreamerType.None.value.toLowerCase().equals(streamerType.toLowerCase())) {
+            return APIDefines.KalturaStreamerType.None;
+        }
+        return null;
+    }
 
-    public OTTMediaOptions buildOttMediaOptions(String assetId) {
+    public OTTMediaOptions buildOttMediaOptions(String assetId, String playerKS) {
 
         OTTMediaAsset ottMediaAsset = new OTTMediaAsset();
         ottMediaAsset.setAssetId(assetId);
@@ -147,9 +166,10 @@ public class MediaAsset {
         ottMediaAsset.setContextType(getPlaybackContextType());
         ottMediaAsset.setAssetReferenceType(getAssetReferenceType());
         ottMediaAsset.setProtocol(getProtocol());
-        ottMediaAsset.setKs(ks);
+        ottMediaAsset.setKs(ks != null ? ks : playerKS);
         ottMediaAsset.setReferrer(referrer);
         ottMediaAsset.setUrlType(getUrlType());
+        ottMediaAsset.setStreamerType(getStreamerType());
         if (format != null) {
             ottMediaAsset.setFormats(Collections.singletonList(format));
         }
