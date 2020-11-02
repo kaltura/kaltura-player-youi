@@ -431,7 +431,7 @@ public class PKPlayerWrapper {
             if (localPlaybackEntry != null) {
                 player.setMedia(localPlaybackEntry);
             } else {
-                player.loadMedia(mediaAsset.buildOttMediaOptions(assetId), (entry, error) -> {
+                player.loadMedia(mediaAsset.buildOttMediaOptions(assetId, player.getKS()), (entry, error) -> {
                     if (error != null) {
                         log.d("ott media load error: " + error);
                         //code, extra, message, name
