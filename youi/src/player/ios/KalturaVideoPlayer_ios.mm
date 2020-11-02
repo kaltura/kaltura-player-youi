@@ -173,16 +173,33 @@ void KalturaVideoPlayerPriv::LoadMedia_(const CYIString &assetId, folly::dynamic
 {
     NSLog(@"*** LoadMedia_(%s, %s)", assetId.GetData(), JSONFromDynamic(options).c_str());
 
+    if (m_pPub->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready)
+    {
+        m_pPub->m_pStateManager->TransitionToMediaUnloaded();
+    }
+    
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
     [m_player loadMedia:assetId.ToNSString() options:convertFollyDynamicToId(options)];
 }
 
 void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &videoURI)
 {
+    if (m_pPub->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready)
+    {
+        m_pPub->m_pStateManager->TransitionToMediaUnloaded();
+    }
+    
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
     NSURL *url = [NSURL URLWithString:videoURI.ToString().ToNSString()];
     NSLog(@"*** SetMedia_(%s)", videoURI.ToString().ToStdString().c_str());
     [m_player setMedia:url];
+}
+
+void KalturaVideoPlayerPriv::SetZIndex_(const float zIndex)
+{
+    NSLog(@"*** SetFZIndex_ %f", zIndex);
+
+    [m_player setZIndex:zIndex];
 }
 
 void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic &content)

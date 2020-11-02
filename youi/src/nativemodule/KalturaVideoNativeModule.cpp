@@ -20,11 +20,15 @@ YI_RN_REGISTER_MODULE(KalturaVideoNativeModule);
 
 static const std::string KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED = "KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED";
 static const std::string KALTURA_VOLUME_CHANGED = "KALTURA_VOLUME_CHANGED";
+static const std::string KALTURA_AD_CONTENT_PAUSE_REQUESTED = "KALTURA_AD_CONTENT_PAUSE_REQUESTED";
+static const std::string KALTURA_AD_CONTENT_RESUME_REQUESTED = "KALTURA_AD_CONTENT_RESUME_REQUESTED";
 
 KalturaVideoNativeModule::KalturaVideoNativeModule()
 {
     SetSupportedEvents
     ({
+        KALTURA_AD_CONTENT_PAUSE_REQUESTED,
+        KALTURA_AD_CONTENT_RESUME_REQUESTED,
         KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED,
         KALTURA_VOLUME_CHANGED
     });
@@ -47,6 +51,14 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
         if (pShadowVideo)
         {
             m_pPlayer = dynamic_cast<KalturaVideoPlayer *>(&pShadowVideo->GetPlayer());
+            
+            m_pPlayer->AdContentPauseRequested.Connect(*this, [this]() {
+                this->EmitEventPriv(KALTURA_AD_CONTENT_PAUSE_REQUESTED, nullptr);
+            });
+
+            m_pPlayer->AdContentResumeRequested.Connect(*this, [this]() {
+                this->EmitEventPriv(KALTURA_AD_CONTENT_RESUME_REQUESTED, nullptr);
+            });
             
             m_pPlayer->AvailableVideoTracksChanged.Connect(*this, [this](std::vector<KalturaVideoPlayer::VideoTrackInfo> tracks) {
                 std::vector<folly::dynamic> dynamicTracks;
@@ -97,5 +109,13 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SelectVideoTrack)(uint32_t 
     if (m_pPlayer)
     {
         m_pPlayer->SelectVideoTrack(trackId);
+    }
+}
+
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SetZIndex)(float zIndex)
+{
+    if (m_pPlayer)
+    {
+        m_pPlayer->SetZIndex(zIndex);
     }
 }

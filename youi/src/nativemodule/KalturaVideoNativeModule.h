@@ -20,7 +20,8 @@ public:
     YI_RN_EXPORT_METHOD(Setup)(int32_t partnerId, folly::dynamic options);
     YI_RN_EXPORT_METHOD(LoadMedia)(std::string assetId, folly::dynamic options);
     YI_RN_EXPORT_METHOD(SetMedia)(const CYIUrl &videoURI);
-        
+    YI_RN_EXPORT_METHOD(SetZIndex)(float zIndex);
+
     YI_RN_EXPORT_METHOD(SelectVideoTrack)(uint32_t trackId);
 
   private:    

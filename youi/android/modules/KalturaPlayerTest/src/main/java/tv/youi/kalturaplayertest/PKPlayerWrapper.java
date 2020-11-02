@@ -20,6 +20,7 @@ import com.kaltura.playkit.PlayerEvent;
 import com.kaltura.playkit.player.LoadControlBuffers;
 import com.kaltura.playkit.player.PKHttpClientManager;
 import com.kaltura.playkit.player.PKTracks;
+import com.kaltura.playkit.player.metadata.PKMetadata;
 import com.kaltura.playkit.plugins.ads.AdCuePoints;
 import com.kaltura.playkit.plugins.ads.AdEvent;
 import com.kaltura.playkit.plugins.ima.IMAConfig;
@@ -70,6 +71,11 @@ public class PKPlayerWrapper {
     private static CYIActivity.LifecycleListener lifecycleListener;
     private static Handler mainHandler = new Handler(Looper.getMainLooper());
     private static Class self = PKPlayerWrapper.class;
+
+    private static int m_playerViewWidth;
+    private static int m_playerViewHeight;
+    private static int m_playerViewPosX;
+    private static int m_playerViewPosY;
 
     private static OnEventListener onEventListener;
 
@@ -234,6 +240,11 @@ public class PKPlayerWrapper {
             return;
         }
 
+        player.addListener(self, PlayerEvent.loadedMetadata, event -> {
+            setFrame(m_playerViewWidth, m_playerViewHeight, m_playerViewPosX, m_playerViewPosY);
+            //sendPlayerEvent("loadedMetadata");
+        });
+
         player.addListener(self, PlayerEvent.canPlay, event -> sendPlayerEvent("canPlay"));
         player.addListener(self, PlayerEvent.playing, event -> sendPlayerEvent("playing"));
         player.addListener(self, PlayerEvent.play, event -> sendPlayerEvent("play"));
@@ -284,8 +295,19 @@ public class PKPlayerWrapper {
             }
         });
 
+        player.addListener(self, PlayerEvent.metadataAvailable, event -> {
+            log.d("Received:PlayerEvent:" + event.eventType().name());
+            Gson gson = new Gson();
+            for (PKMetadata pkMetadata : event.metadataList){
+                sendPlayerEvent("timedMetadata", gson.toJson(pkMetadata));
+            }
+        });
         player.addListener(self, AdEvent.adProgress, event -> sendPlayerEvent("adProgress", "{ \"currentAdPosition\": " + (event.currentAdPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
-        player.addListener(self, AdEvent.cuepointsChanged, event -> sendPlayerEvent("adCuepointsChanged", getCuePointsJson(event.cuePoints)));
+        player.addListener(self, AdEvent.cuepointsChanged, event -> {
+            setFrame(m_playerViewWidth, m_playerViewHeight, m_playerViewPosX, m_playerViewPosY);
+            sendPlayerEvent("adCuepointsChanged", getCuePointsJson(event.cuePoints));
+        });
+
         player.addListener(self, AdEvent.started, event -> sendPlayerEvent("adStarted"));
         player.addListener(self, AdEvent.completed, event -> sendPlayerEvent("adCompleted"));
         player.addListener(self, AdEvent.paused, event -> sendPlayerEvent("adPaused"));
@@ -398,8 +420,8 @@ public class PKPlayerWrapper {
 
         if (!initialized) {
             onEventListener = () -> {
-                    log.d("delayed loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
-                    loadMediaInUIThread(assetId, jsonOptionsStr);
+                log.d("delayed loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
+                loadMediaInUIThread(assetId, jsonOptionsStr);
 
             };
             return;
@@ -457,8 +479,8 @@ public class PKPlayerWrapper {
 
         if (!initialized) {
             onEventListener = () -> {
-                    log.d("delayed setMedia contentUrl: " + contentUrl);
-                    setMediaInUIThread(contentUrl);
+                log.d("delayed setMedia contentUrl: " + contentUrl);
+                setMediaInUIThread(contentUrl);
             };
             return;
         }
@@ -655,6 +677,11 @@ public class PKPlayerWrapper {
             }
         });
 
+        m_playerViewWidth = 0;
+        m_playerViewHeight = 0;
+        m_playerViewPosX = 0;
+        m_playerViewPosY = 0;
+
         onEventListener = null;
         activity = null;
         mainHandler = null;
@@ -692,11 +719,16 @@ public class PKPlayerWrapper {
 
     @SuppressWarnings("unused") // Called from C++
     public static void setFrame(int playerViewWidth, int playerViewHeight, int playerViewPosX, int playerViewPosY) {
-
         log.d("setFrame " + playerViewWidth + "/" + playerViewHeight + " " + playerViewPosX + "/" + playerViewPosY);
 
+        m_playerViewWidth = playerViewWidth;
+        m_playerViewHeight = playerViewHeight;
+        m_playerViewPosX = playerViewPosX;
+        m_playerViewPosY = playerViewPosY;
         if (player != null && player.getPlayerView() != null) {
             runOnUiThread(() -> {
+                log.d("setFrame UI Thread = " + playerViewWidth + "/" + playerViewHeight + " " + playerViewPosX + "/" + playerViewPosY);
+
                 ViewGroup.LayoutParams layoutParams = player.getPlayerView().getLayoutParams();
 
                 if (layoutParams != null) {

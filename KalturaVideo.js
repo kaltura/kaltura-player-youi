@@ -18,6 +18,18 @@ export default class KalturaVideo extends React.Component {
     // Must be called before any other method on the native module
     NativeModules.KalturaVideo.ConnectToPlayer(findNodeHandle(this.videoRef.current));
 
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_CONTENT_PAUSE_REQUESTED', () => {
+      if (this.props.onAdContentPauseRequested) {
+        this.props.onAdContentPauseRequested();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_CONTENT_RESUME_REQUESTED', () => {
+      if (this.props.onAdContentResumeRequested) {
+        this.props.onAdContentResumeRequested();
+      }
+    })
+
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_VOLUME_CHANGED', (event) => {
       if (this.props.onVolumeChanged) {
         this.props.onVolumeChanged(event.volume);
@@ -31,6 +43,11 @@ export default class KalturaVideo extends React.Component {
     })
 
     NativeModules.KalturaVideo.Setup(this.props.ottPartnerId, this.props.initOptions)
+    
+    // Custom prop init
+    if (this.props.zIndex) {
+      NativeModules.KalturaVideo.SetZIndex(this.props.zIndex)
+    }
     
     if (this.props.media) {
       this.loadMedia(this.props.media.id, this.props.media.asset);
@@ -49,6 +66,18 @@ export default class KalturaVideo extends React.Component {
     if (this.props.selectedVideoTrack !== prevProps.selectedVideoTrack) {
       NativeModules.KalturaVideo.SelectVideoTrack(this.props.selectedVideoTrack);
     }
+
+    if (this.props.zIndex !== prevProps.zIndex) {
+      NativeModules.KalturaVideo.SetZIndex(this.props.zIndex)
+    }
+
+    if (this.props.media !== prevProps.media) {
+      this.loadMedia(this.props.media.id, this.props.media.asset);
+    }
+
+    if (this.props.source !== prevProps.source) {
+      this.setMedia(this.props.source.uri);
+    }
   }
 
   render() {
@@ -64,6 +93,10 @@ export default class KalturaVideo extends React.Component {
     NativeModules.KalturaVideo.SetMedia(url)
   }
 
+  setZIndex = (zIndex) => {
+    NativeModules.KalturaVideo.SetZIndex(zIndex)
+  }
+  
   // Passthrough functions
   play = () => {
     this.videoRef.current.play()
