@@ -20,7 +20,6 @@ public class MediaAsset {
     private Boolean useApiCaptions = false; // ovp
     private String urlType;
     private String streamerType;
-
     private String referrer;
     private Long startPosition;
     private Plugins plugins;
