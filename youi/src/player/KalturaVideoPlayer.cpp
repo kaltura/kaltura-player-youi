@@ -26,6 +26,7 @@ static const char *textTrackChangedEvent = "textTrackChanged";
 static const char *seekingEvent = "seeking";
 static const char *seekedEvent = "seeked";
 static const char *volumeChangedEvent = "volumeChanged";
+static const char *timedMetadataEvent = "timedMetadata";
 static const char *errorEvent = "error";
 static const char *adProgressEvent = "adProgress";
 static const char *adCuepointsChangedEvent = "adCuepointsChanged";
@@ -203,6 +204,11 @@ void KalturaVideoPlayer::Mute_(bool bMute)
 void KalturaVideoPlayer::DisableClosedCaptions_()
 {
     m_pPriv->DisableClosedCaptions_();
+}
+
+CYIAbstractVideoPlayer::TimedMetadataInterface *KalturaVideoPlayer::GetTimedMetadataInterface_() const
+{
+    return const_cast<KalturaVideoPlayer*>(this);
 }
 
 void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic content)
@@ -407,6 +413,69 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         YI_LOGD(TAG, "volumeChangedEvent");
         VolumeChanged.Emit(content);
     }
+    else if (name.Compare(timedMetadataEvent) == 0)
+    {
+        YI_LOGD(TAG, "timedMetadataEvent");
+        TimedMetadata timedMetadata = TimedMetadata();
+
+        if (!content["value"].isNull()) {
+            const CYIString metadataValue = content["value"].asString();
+            timedMetadata.value = content["value"].asString();
+            YI_LOGD(TAG, "timedMetadata value = %s", metadataValue.GetData());
+
+        }
+
+        if (!content["id"].isNull()) {
+            timedMetadata.identifier = content["id"].asString();
+            YI_LOGD(TAG, "timedMetadata identifier = %s", timedMetadata.identifier.GetData());
+
+        } else if (!content["key"].isNull()) {
+            timedMetadata.identifier = content["key"].asString();
+            YI_LOGD(TAG, "timedMetadata identifier = %s", timedMetadata.identifier.GetData());
+        }
+
+        if (!content["duration"].isNull()) {
+            const CYIString duration = content["duration"].asString();
+            YI_LOGD(TAG, "timedMetadata duration = %s", duration.GetData());
+
+            if (duration != "{INVALID}") {
+               //timedMetadata.duration = std::chrono::microseconds::max();
+            }
+        }
+
+        if (!content["startDate"].isNull()) {
+            //timedMetadata.timestamp = std::chrono::microseconds((uint64_t)(CMTimeGetSeconds(item.time) * 1000000));
+        }
+
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::ID3PrivateFrameOwner] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageId] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageDuration] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessagePTSDelta] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageTimescale] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageValue] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageMessageData] = "";
+//        timedMetadata.additionalData[CYIAbstractVideoPlayer::TimedMetadataAdditionalDataKeys::EventMessageSchemeId] = "";
+
+
+        MetadataAvailable.Emit(timedMetadata);
+
+        //android
+        //                {"description":"","id":"TXXX","value":"google_2886880465115528457"}
+        //ios
+        //                identifier=id3/TXXX,
+        //                keySpace=org.id3,
+        //                key class = NSTaggedPointerString,
+        //                key=TXXX,
+        //                commonKey=(null),
+        //                extendedLanguageTag=(null),
+        //                dataType=(null),
+        //                time={294000/4410000 = 0.067},
+        //                duration={INVALID},ssr
+        //                startDate=(null),
+        //                extras={\n    info = \"\";\n}, value class=__NSCFString,
+        //                value=google_2886880465115528457
+
+    }
     else if (name.Compare(errorEvent) == 0)
     {
         YI_LOGD(TAG, "errorEvent - %s", JSONFromDynamic(content).c_str());
@@ -416,12 +485,15 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         error.message = JSONFromDynamic(content).c_str();
 
         CYIString errorType = content["errorType"].asString();
-        CYIString errorSeverity = content["errorSeverity"].asString();
         error.nativePlayerErrorCode = errorType;
-
-        ErrorOccurred.Emit(error);
-        if (errorSeverity == "fatal") {
-            YI_LOGD(TAG, "errorEvent fatal");
+        if (!content["errorSeverity"].isNull()) {
+            CYIString errorSeverity = content["errorSeverity"].asString();
+            ErrorOccurred.Emit(error);
+            if (errorSeverity == "fatal") {
+                YI_LOGD(TAG, "errorEvent fatal");
+                m_pStateManager->TransitionToMediaUnloaded();
+            }
+        } else {
             m_pStateManager->TransitionToMediaUnloaded();
         }
     }

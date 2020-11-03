@@ -33,7 +33,7 @@ export default class YiReactApp extends Component {
       this.setState(
         {
           sources: {
-            uri: "https://qa-apache-php7.dev.kaltura.com/p/1091/sp/109100/playManifest/entryId/0_wifqaipd/protocol/https/format/applehttp/flavorIds/0_h65mfj7f,0_3flmvnwc,0_m131krws,0_5407xm9j,0_xcrwyk2n/a.m3u8"
+            uri: "https://pubads.g.doubleclick.net/ondemand/hls/content/2528370/vid/tears-of-steel/GRQ/streams/4d4a2b0d-baed-4c39-932b-02d91bbcfdd9/master.m3u8"
           }
         }
       );
@@ -64,11 +64,11 @@ export default class YiReactApp extends Component {
             <KalturaVideo
               ottPartnerId={OttPartnerId}
               initOptions={initOptions}
-              //source={this.state.sources}
-              media={{
-                id: OttMediaId,
-                asset: asset
-              }}
+              source={this.state.sources}
+              // media={{
+              //   id: OttMediaId,
+              //   asset: asset
+              // }}
               muted={this.state.isMuted}
               style={styles.video}
               ref={this.videoRef}
@@ -98,6 +98,10 @@ export default class YiReactApp extends Component {
               onErrorOccurred={(error) => {
                 console.log("onErrorOccurred")
                 console.log(error.nativeEvent.message)
+              }}
+              onTimedMetadata={(metadata) => {
+                console.log("onTimedMetadata")
+                console.log(metadata.nativeEvent.identifier)
               }}
             /> : undefined}
         </View>

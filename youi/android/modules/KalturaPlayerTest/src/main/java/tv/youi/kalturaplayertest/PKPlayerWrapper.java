@@ -20,6 +20,7 @@ import com.kaltura.playkit.PlayerEvent;
 import com.kaltura.playkit.player.LoadControlBuffers;
 import com.kaltura.playkit.player.PKHttpClientManager;
 import com.kaltura.playkit.player.PKTracks;
+import com.kaltura.playkit.player.metadata.PKMetadata;
 import com.kaltura.playkit.plugins.ads.AdCuePoints;
 import com.kaltura.playkit.plugins.ads.AdEvent;
 import com.kaltura.playkit.plugins.ima.IMAConfig;
@@ -284,6 +285,13 @@ public class PKPlayerWrapper {
             }
         });
 
+        player.addListener(self, PlayerEvent.metadataAvailable, event -> {
+            log.d("Received:PlayerEvent:" + event.eventType().name());
+            Gson gson = new Gson();
+            for (PKMetadata pkMetadata : event.metadataList){
+                sendPlayerEvent("timedMetadata", gson.toJson(pkMetadata));
+            }
+        });
         player.addListener(self, AdEvent.adProgress, event -> sendPlayerEvent("adProgress", "{ \"currentAdPosition\": " + (event.currentAdPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
         player.addListener(self, AdEvent.cuepointsChanged, event -> sendPlayerEvent("adCuepointsChanged", getCuePointsJson(event.cuePoints)));
         player.addListener(self, AdEvent.started, event -> sendPlayerEvent("adStarted"));
@@ -398,8 +406,8 @@ public class PKPlayerWrapper {
 
         if (!initialized) {
             onEventListener = () -> {
-                    log.d("delayed loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
-                    loadMediaInUIThread(assetId, jsonOptionsStr);
+                log.d("delayed loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
+                loadMediaInUIThread(assetId, jsonOptionsStr);
 
             };
             return;
@@ -457,8 +465,8 @@ public class PKPlayerWrapper {
 
         if (!initialized) {
             onEventListener = () -> {
-                    log.d("delayed setMedia contentUrl: " + contentUrl);
-                    setMediaInUIThread(contentUrl);
+                log.d("delayed setMedia contentUrl: " + contentUrl);
+                setMediaInUIThread(contentUrl);
             };
             return;
         }
