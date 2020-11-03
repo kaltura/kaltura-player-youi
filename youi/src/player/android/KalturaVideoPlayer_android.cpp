@@ -3,7 +3,6 @@
 #include <player/YiVideoPlayerStateManager.h>
 #include <framework/YiAppContext.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/epsilon.hpp>
 #include <renderer/YiSurface.h>
 #include <framework/YiScreen.h>
 
@@ -348,11 +347,6 @@ CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayerPriv::GetActiv
 
     return CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo();
 }
-
-//bool KalturaVideoPlayerPriv::IsMuted_() const
-//{
-//    return glm::epsilonEqual(m_pPub->m_volume, true, glm::epsilon<float>());
-//}
 
 void KalturaVideoPlayerPriv::Mute_(bool bMute)
 {

@@ -192,7 +192,7 @@ CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayer::GetActiveClo
 
 bool KalturaVideoPlayer::IsMuted_() const
 {
-    return m_isMuted; //m_pPriv->IsMuted_();
+    return m_isMuted;
 }
 
 void KalturaVideoPlayer::Mute_(bool bMute)
