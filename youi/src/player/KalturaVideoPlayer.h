@@ -87,7 +87,6 @@ public:
     VideoTrackInfo GetActiveVideoTrack();
     
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
-    //CYISignal<folly::dynamic> VolumeChanged;
     CYISignal<float> VolumeChanged;
     CYISignal<uint64_t> CurrentBufferTimeUpdated;
 
