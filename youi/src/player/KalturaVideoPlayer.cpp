@@ -275,7 +275,9 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(playingEvent) == 0)
     {
         YI_LOGD(TAG, "playingEvent");
-        m_pStateManager->TransitionToPlaybackPlaying();
+        if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready) {
+            m_pStateManager->TransitionToPlaybackPlaying();
+        }
     }
     else if (name.Compare(endedEvent) == 0)
     {
@@ -436,7 +438,9 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(adStartedEvent) == 0)
     {
         YI_LOGD(TAG, "adStartedEvent");
-        m_pStateManager->TransitionToPlaybackPlaying();
+        if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready) {
+            m_pStateManager->TransitionToPlaybackPlaying();
+        }
     }
     else if (name.Compare(adCompletedEvent) == 0)
     {
@@ -450,7 +454,9 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(adResumedEvent) == 0)
     {
         YI_LOGD(TAG, "adResumedEvent");
-         m_pStateManager->TransitionToPlaybackPlaying();
+        if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready) {
+            m_pStateManager->TransitionToPlaybackPlaying();
+        }
     }
     else if (name.Compare(adBufferStartEvent) == 0)
     {
