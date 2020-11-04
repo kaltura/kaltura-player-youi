@@ -17,6 +17,7 @@ import com.kaltura.playkit.PKMediaSource;
 import com.kaltura.playkit.PKPluginConfigs;
 import com.kaltura.playkit.PlayKitManager;
 import com.kaltura.playkit.PlayerEvent;
+import com.kaltura.playkit.Utils;
 import com.kaltura.playkit.player.LoadControlBuffers;
 import com.kaltura.playkit.player.PKHttpClientManager;
 import com.kaltura.playkit.player.PKTracks;
@@ -199,10 +200,22 @@ public class PKPlayerWrapper {
             addKalturaPlayerListeners();
 
             initialized = true;
+
+            sendPlayerInitializedEvent(context);
             if (onEventListener != null) {
                 onEventListener.onKalturaPlayerInitialized();
             }
         });
+    }
+
+    private static void sendPlayerInitializedEvent(Context context) {
+        String playerName = "kaltura-vp-android";
+        String playerVersion = PlayKitManager.VERSION_STRING;
+        String userAgent = Utils.getUserAgent(context);
+
+        sendPlayerEvent("playerInitialized", "{ \"playerName\": \"" + playerName +
+                "\" , \"playerVersion\": \"" + playerVersion +
+                "\" }");
     }
 
     private static CYIActivity.LifecycleListener getLifeCycleListener() {

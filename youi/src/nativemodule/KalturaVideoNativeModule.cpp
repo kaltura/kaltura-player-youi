@@ -17,6 +17,7 @@ YI_RN_INSTANTIATE_MODULE(KalturaVideoNativeModule, yi::react::EventEmitterModule
 YI_RN_REGISTER_MODULE(KalturaVideoNativeModule);
 
 #define TAG "KalturaVideoNativeModule"
+static const std::string KALTURA_PLAYER_INITIALIZED_EVENT = "KALTURA_PLAYER_INITIALIZED_EVENT";
 static const std::string KALTURA_CAN_PLAY_EVENT = "KALTURA_CAN_PLAY_EVENT";
 static const std::string KALTURA_PLAYING_EVENT = "KALTURA_PLAYING_EVENT";
 static const std::string KALTURA_ENDED_EVENT = "KALTURA_ENDED_EVENT";
@@ -31,6 +32,7 @@ KalturaVideoNativeModule::KalturaVideoNativeModule()
 {
     SetSupportedEvents
     ({
+        KALTURA_PLAYER_INITIALIZED_EVENT,
         KALTURA_CAN_PLAY_EVENT,
         KALTURA_PLAYING_EVENT,
         KALTURA_ENDED_EVENT,
@@ -60,6 +62,10 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
         if (pShadowVideo)
         {
             m_pPlayer = dynamic_cast<KalturaVideoPlayer *>(&pShadowVideo->GetPlayer());
+
+            m_pPlayer->PlayerInitializedEvent.Connect(*this, [this]() {
+                this->EmitEventPriv(KALTURA_PLAYER_INITIALIZED_EVENT, nullptr);
+            });
 
             m_pPlayer->PlayerCanPlayEvent.Connect(*this, [this]() {
                 this->EmitEventPriv(KALTURA_CAN_PLAY_EVENT, nullptr);

@@ -22,6 +22,19 @@ export default class KalturaVideo extends React.Component {
     // Must be called before any other method on the native module
     NativeModules.KalturaVideo.ConnectToPlayer(findNodeHandle(this.videoRef.current));
     
+    
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYER_INITIALIZED_EVENT', () => {
+      if (this.props.onPlayerInitializedEvent) {
+        this.props.onPlayerInitializedEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_CAN_PLAY_EVENT', () => {
+      if (this.props.onCanPlayEvent) {
+        this.props.onCanPlayEvent();
+      }
+    })
+
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYING_EVENT', () => {
       if (this.props.onPlayingEvent) {
         this.props.onPlayingEvent();

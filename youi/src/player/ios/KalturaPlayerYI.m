@@ -9,6 +9,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <PlayKit/PlayKit-Swift.h>
+#import <PlayKitUtils/PlayKitUtils-Swift.h>
 
 #import <KalturaNetKit/KalturaNetKit-Swift.h>
 #import <PlayKitProviders/PlayKitProviders-Swift.h>
@@ -218,6 +219,12 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     
     [self observeAllEvents];
     
+    __weak EventSender *playerInitializedWeakSender = self.eventSender;
+    [playerInitializedWeakSender sendEvent:@"playerInitialized" payload:@{
+            @"playerName": @"kaltura-vp-ios",
+            @"playerVersion": PlayKitManager.versionString
+    }];
+
     return self;
 }
 

@@ -169,16 +169,6 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
     GetEnv_KalturaPlayer()->DeleteLocalRef(url);
 }
 
-CYIString KalturaVideoPlayerPriv::GetName_() const
-{
-    return "Kaltura Video Player";
-}
-
-CYIString KalturaVideoPlayerPriv::GetVersion_() const
-{
-    return "1";
-}
-
 CYIAbstractVideoPlayer::Statistics KalturaVideoPlayerPriv::GetStatistics_() const
 {
     CYIAbstractVideoPlayer::Statistics stats;

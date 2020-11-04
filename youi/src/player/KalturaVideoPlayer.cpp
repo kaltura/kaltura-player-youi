@@ -7,6 +7,7 @@
 
 static const CYIString TAG("KalturaVideoPlayer");
 
+static const char *playerInitializedEvent = "playerInitialized";
 static const char *loadMediaSuccessEvent = "loadMediaSuccess";
 static const char *loadMediaFailedEvent = "loadMediaFailed";
 static const char *stateChangedEvent = "stateChanged";
@@ -92,12 +93,12 @@ KalturaVideoPlayer::VideoTrackInfo KalturaVideoPlayer::GetActiveVideoTrack() {
 
 CYIString KalturaVideoPlayer::GetName_() const
 {
-    return m_pPriv->GetName_();
+    return m_playerName;
 }
 
 CYIString KalturaVideoPlayer::GetVersion_() const
 {
-    return m_pPriv->GetVersion_();
+    return m_playerVersion;
 }
 
 CYIAbstractVideoPlayer::Statistics KalturaVideoPlayer::GetStatistics_() const
@@ -218,7 +219,14 @@ void KalturaVideoPlayer::DisableClosedCaptions_()
 void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic content)
 {
 
-    if (name.Compare(loadMediaSuccessEvent) == 0)
+    if (name.Compare(playerInitializedEvent) == 0)
+    {
+        YI_LOGD(TAG, "playerInitializedEvent");
+        m_playerName = content["playerName"].asString();
+        m_playerVersion = content["playerVersion"].asString();
+        PlayerInitializedEvent.Emit();
+    }
+    else if (name.Compare(loadMediaSuccessEvent) == 0)
     {
         YI_LOGD(TAG, "loadMediaSuccessEvent");
         m_pStateManager->TransitionToMediaReady();
