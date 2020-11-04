@@ -34,7 +34,7 @@ void JNICALL Java_tv_youi_kalturaplayertest_PKPlayerWrapper_nativeSendEvent(JNIE
     {
         content = folly::parseJson(std_payload);
     }
-    
+
     pBridge->HandleEvent(event, content);
 }
 
@@ -133,6 +133,11 @@ void KalturaVideoPlayerPriv::LoadMedia_(const CYIString &assetId, folly::dynamic
         return;
     }
 
+    if (m_pPub->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready)
+    {
+        m_pPub->m_pStateManager->TransitionToMediaUnloaded();
+    }
+
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
 
     jstring jAssetId = GetEnv_KalturaPlayer()->NewStringUTF(assetId.GetData());
@@ -149,6 +154,11 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
   if (!playerWrapperBridgeClass)
     {
         return;
+    }
+
+    if (m_pPub->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready)
+    {
+        m_pPub->m_pStateManager->TransitionToMediaUnloaded();
     }
 
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
@@ -367,7 +377,7 @@ void KalturaVideoPlayerPriv::Mute_(bool bMute)
     float volume = 1.0;
     if (bMute == true) {
         volume = 0;
-    } 
+    }
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setVolumeMethodID, volume);
 }
 
