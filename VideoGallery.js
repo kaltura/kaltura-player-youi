@@ -82,7 +82,14 @@ const DATA = [
                 "plugins": {
                     "ima": {},
                     "youbora": {
-                        "accountCode": "kalturatest"
+                        "accountCode": "kalturatest",
+                        "username": "aaa",
+                        "userEmail": "aaa@gmail.com",
+                        "userType": "paid",       // optional any string - free / paid etc.
+                        "houseHoldId": "qwerty",   // optional which device is used to play
+                        "httpSecure": true,        // youbora events will be sent via https
+                        "appName": "YouiBridgeTesdtApp",
+                        "appReleaseVersion": "v1.0.0",
                     }
                 }
             }
@@ -102,22 +109,37 @@ const DATA = [
                         "urlType": "DIRECT",
                         "startPosition": 0,
                         "plugins": {
-                            "ima": {
-                                "adTagUrl": "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=",
-                                "alwaysStartWithPreroll": true,
-                                "enableDebugMode": false
-                            },
+                            // "ima": {
+                            //     "adTagUrl": "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=",
+                            //     "alwaysStartWithPreroll": true,
+                            //     "enableDebugMode": false
+                            // },
                             "youbora": {
-                                "accountCode": "kalturatest",
-                                "username": "aaa",
-                                "userEmail": "aaa@gmail.com",
-                                "userType": "paid",       // optional any string - free / paid etc.
-                                "houseHoldId": "qwerty",   // optional which device is used to play
-                                "httpSecure": true,        // youbora events will be sent via https
-                                "appName": "YouiBridgeTesdtApp",
-                                "appReleaseVersion": "v1.0.0",
                                 "extraParam1": "param1",
                                 "extraParam2": "param2"
+                            }
+                        }
+                    }
+                }
+            }
+        }, {
+            id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+            title: 'Media 2',
+            type: SOURCE_TYPE.media,
+            data: {
+                media: {
+                    id: "548579",
+                    asset: {
+                        "format": "Mobile_Main",
+                        "assetType": "media",
+                        "protocol": "http",
+                        "playbackContextType": "playback",
+                        "urlType": "DIRECT",
+                        "startPosition": 0,
+                        "plugins": {
+                            "youbora": {
+                                "extraParam1": "param3",
+                                "extraParam2": "param4"
                             }
                         }
                     }
@@ -138,6 +160,7 @@ function Item({ title, data, onPress }) {
 function VideoGallery(props) {
     return (
         <SectionList
+            style={styles.list}
             sections={DATA}
             renderItem={({ item, section }) => <Item title={item.title} data={{...section.playerConfig, ...item.data}} onPress={props.onVideoSelected}/>}
             renderSectionHeader={({ section: { title } }) => (
@@ -149,17 +172,21 @@ function VideoGallery(props) {
 }
 
 const styles = StyleSheet.create({
+    list: {
+        backgroundColor: 'gray'
+    },
     header: {
-        fontSize: 32,
+        fontSize: 20,
+        textAlign: 'center',
     },
     item: {
-        backgroundColor: '#f9c2ff',
-        padding: 20,
-        marginVertical: 8,
-        // marginHorizontal: 16,
+        backgroundColor: 'white',
+        padding: 6,
+        marginVertical: 4,
+        marginHorizontal: 16,
     },
     title: {
-        fontSize: 24,
+        fontSize: 16,
     },
 });
 
