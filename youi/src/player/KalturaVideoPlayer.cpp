@@ -70,6 +70,11 @@ void KalturaVideoPlayer::SetMedia(const CYIUrl &videoURI)
     m_pPriv->SetMedia_(videoURI);
 }
 
+void KalturaVideoPlayer::Replay()
+{
+    m_pPriv->Replay_();
+}
+
 bool KalturaVideoPlayer::SelectVideoTrack(uint32_t uID) {
     return m_pPriv->SelectVideoTrack_(uID);
 }
