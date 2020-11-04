@@ -133,6 +133,14 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SetMedia)(const CYIUrl &vid
     }
 }
 
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, Replay)()
+{
+    if (m_pPlayer)
+    {
+        m_pPlayer->Replay();
+    }
+}
+
 YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SelectVideoTrack)(uint32_t trackId)
 {
     if (m_pPlayer)

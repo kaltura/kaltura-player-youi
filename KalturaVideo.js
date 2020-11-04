@@ -113,6 +113,10 @@ export default class KalturaVideo extends React.Component {
     this.videoRef.current.stop()
   }
 
+  replay = () => {
+    NativeModules.KalturaVideo.Replay()
+  }
+
   seek = (time) => {
     this.videoRef.current.seek(time)
   }

@@ -26,7 +26,8 @@ public:
     void Setup_(int32_t partnerId, folly::dynamic options);
     void LoadMedia_(const CYIString &assetId, folly::dynamic options);
     void SetMedia_(const CYIUrl &videoURI);
-    
+    void Replay_();
+
     bool SelectVideoTrack_(uint32_t uID);
     std::vector<KalturaVideoPlayer::VideoTrackInfo> GetVideoTracks_() const;
     KalturaVideoPlayer::VideoTrackInfo GetActiveVideoTrack_() const;
