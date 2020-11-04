@@ -277,6 +277,13 @@ public class PKPlayerWrapper {
             sendPlayerEvent("textTrackChanged", gson.toJson(textTrack));
         });
 
+        player.addListener(self, PlayerEvent.playbackInfoUpdated, event -> {
+            sendPlayerEvent("playbackInfoUpdated", "{ \"videoBitrate\": " + event.playbackInfo.getVideoBitrate() +
+                    ", \"audioBitrate\": " + event.playbackInfo.getAudioBitrate() +
+                    //", \"totalBitrate\": " + event.playbackInfo.getVideoBitrate() +
+                    " }");
+        });
+
         player.addListener(self, PlayerEvent.seeking, event -> sendPlayerEvent("seeking", "{ \"targetPosition\": " + (event.targetPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
         player.addListener(self, PlayerEvent.seeked, event -> sendPlayerEvent("seeked"));
         player.addListener(self, PlayerEvent.error, event -> {

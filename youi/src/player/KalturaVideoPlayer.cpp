@@ -23,6 +23,7 @@ static const char *tracksAvailableEvent = "tracksAvailable";
 static const char *videoTrackChangedEvent = "videoTrackChanged";
 static const char *audioTrackChangedEvent = "audioTrackChanged";
 static const char *textTrackChangedEvent = "textTrackChanged";
+static const char *playbackInfoUpdatedEvent = "playbackInfoUpdated";
 static const char *seekingEvent = "seeking";
 static const char *seekedEvent = "seeked";
 static const char *volumeChangedEvent = "volumeChanged";
@@ -410,6 +411,38 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(textTrackChangedEvent) == 0)
     {
         YI_LOGD(TAG, "textTrackChangedEvent");
+    }
+    else if (name.Compare(playbackInfoUpdatedEvent) == 0)
+    {
+        YI_LOGD(TAG, "playbackInfoUpdatedEvent");
+        if (content.find("videoBitrate") != content.items().end() && !content["videoBitrate"].isNull()) {
+            const auto videoBitrate = content["videoBitrate"].asDouble();
+            float currentVideoBitrate = static_cast<float>(videoBitrate);
+            VideoBitrateChanged.Emit(currentVideoBitrate);
+        }
+        if (content.find("audioBitrate") != content.items().end() && !content["audioBitrate"].isNull()) {
+            const auto audioBitrate = content["audioBitrate"].asDouble();
+            float currentAudioBitrate = static_cast<float>(audioBitrate);
+            AudioBitrateChanged.Emit(currentAudioBitrate);
+        }
+
+        if (content.find("totalBitrate") != content.items().end() && !content["totalBitrate"].isNull()) {
+            const auto totalBitrate = content["totalBitrate"].asDouble();
+            float currentTotalBitrate = static_cast<float>(totalBitrate);
+            TotalBitrateChanged.Emit(currentTotalBitrate);
+        }
+
+
+        /*!
+            \details Signals that the video bitrate has changed. This may be emitted at any point.
+         */
+        CYISignal<float> VideoBitrateChanged;
+
+        /*!
+            \details Signals that the audio bitrate has changed. This may be emitted at any point.
+         */
+        CYISignal<float> AudioBitrateChanged;
+
     }
     else if (name.Compare(seekingEvent) == 0)
     {

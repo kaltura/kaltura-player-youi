@@ -273,6 +273,14 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         [weakSender sendEvent:@"textTrackChanged"
                       payload:trackToDict(event.selectedTrack, event.selectedTrack.id)];
     }];
+    [self.kalturaPlayer addObserver:self event:PlayerEvent.playbackInfo block:^(PKEvent * _Nonnull event) {
+        [weakSender sendEvent:@"playbackInfoUpdated"
+                      payload:@{
+                          @"videoBitrate": @(event.playbackInfo.bitrate),
+                          @"audioBitrate": @(event.playbackInfo.bitrate)
+                         // @"totalBitrate": @(event.playbackInfo.bitrate)
+        }];
+    }];
     [self.kalturaPlayer addObserver:self event:PlayerEvent.error block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"error" payload:@{@"errorType": @(event.error.code)}];   // TODO more details
     }];
@@ -403,10 +411,10 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         options.fileIds = @[assetFileId];
     }
     
-    NSString *streamerType = dyn_options[@"streamerType"];
-    if (streamerType) {
-        options.streamerType = streamerType;
-    }
+//    NSString *streamerType = dyn_options[@"streamerType"];
+//    if (streamerType) {
+//        options.streamerType = streamerType;
+//    }
     
     id youboraConfig = dyn_options[@"plugins"][@"youbora"];
     if (youboraConfig) {
