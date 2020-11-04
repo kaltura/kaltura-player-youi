@@ -248,11 +248,16 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(stateChangedEvent) == 0)
     {
         const CYIString &state = content["newState"].asString();
+
         YI_LOGD(TAG, "stateChangedEvent %s", state.GetData());
 
         if (state == "BUFFERING")
         {
+            YI_LOGD(TAG, "BUFFERING");
             m_pStateManager->TransitionToPlaybackBuffering();
+        } else  if (state == "READY" && m_pStateManager->GetPlayerState().playbackState == CYIAbstractVideoPlayer::PlaybackState::Buffering) {
+                YI_LOGD(TAG, "READY + BUFFERING ENDED");
+                BufferingEnded.Emit();
         }
     }
     else if (name.Compare(playEvent) == 0)
