@@ -89,9 +89,6 @@ public:
 
     CYISignal<> PlayerInitializedEvent;
     CYISignal<> PlayerCanPlayEvent;
-    CYISignal<> PlayerPlayingEvent;
-    CYISignal<> PlayerEndedEvent;
-    CYISignal<> PlayerStoppedEvent;
     CYISignal<> PlayerReplayEvent;
 
     CYISignal<uint64_t> PlayerSeekingEvent;

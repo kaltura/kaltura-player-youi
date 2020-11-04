@@ -297,17 +297,17 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready) {
             m_pStateManager->TransitionToPlaybackPlaying();
         }
-        PlayerPlayingEvent.Emit();
     }
     else if (name.Compare(endedEvent) == 0)
     {
         YI_LOGD(TAG, "endedEvent");
-        PlayerEndedEvent.Emit();
+        m_pStateManager->TransitionToPlaybackPaused();
+        PlaybackComplete.Emit();
     }
     else if (name.Compare(stoppedEvent) == 0)
     {
         YI_LOGD(TAG, "stoppedEvent");
-        PlayerStoppedEvent.Emit();
+        Finalized.Emit();
     }
     else if (name.Compare(replayEvent) == 0)
     {
