@@ -47,11 +47,6 @@ export default class YiReactApp extends Component {
   seekBtnPressed = () => this.videoRef.current.seek(this.state.currentTime + 10000);
   muteBtnPressed = () => this.setState({ 'isMuted': !this.state.isMuted });
 
-  clickHandler = () => {
-    //function to handle click on floating Action Button
-    alert('Floating Button Clicked');
-  };
-
   render() {
     const {isMuted, isPlaying, videoSelected, media, sources, partnerId, initOptions, changeMedia} = this.state;
     return (
