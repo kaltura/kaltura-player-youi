@@ -17,6 +17,42 @@ export default class KalturaVideo extends React.Component {
   componentDidMount() {
     // Must be called before any other method on the native module
     NativeModules.KalturaVideo.ConnectToPlayer(findNodeHandle(this.videoRef.current));
+    
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYING_EVENT', () => {
+      if (this.props.onPlayingEvent) {
+        this.props.onPlayingEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_ENDED_EVENT', () => {
+      if (this.props.onEndedEvent) {
+        this.props.onEndedEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_STOPPED_EVENT', () => {
+      if (this.props.onStoppedEvent) {
+        this.props.onStoppedEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_REPLAY_EVENT', () => {
+      if (this.props.onReplayEvent) {
+        this.props.onReplayEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_SEEKED_EVENT', () => {
+      if (this.props.onSeekedEvent) {
+        this.props.onSeekedEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_SEEKING_EVENT', (targetPosition) => {
+      if (this.props.onSeekingEvent) {
+        this.props.onSeekingEvent(targetPosition);
+      }
+    })
 
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_VOLUME_CHANGED', (event) => {
       if (this.props.onVolumeChanged) {

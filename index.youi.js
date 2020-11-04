@@ -83,6 +83,9 @@ export default class YiReactApp extends Component {
                 this.setState({ currentTime: currentTime })
               }}
               onDurationChanged={(duration) => this.setState({ duration: duration })}
+              onSeekingEvent={(targetPosition) => {
+                console.log("onSeekingEvent " + targetPosition)
+              }}
               onAvailableAudioTracksChanged={(tracks) => {
                 console.log("onAvailableAudioTracksChanged")
                 console.log(tracks.nativeEvent)
