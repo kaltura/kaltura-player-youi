@@ -240,6 +240,15 @@ void KalturaVideoPlayerPriv::Stop_()
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, stopMethodID);
 }
 
+void KalturaVideoPlayerPriv::Replay_()
+{
+    if (!playerWrapperBridgeClass)
+    {
+        return;
+    }
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, replayMethodID);
+}
+
 uint64_t KalturaVideoPlayerPriv::GetDurationMs_() const
 {
     return m_pPub->m_durationMs;
