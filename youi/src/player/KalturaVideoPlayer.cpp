@@ -50,11 +50,13 @@ YI_TYPE_DEF(KalturaVideoPlayer, CYIAbstractVideoPlayer)
 
 KalturaVideoPlayer::KalturaVideoPlayer()
 {
+    YI_LOGD(TAG, "construct  KalturaVideoPlayer");
     m_pPriv = std::make_unique<KalturaVideoPlayerPriv>(this);
 }
 
 KalturaVideoPlayer::~KalturaVideoPlayer()
 {
+    YI_LOGD(TAG, "destroy ~KalturaVideoPlayer");
     m_pPriv->Stop_();
 }
 
