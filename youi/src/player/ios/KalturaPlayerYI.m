@@ -411,10 +411,10 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         options.fileIds = @[assetFileId];
     }
     
-//    NSString *streamerType = dyn_options[@"streamerType"];
-//    if (streamerType) {
-//        options.streamerType = streamerType;
-//    }
+    NSString *streamerType = dyn_options[@"streamerType"];
+    if (streamerType) {
+        options.streamerType = streamerType;
+    }
     
     id youboraConfig = dyn_options[@"plugins"][@"youbora"];
     if (youboraConfig) {
