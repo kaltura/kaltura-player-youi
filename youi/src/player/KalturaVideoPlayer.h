@@ -97,6 +97,8 @@ public:
     CYISignal<> PlayerSeekedEvent;
 
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
+    CYISignal<folly::dynamic> LoadMediaSuccess;
+    CYISignal<folly::dynamic> LoadMediaFailed;
     CYISignal<folly::dynamic> VolumeChanged;
 
     virtual void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle) override;

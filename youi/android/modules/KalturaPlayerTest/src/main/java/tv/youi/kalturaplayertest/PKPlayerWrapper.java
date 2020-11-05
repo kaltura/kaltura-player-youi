@@ -19,6 +19,7 @@ import com.kaltura.playkit.PlayKitManager;
 import com.kaltura.playkit.PlayerEvent;
 import com.kaltura.playkit.player.LoadControlBuffers;
 import com.kaltura.playkit.player.PKHttpClientManager;
+import com.kaltura.playkit.player.PKPlayerErrorType;
 import com.kaltura.playkit.player.PKTracks;
 import com.kaltura.playkit.plugins.ads.AdCuePoints;
 import com.kaltura.playkit.plugins.ads.AdEvent;
@@ -355,7 +356,7 @@ public class PKPlayerWrapper {
         String errorCause = (error.exception != null) ? error.exception.getCause() + "" : "";
         JsonObject errorJson = new JsonObject();
         errorJson.addProperty("errorType", error.errorType.name());
-        errorJson.addProperty("errorCode", error.errorType.ordinal());
+        errorJson.addProperty("errorCode", ((PKPlayerErrorType) error.errorType).errorCode);
         errorJson.addProperty("errorSeverity", error.severity.name());
         errorJson.addProperty("errorMessage", error.message);
         errorJson.addProperty("errorCause", errorCause);

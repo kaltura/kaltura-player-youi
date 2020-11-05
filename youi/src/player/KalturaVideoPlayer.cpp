@@ -220,7 +220,10 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
 
     if (name.Compare(loadMediaSuccessEvent) == 0)
     {
-        YI_LOGD(TAG, "loadMediaSuccessEvent");
+        const CYIString id = content["id"].asString();
+        const CYIString mediaType = content["mediaType"].asString();
+        YI_LOGD(TAG, "loadMediaSuccessEvent id = %s mediaType = %s", id.GetData(), mediaType.GetData());
+        LoadMediaSuccess.Emit(content);
         m_pStateManager->TransitionToMediaReady();
     }
     else if (name.Compare(loadMediaFailedEvent) == 0)
@@ -228,13 +231,22 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         YI_LOGD(TAG, "loadMediaFailedEvent");
         if (!content.isNull()) {
             const CYIString code = content["code"].asString();
-            const CYIString extra = content["extra"].asString();
             const CYIString message = content["message"].asString();
-            const CYIString errorName = content["name"].asString();
-            YI_LOGD(TAG, "loadMediaFailedEvent message = <%s>", message.GetData());
+
+            YI_LOGD(TAG, "loadMediaFailedEvent code = %s message = %s", code.GetData(), message.GetData());
+//            CYIAbstractVideoPlayer::Error error;
+//            error.errorCode = CYIAbstractVideoPlayer::ErrorCode::InitializationError;
+//            error.message = JSONFromDynamic(content).c_str();
+//
+//            error.nativePlayerErrorCode = code;
+//            ErrorOccurred.Emit(error);
+            LoadMediaFailed.Emit(content);
         }
 
         m_pStateManager->TransitionToMediaUnloaded();
+        
+       
+
 //Example:
 //        //buffering / playing // paused
 //        if (m_pStateManager->GetPlayerState().playbackState == CYIAbstractVideoPlayer::PlaybackState::Buffering) {
@@ -441,7 +453,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         error.nativePlayerErrorCode = errorType;
 
         ErrorOccurred.Emit(error);
-        if (errorSeverity == "fatal") {
+        if (errorSeverity == "Fatal") {
             YI_LOGD(TAG, "errorEvent fatal");
             m_pStateManager->TransitionToMediaUnloaded();
         }

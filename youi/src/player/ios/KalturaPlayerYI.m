@@ -273,8 +273,79 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         [weakSender sendEvent:@"textTrackChanged"
                       payload:trackToDict(event.selectedTrack, event.selectedTrack.id)];
     }];
+
     [self.kalturaPlayer addObserver:self event:PlayerEvent.error block:^(PKEvent * _Nonnull event) {
-        [weakSender sendEvent:@"error" payload:@{@"errorType": @(event.error.code)}];   // TODO more details
+        
+        NSError *playerError = event.error;
+        NSInteger errorCode = playerError.code;
+        NSString *errorMessage = [playerError.userInfo valueForKey: NSLocalizedDescriptionKey];
+        NSString *errorCause = playerError.localizedFailureReason;
+
+        //        @objc(FailedToLoadAssetFromKeys) public static let failedToLoadAssetFromKeys = 7000
+        //        @objc(AssetNotPlayable) public static let assetNotPlayable = 7001
+        //        @objc(PlayerItemFailed) public static let playerItemFailed = 7002
+        //        @objc(PlayerFailed) public static let playerFailed = 7003
+        //        @objc(MissingDependency) public static let missingDependency = 7004
+        //        // PlayerErrorLog
+        //        @objc(PlayerItemErrorLogEvent) public static let playerItemErrorLogEvent = 7100
+        //        // PKPluginError
+        //        @objc(FailedToCreatePlugin) public static let failedToCreatePlugin = 2000
+        //        @objc(MissingPluginConfig) public static let missingPluginConfig = 2001
+                
+        //         SOURCE_ERROR(7000),
+        //         RENDERER_ERROR(7001),
+        //         UNEXPECTED(7002),
+        //         SOURCE_SELECTION_FAILED(7003),
+        //         FAILED_TO_INITIALIZE_PLAYER(7004),
+        //         DRM_ERROR(7005),
+        //         TRACK_SELECTION_FAILED(7006),
+        //         LOAD_ERROR(7007),
+        //         OUT_OF_MEMORY(7008),
+        //         REMOTE_COMPONENT_ERROR(7009),
+        //         TIMEOUT(7010);
+                
+        
+        NSString *errorType = @"UNEXPECTED";
+        switch (playerError.code) {
+            case 7000:
+            case 7001:
+                errorCode = 7000;
+                errorType = @"SOURCE_ERROR";
+                break;
+            case 7002:
+            case 7003:
+                errorCode = 7007;
+                errorType = @"LOAD_ERROR";
+               break;
+            case 7004:
+                errorCode = 7004;
+                errorType = @"FAILED_TO_INITIALIZE_PLAYER";
+               break;
+            case 7100:
+                errorCode = 7001;
+                errorType = @"RENDERER_ERROR";
+               break;
+            case 2000:
+            case 2001:
+                errorCode = 7004;
+                errorType = @"FAILED_TO_INITIALIZE_PLAYER";
+               break;
+            default:
+                errorCode = 7002;
+                errorType = @"UNEXPECTED";
+               break;
+        }
+
+        if (errorCause == nil || [errorCause length] == 0) {
+            errorCause = errorMessage; //[playerError.userInfo valueForKey: NSUnderlyingErrorKey];
+        }
+        
+        [weakSender sendEvent:@"error" payload:@{@"errorType": errorType,
+                                                 @"errorCode": @(errorCode),
+                                                 @"errorSeverity": @"Fatal",
+                                                 @"errorMessage": errorMessage,
+                                                 @"errorCause": errorCause
+        }];
     }];
     [self.kalturaPlayer addObserver:self event:PlayerEvent.stateChanged block:^(PKEvent * _Nonnull event) {
         PlayerState state = event.newState;
@@ -422,11 +493,18 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer loadMediaWithOptions:options callback:^(NSError * _Nullable error) {
         if (error) {
             NSLog(@"Error in loadMedia: %@", error);
-            // TODO -  // send code, extra, message, name
-            [weakSender sendEvent:@"loadMediaFailed" payload:nil];
+                        
+//            NSInteger errorCode = error.code;
+//            NSString *errorMessage = error.userInfo["message"];
+            [weakSender sendEvent:@"loadMediaFailed" payload:@{@"code": @"code",
+                                                               @"message": @"message"
+                                                               
+            }];
         } else {
             // TODO send PKMeidaEntry ??
-            [weakSender sendEvent:@"loadMediaSuccess" payload:nil];
+            [weakSender sendEvent:@"loadMediaSuccess" payload:@{@"id": assetId,
+                                                                @"mediaType": @"Vod"
+            }];
         }
     }];
     

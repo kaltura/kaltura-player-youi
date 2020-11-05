@@ -25,6 +25,8 @@ static const std::string KALTURA_REPLAY_EVENT = "KALTURA_REPLAY_EVENT";
 static const std::string KALTURA_SEEKING_EVENT = "KALTURA_SEEKING_EVENT";
 static const std::string KALTURA_SEEKED_EVENT = "KALTURA_SEEKED_EVENT";
 static const std::string KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED = "KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED";
+static const std::string KALTURA_LOAD_MEDIA_SUCCESS = "KALTURA_LOAD_MEDIA_SUCCESS";
+static const std::string KALTURA_LOAD_MEDIA_FAILED = "KALTURA_LOAD_MEDIA_FAILED";
 static const std::string KALTURA_VOLUME_CHANGED = "KALTURA_VOLUME_CHANGED";
 
 KalturaVideoNativeModule::KalturaVideoNativeModule()
@@ -38,6 +40,8 @@ KalturaVideoNativeModule::KalturaVideoNativeModule()
         KALTURA_REPLAY_EVENT,
         KALTURA_SEEKING_EVENT,
         KALTURA_SEEKED_EVENT,
+        KALTURA_LOAD_MEDIA_SUCCESS,
+        KALTURA_LOAD_MEDIA_FAILED,
         KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED,
         KALTURA_VOLUME_CHANGED
     });
@@ -97,7 +101,15 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
                 }
                 this->EmitEventPriv(KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED, ToDynamic(dynamicTracks));
             });
-            
+
+            m_pPlayer->LoadMediaSuccess.Connect(*this, [this](folly::dynamic data) {
+                this->EmitEventPriv(KALTURA_LOAD_MEDIA_SUCCESS, data);
+            });
+
+            m_pPlayer->LoadMediaFailed.Connect(*this, [this](folly::dynamic data) {
+                this->EmitEventPriv(KALTURA_LOAD_MEDIA_FAILED, data);
+            });
+
             m_pPlayer->VolumeChanged.Connect(*this, [this](folly::dynamic data) {
                 this->EmitEventPriv(KALTURA_VOLUME_CHANGED, data);
             });
