@@ -56,6 +56,7 @@ KalturaVideoPlayer::KalturaVideoPlayer()
 KalturaVideoPlayer::~KalturaVideoPlayer()
 {
     m_pPriv->Stop_();
+    Finalized.Emit();
 }
 
 void KalturaVideoPlayer::Setup(int32_t partnerId, folly::dynamic options)

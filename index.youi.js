@@ -90,6 +90,7 @@ export default class YiReactApp extends Component {
                     console.log("onAvailableVideoTracksChanged")
                     console.log(tracks.nativeEvent)
                   }}
+                  onFinalized={() => console.log("onFinalized called.")}
                   onErrorOccurred={(error) => {
                     console.log("onErrorOccurred")
                     console.log(error.nativeEvent.message)
