@@ -90,6 +90,7 @@ public:
     CYISignal<> PlayerInitializedEvent;
     CYISignal<> PlayerCanPlayEvent;
     CYISignal<> PlayerReplayEvent;
+    CYISignal<> PlayerStoppedEvent;
 
     CYISignal<uint64_t> PlayerSeekingEvent;
     CYISignal<> PlayerSeekedEvent;

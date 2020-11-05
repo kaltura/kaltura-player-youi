@@ -307,7 +307,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(stoppedEvent) == 0)
     {
         YI_LOGD(TAG, "stoppedEvent");
-        Finalized.Emit();
+        PlayerStoppedEvent.Emit();
     }
     else if (name.Compare(replayEvent) == 0)
     {
