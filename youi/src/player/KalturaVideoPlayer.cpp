@@ -431,18 +431,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             float currentTotalBitrate = static_cast<float>(totalBitrate);
             TotalBitrateChanged.Emit(currentTotalBitrate);
         }
-
-
-        /*!
-            \details Signals that the video bitrate has changed. This may be emitted at any point.
-         */
-        CYISignal<float> VideoBitrateChanged;
-
-        /*!
-            \details Signals that the audio bitrate has changed. This may be emitted at any point.
-         */
-        CYISignal<float> AudioBitrateChanged;
-
     }
     else if (name.Compare(seekingEvent) == 0)
     {
