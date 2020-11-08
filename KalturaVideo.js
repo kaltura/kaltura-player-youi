@@ -140,6 +140,10 @@ export default class KalturaVideo extends React.Component {
     NativeModules.KalturaVideo.Replay()
   }
 
+  setLogLevel = (logLevel) => {
+    NativeModules.KalturaVideo.SetLogLevel(logLevel)
+  }
+
   seek = (time) => {
     this.videoRef.current.seek(time)
   }
