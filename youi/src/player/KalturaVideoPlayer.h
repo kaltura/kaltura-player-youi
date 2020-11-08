@@ -135,6 +135,7 @@ private:
     
     std::unique_ptr<KalturaVideoPlayerPriv> m_pPriv;
     
+    CYIString m_devicOSName;
     uint64_t m_durationMs = 0;
     uint64_t m_currentTimeMs = 0;
     bool m_isMuted = false;

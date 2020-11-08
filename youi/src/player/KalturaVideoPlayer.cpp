@@ -5,6 +5,9 @@
 
 #include "player/KalturaVideoPlayerPriv.h"
 
+#include <platform/YiDeviceInformationBridge.h>
+#include <platform/YiDeviceBridgeLocator.h>
+
 static const CYIString TAG("KalturaVideoPlayer");
 
 static const char *loadMediaSuccessEvent = "loadMediaSuccess";
@@ -51,6 +54,13 @@ YI_TYPE_DEF(KalturaVideoPlayer, CYIAbstractVideoPlayer)
 KalturaVideoPlayer::KalturaVideoPlayer()
 {
     m_pPriv = std::make_unique<KalturaVideoPlayerPriv>(this);
+    CYIDeviceInformationBridge *pDeviceInformationBridge = CYIDeviceBridgeLocator::GetDeviceInformationBridge();
+    if (pDeviceInformationBridge)
+    {
+        m_devicOSName = pDeviceInformationBridge->GetDeviceOSName();
+    } else {
+        m_devicOSName = "UNKNOWN";
+    }
 }
 
 KalturaVideoPlayer::~KalturaVideoPlayer()
@@ -207,7 +217,27 @@ bool KalturaVideoPlayer::IsMuted_() const
 
 void KalturaVideoPlayer::Mute_(bool bMute)
 {
+    YI_LOGD(TAG, "Mute_  = %d", bMute);
+
+    if (bMute == m_isMuted) {
+        return;
+    }
+    
     m_pPriv->Mute_(bMute);
+    float volume;
+    if (bMute) {
+        m_isMuted = true;
+        volume = 0.0f;
+    } else {
+        m_isMuted = false;
+        volume = 1.0f;
+    }
+    
+    if (m_devicOSName.Contains("iOS") || m_devicOSName.Contains("tvOS"))
+    {
+        YI_LOGD(TAG, "%s VolumeChanged isMuted = %d", m_devicOSName.GetData(), m_isMuted);
+        VolumeChanged.Emit(volume);
+    }
 }
 
 void KalturaVideoPlayer::DisableClosedCaptions_()
@@ -441,6 +471,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
                 } else {
                     m_isMuted = false;
                 }
+                YI_LOGD(TAG, "%s VolumeChanged isMuted = %d", m_devicOSName.GetData(), m_isMuted);
                 VolumeChanged.Emit(volume);
             }
     }
