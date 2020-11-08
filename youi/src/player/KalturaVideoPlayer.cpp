@@ -27,6 +27,9 @@ static const char *seekingEvent = "seeking";
 static const char *seekedEvent = "seeked";
 static const char *volumeChangedEvent = "volumeChanged";
 static const char *errorEvent = "error";
+static const char *bookmarkErrorEvent = "bookmarkError";
+static const char *concurrencyErrorEvent = "concurrencyError";
+
 static const char *adProgressEvent = "adProgress";
 static const char *adCuepointsChangedEvent = "adCuepointsChanged";
 static const char *adStartedEvent = "adStarted";
@@ -68,6 +71,11 @@ void KalturaVideoPlayer::LoadMedia(const CYIString &assetId, folly::dynamic opti
 void KalturaVideoPlayer::SetMedia(const CYIUrl &videoURI)
 {
     m_pPriv->SetMedia_(videoURI);
+}
+
+void KalturaVideoPlayer::Replay()
+{
+    m_pPriv->Replay_();
 }
 
 bool KalturaVideoPlayer::SelectVideoTrack(uint32_t uID) {
@@ -147,7 +155,9 @@ uint64_t KalturaVideoPlayer::GetCurrentTimeMs_() const
 
 void KalturaVideoPlayer::Seek_(uint64_t uSeekPositionMs)
 {
-    m_pPriv->Seek_(uSeekPositionMs);
+    if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready) {
+        m_pPriv->Seek_(uSeekPositionMs);
+    }
 }
 
 void KalturaVideoPlayer::SetMaxBitrate_(uint64_t uMaxBitrate)
@@ -223,7 +233,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             const CYIString errorName = content["name"].asString();
             YI_LOGD(TAG, "loadMediaFailedEvent message = <%s>", message.GetData());
         }
-        
+
         m_pStateManager->TransitionToMediaUnloaded();
 //Example:
 //        //buffering / playing // paused
@@ -278,23 +288,30 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(canPlayEvent) == 0)
     {
         YI_LOGD(TAG, "canPlayEvent");
+        PlayerCanPlayEvent.Emit();
     }
     else if (name.Compare(playingEvent) == 0)
     {
         YI_LOGD(TAG, "playingEvent");
-        m_pStateManager->TransitionToPlaybackPlaying();
+        if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready) {
+            m_pStateManager->TransitionToPlaybackPlaying();
+        }
+        PlayerPlayingEvent.Emit();
     }
     else if (name.Compare(endedEvent) == 0)
     {
         YI_LOGD(TAG, "endedEvent");
+        PlayerEndedEvent.Emit();
     }
     else if (name.Compare(stoppedEvent) == 0)
     {
         YI_LOGD(TAG, "stoppedEvent");
+        PlayerStoppedEvent.Emit();
     }
     else if (name.Compare(replayEvent) == 0)
     {
         YI_LOGD(TAG, "replayEvent");
+        PlayerReplayEvent.Emit();
     }
     else if (name.Compare(tracksAvailableEvent) == 0)
     {
@@ -404,10 +421,14 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(seekingEvent) == 0)
     {
         YI_LOGD(TAG, "seekingEvent");
+        const auto targetPosition = content["targetPosition"].asDouble();
+        uint64_t targetPositionMs = static_cast<uint64_t>(targetPosition * 1000);
+        PlayerSeekingEvent.Emit(targetPositionMs);
     }
     else if (name.Compare(seekedEvent) == 0)
     {
         YI_LOGD(TAG, "seekedEvent");
+        PlayerSeekedEvent.Emit();
     }
     else if (name.Compare(volumeChangedEvent) == 0) {
             YI_LOGD(TAG, "volumeChangedEvent");
@@ -444,6 +465,34 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             m_pStateManager->TransitionToMediaUnloaded();
         }
     }
+    else if (name.Compare(bookmarkErrorEvent) == 0)
+    {
+        YI_LOGD(TAG, "bookmarkErrorEvent - %s", JSONFromDynamic(content).c_str());
+
+        CYIAbstractVideoPlayer::Error error;
+        error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
+        error.message = JSONFromDynamic(content).c_str();
+
+        CYIString errorType = content["errorCode"].asString();
+        error.nativePlayerErrorCode = errorType;
+
+        ErrorOccurred.Emit(error);
+        m_pStateManager->TransitionToMediaUnloaded();
+    }
+    else if (name.Compare(concurrencyErrorEvent) == 0)
+    {
+        YI_LOGD(TAG, "concurrencyErrorEvent - %s", JSONFromDynamic(content).c_str());
+
+        CYIAbstractVideoPlayer::Error error;
+        error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
+        error.message = JSONFromDynamic(content).c_str();
+
+        CYIString errorType = content["errorMessage"].asString();
+        error.nativePlayerErrorCode = errorType;
+
+        ErrorOccurred.Emit(error);
+        m_pStateManager->TransitionToMediaUnloaded();
+    }
     else if (name.Compare(adProgressEvent) == 0)
     {
         //YI_LOGD(TAG, "adProgressEvent");
@@ -455,7 +504,9 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(adStartedEvent) == 0)
     {
         YI_LOGD(TAG, "adStartedEvent");
-        m_pStateManager->TransitionToPlaybackPlaying();
+        if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready) {
+            m_pStateManager->TransitionToPlaybackPlaying();
+        }
     }
     else if (name.Compare(adCompletedEvent) == 0)
     {
@@ -469,7 +520,9 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(adResumedEvent) == 0)
     {
         YI_LOGD(TAG, "adResumedEvent");
-         m_pStateManager->TransitionToPlaybackPlaying();
+        if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready) {
+            m_pStateManager->TransitionToPlaybackPlaying();
+        }
     }
     else if (name.Compare(adBufferStartEvent) == 0)
     {

@@ -81,11 +81,21 @@ public:
     void Setup(int32_t partnerId, folly::dynamic options);
     void LoadMedia(const CYIString &assetId, folly::dynamic options);
     void SetMedia(const CYIUrl &videoURI);
+    void Replay();
 
     bool SelectVideoTrack(uint32_t uID);
     std::vector<VideoTrackInfo> GetVideoTracks();
     VideoTrackInfo GetActiveVideoTrack();
-    
+
+    CYISignal<> PlayerCanPlayEvent;
+    CYISignal<> PlayerPlayingEvent;
+    CYISignal<> PlayerEndedEvent;
+    CYISignal<> PlayerStoppedEvent;
+    CYISignal<> PlayerReplayEvent;
+
+    CYISignal<uint64_t> PlayerSeekingEvent;
+    CYISignal<> PlayerSeekedEvent;
+
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
     CYISignal<float> VolumeChanged;
     CYISignal<uint64_t> CurrentBufferTimeUpdated;
