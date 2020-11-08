@@ -376,7 +376,7 @@ public class PKPlayerWrapper {
         adInfoJson.addProperty("isBumper", adInfo.isBumper());
         adInfoJson.addProperty("isSkippable", adInfo.isAdSkippable());
         adInfoJson.addProperty("podIndex", adInfo.getPodIndex());
-        adInfoJson.addProperty("positionType", adInfo.getAdPositionType().name());
+        adInfoJson.addProperty("positionType", adInfo.getAdPositionType().ordinal());
         adInfoJson.addProperty("totalAds", adInfo.getTotalAdsInPod());
         adInfoJson.addProperty("width", adInfo.getAdWidth());
         adInfoJson.addProperty("height", adInfo.getAdHeight());

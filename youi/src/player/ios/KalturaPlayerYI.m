@@ -315,21 +315,21 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer addObserver:self event:AdEvent.adStarted block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"adStarted" payload:@{
             @"adId": event.adInfo.adId,
-            //@"adTitle": event.adInfo.adTitle,
             @"adPosition": @(event.adInfo.adPosition),
             @"adDuration": @(event.adInfo.duration),
             @"adDescription": event.adInfo.adDescription,
             @"adSystem": event.adInfo.adSystem,
-            @"creativeId": event.adInfo.creativeId,
             @"isBumper": @(event.adInfo.isBumper),
             @"isSkippable": @(event.adInfo.isSkippable),
-            @"advertiserName": event.adInfo.advertiserName,
             @"podIndex": @(event.adInfo.podIndex),
             @"positionType": @(event.adInfo.positionType),
             @"totalAds": @(event.adInfo.totalAds),
             @"mediaBitrate": @(event.adInfo.mediaBitrate),
             @"width": @(event.adInfo.width),
             @"height": @(event.adInfo.height),
+            //@"adTitle": event.adInfo.adTitle,
+            // @"creativeId": event.adInfo.creativeId,
+            //@"advertiserName": event.adInfo.advertiserName,
             @"timeOffset": @(event.adInfo.timeOffset)
         }];
     }];
