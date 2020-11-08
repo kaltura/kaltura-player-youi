@@ -496,6 +496,13 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
 + (void)setLogLevel:(NSString *)logLevel {
     PKLogLevel level = PKLogLevelError;
     
+    if (logLevel == nil || [logLevel length] == 0) {
+        return;
+    }
+
+    logLevel = [logLevel lowercaseString];
+    NSLog(@"*** setLogLevel level: %@", logLevel);
+
     if ([logLevel  isEqual: @"verbose"]) {
         level = PKLogLevelVerbose;
     } else if ([logLevel  isEqual: @"debug"]) {
@@ -507,7 +514,8 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     } else if ([logLevel  isEqual: @"error"]) {
         level = PKLogLevelError;
     } else {
-        NSLog(@"*** Unknown log level: %@", logLevel);
+        NSLog(@"*** setLogLevel unknown level: %@", logLevel);
+        return;
     }
     
     PlayKitManager.logLevel = level;

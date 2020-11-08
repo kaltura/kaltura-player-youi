@@ -169,6 +169,19 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
     GetEnv_KalturaPlayer()->DeleteLocalRef(url);
 }
 
+void KalturaVideoPlayerPriv::SetLogLevel_(const CYIString &logLevel) {
+
+    if (!playerWrapperBridgeClass)
+    {
+        return;
+    }
+
+    jstring logLevelStr = GetEnv_KalturaPlayer()->NewStringUTF(logLevel.GetData());
+
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setLogLevelMethodID, logLevelStr);
+    GetEnv_KalturaPlayer()->DeleteLocalRef(logLevelStr);
+}
+
 CYIString KalturaVideoPlayerPriv::GetName_() const
 {
     return "Kaltura Video Player";

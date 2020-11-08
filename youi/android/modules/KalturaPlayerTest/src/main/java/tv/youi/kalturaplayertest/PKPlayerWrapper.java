@@ -402,8 +402,8 @@ public class PKPlayerWrapper {
 
         if (!initialized) {
             onEventListener = () -> {
-                    log.d("delayed loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
-                    loadMediaInUIThread(assetId, jsonOptionsStr);
+                log.d("delayed loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
+                loadMediaInUIThread(assetId, jsonOptionsStr);
 
             };
             return;
@@ -461,8 +461,8 @@ public class PKPlayerWrapper {
 
         if (!initialized) {
             onEventListener = () -> {
-                    log.d("delayed setMedia contentUrl: " + contentUrl);
-                    setMediaInUIThread(contentUrl);
+                log.d("delayed setMedia contentUrl: " + contentUrl);
+                setMediaInUIThread(contentUrl);
             };
             return;
         }
@@ -743,44 +743,51 @@ public class PKPlayerWrapper {
     @SuppressWarnings("unused") // Called from C++
     public static void setLogLevel(String logLevel) {
 
-        log.d("setLogLevel: " + logLevel);
         if (TextUtils.isEmpty(logLevel)) {
             return;
         }
         logLevel = logLevel.toUpperCase();
-
+        String logMeaasge = "setLogLevel: " + logLevel;
         switch (logLevel) {
             case "VERBOSE":
                 PKLog.setGlobalLevel(PKLog.Level.verbose);
                 NKLog.setGlobalLevel(NKLog.Level.verbose);
                 YouboraLog.setDebugLevel(YouboraLog.Level.VERBOSE);
+                log.v(logMeaasge);
                 break;
             case "DEBUG":
                 PKLog.setGlobalLevel(PKLog.Level.debug);
                 NKLog.setGlobalLevel(NKLog.Level.debug);
                 YouboraLog.setDebugLevel(YouboraLog.Level.DEBUG);
+                log.d(logMeaasge);
                 break;
             case "WARN":
                 PKLog.setGlobalLevel(PKLog.Level.warn);
                 NKLog.setGlobalLevel(NKLog.Level.warn);
                 YouboraLog.setDebugLevel(YouboraLog.Level.WARNING);
+                log.w(logMeaasge);
                 break;
             case "INFO":
                 PKLog.setGlobalLevel(PKLog.Level.info);
                 NKLog.setGlobalLevel(NKLog.Level.info);
                 YouboraLog.setDebugLevel(YouboraLog.Level.NOTICE);
+                log.i(logMeaasge);
+
                 break;
             case "ERROR":
                 PKLog.setGlobalLevel(PKLog.Level.error);
                 NKLog.setGlobalLevel(NKLog.Level.error);
                 YouboraLog.setDebugLevel(YouboraLog.Level.ERROR);
+                log.e(logMeaasge);
                 break;
             case "OFF":
-            default:
                 PKLog.setGlobalLevel(PKLog.Level.off);
                 NKLog.setGlobalLevel(NKLog.Level.off);
                 YouboraLog.setDebugLevel(YouboraLog.Level.SILENT);
+            default:
+                log.e("setLogLevel unknown level: " + logLevel);
         }
+
     }
 
     static void sendPlayerEvent(String type, String payload) {

@@ -24,7 +24,9 @@ export default class YiReactApp extends Component {
     media: null,
     isMuted: false,
     videoSelected: false,
-    changeMedia: false
+    changeMedia: false,
+    logLevel: "VERBOSE"
+
   }
 
   videoRef = React.createRef()
@@ -45,10 +47,11 @@ export default class YiReactApp extends Component {
 
   pauseBtnPressed = () => this.state.isPlaying ? this.videoRef.current.pause() : this.videoRef.current.play();
   seekBtnPressed = () => this.videoRef.current.seek(this.state.currentTime + 10000);
+  logLevelBtnPressed = () => this.setState({ logLevel:  this.state.logLevel === "VERBOSE" ? "ERROR" : "VERBOSE"}); 
   muteBtnPressed = () => this.setState({ 'isMuted': !this.state.isMuted });
 
   render() {
-    const {isMuted, isPlaying, videoSelected, media, sources, partnerId, initOptions, changeMedia} = this.state;
+    const {isMuted, isPlaying, videoSelected, media, sources, partnerId, initOptions, changeMedia, logLevel} = this.state;
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.header}>Kaltura Video Sample</Text>
@@ -59,6 +62,7 @@ export default class YiReactApp extends Component {
                 <KalturaVideo
                   ottPartnerId={partnerId}
                   initOptions={initOptions}
+                  logLevel={logLevel}
                   source={sources}
                   media={media}
                   muted={isMuted}
@@ -101,6 +105,7 @@ export default class YiReactApp extends Component {
                 <MyTouchableOpacity text={isPlaying ? 'Pause' : 'Play'} onPress={this.pauseBtnPressed} disabled={!videoSelected} />
                 <MyTouchableOpacity text={isMuted ? 'Unmute' : 'Mute'} onPress={this.muteBtnPressed} disabled={!videoSelected}/>
                 <MyTouchableOpacity text={'Seek +10s'} onPress={this.seekBtnPressed} disabled={!videoSelected}/>
+                <MyTouchableOpacity text={'LOG'} onPress={this.logLevelBtnPressed} disabled={!videoSelected}/>
               </View>
               <TouchableOpacity
                   activeOpacity={0.7}

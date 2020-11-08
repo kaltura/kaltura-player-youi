@@ -73,6 +73,11 @@ void KalturaVideoPlayer::SetMedia(const CYIUrl &videoURI)
     m_pPriv->SetMedia_(videoURI);
 }
 
+void KalturaVideoPlayer::SetLogLevel(const CYIString &logLevel)
+{
+    m_pPriv->SetLogLevel_(logLevel);
+}
+
 void KalturaVideoPlayer::Replay()
 {
     m_pPriv->Replay_();

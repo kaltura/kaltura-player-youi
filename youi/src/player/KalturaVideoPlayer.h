@@ -82,6 +82,7 @@ public:
     void LoadMedia(const CYIString &assetId, folly::dynamic options);
     void SetMedia(const CYIUrl &videoURI);
     void Replay();
+    void SetLogLevel(const CYIString &logLevel);
 
     bool SelectVideoTrack(uint32_t uID);
     std::vector<VideoTrackInfo> GetVideoTracks();
