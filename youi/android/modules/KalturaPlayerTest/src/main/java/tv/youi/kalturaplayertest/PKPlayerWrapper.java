@@ -22,6 +22,7 @@ import com.kaltura.playkit.player.PKHttpClientManager;
 import com.kaltura.playkit.player.PKTracks;
 import com.kaltura.playkit.plugins.ads.AdCuePoints;
 import com.kaltura.playkit.plugins.ads.AdEvent;
+import com.kaltura.playkit.plugins.ads.AdInfo;
 import com.kaltura.playkit.plugins.ima.IMAConfig;
 import com.kaltura.playkit.plugins.ima.IMAPlugin;
 import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsEvent;
@@ -290,7 +291,9 @@ public class PKPlayerWrapper {
 
         player.addListener(self, AdEvent.adProgress, event -> sendPlayerEvent("adProgress", "{ \"currentAdPosition\": " + (event.currentAdPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
         player.addListener(self, AdEvent.cuepointsChanged, event -> sendPlayerEvent("adCuepointsChanged", getCuePointsJson(event.cuePoints)));
-        player.addListener(self, AdEvent.started, event -> sendPlayerEvent("adStarted"));
+        player.addListener(self, AdEvent.adBreakStarted, event -> sendPlayerEvent("adBreakStarted"));
+        player.addListener(self, AdEvent.adBreakEnded, event -> sendPlayerEvent("adBreakEnded"));
+        player.addListener(self, AdEvent.started, event -> sendPlayerEvent("adStarted", getAdInfoJson(event.adInfo)));
         player.addListener(self, AdEvent.completed, event -> sendPlayerEvent("adCompleted"));
         player.addListener(self, AdEvent.paused, event -> sendPlayerEvent("adPaused"));
         player.addListener(self, AdEvent.resumed, event -> sendPlayerEvent("adResumed"));
@@ -361,6 +364,32 @@ public class PKPlayerWrapper {
         errorJson.addProperty("errorCause", errorCause);
         return new Gson().toJson(errorJson);
     }
+
+    private static String getAdInfoJson(AdInfo adInfo) {
+        JsonObject adInfoJson = new JsonObject();
+        adInfoJson.addProperty("adId", adInfo.getAdId());
+        adInfoJson.addProperty("mediaBitrate", adInfo.getMediaBitrate());
+        adInfoJson.addProperty("adPosition", adInfo.getAdPlayHead());
+        adInfoJson.addProperty("adDuration", adInfo.getAdDuration());
+        adInfoJson.addProperty("adDescription", adInfo.getAdDescription());
+        adInfoJson.addProperty("adSystem", adInfo.getAdSystem());
+        adInfoJson.addProperty("isBumper", adInfo.isBumper());
+        adInfoJson.addProperty("isSkippable", adInfo.isAdSkippable());
+        adInfoJson.addProperty("podIndex", adInfo.getPodIndex());
+        adInfoJson.addProperty("positionType", adInfo.getAdPositionType().name());
+        adInfoJson.addProperty("totalAds", adInfo.getTotalAdsInPod());
+        adInfoJson.addProperty("width", adInfo.getAdWidth());
+        adInfoJson.addProperty("height", adInfo.getAdHeight());
+        adInfoJson.addProperty("timeOffset", adInfo.getAdPodTimeOffset());
+
+        //adInfoJson.addProperty("adTitle", adInfo.getAdTitle());
+        // adInfoJson.addProperty("creativeId", adInfo.());
+        // adInfoJson.addProperty("advertiserName", adInfo.getAda);
+        return new Gson().toJson(adInfoJson);
+    }
+
+
+
 
     private static String getCuePointsJson(AdCuePoints adCuePoints) {
 
