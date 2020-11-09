@@ -46,6 +46,12 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYBACK_RATE_CHANGED_EVENT', (rate) => {
+      if (this.props.onPlaybackRateChangedEvent) {
+        this.props.onPlaybackRateChangedEvent(rate);
+      }
+    })
+
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_SEEKED_EVENT', () => {
       if (this.props.onSeekedEvent) {
         this.props.onSeekedEvent();
@@ -97,6 +103,10 @@ export default class KalturaVideo extends React.Component {
 
     if (this.props.source !== prevProps.source && this.props.source) {
       this.setMedia(this.props.source.uri);
+    }
+
+    if (this.props.playbackSpeed != prevProps.playbackSpeed && this.props.playbackSpeed) {
+        NativeModules.KalturaVideo.ChangePlaybackRate(this.props.playbackSpeed)
     }
   }
 

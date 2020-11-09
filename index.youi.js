@@ -24,7 +24,8 @@ export default class YiReactApp extends Component {
     media: null,
     isMuted: false,
     videoSelected: false,
-    changeMedia: false
+    changeMedia: false,
+    playbackSpeed: 1.0
   }
 
   videoRef = React.createRef()
@@ -46,9 +47,10 @@ export default class YiReactApp extends Component {
   pauseBtnPressed = () => this.state.isPlaying ? this.videoRef.current.pause() : this.videoRef.current.play();
   seekBtnPressed = () => this.videoRef.current.seek(this.state.currentTime + 10000);
   muteBtnPressed = () => this.setState({ 'isMuted': !this.state.isMuted });
+  speedBtnPressed = () => this.setState({playbackSpeed: this.state.playbackSpeed == 1.0 ? 2.0 : 1.0 });
 
   render() {
-    const {isMuted, isPlaying, videoSelected, media, sources, partnerId, initOptions, changeMedia} = this.state;
+    const {isMuted, isPlaying, videoSelected, media, sources, partnerId, initOptions, changeMedia, playbackSpeed} = this.state;
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.header}>Kaltura Video Sample</Text>
@@ -61,6 +63,7 @@ export default class YiReactApp extends Component {
                   initOptions={initOptions}
                   source={sources}
                   media={media}
+                  playbackSpeed={playbackSpeed}
                   muted={isMuted}
                   style={styles.video}
                   ref={this.videoRef}
@@ -100,6 +103,8 @@ export default class YiReactApp extends Component {
                 {/*<MyTouchableOpacity text={'Change Media'} onPress={this.changeMediaPressed} />*/}
                 <MyTouchableOpacity text={isPlaying ? 'Pause' : 'Play'} onPress={this.pauseBtnPressed} disabled={!videoSelected} />
                 <MyTouchableOpacity text={isMuted ? 'Unmute' : 'Mute'} onPress={this.muteBtnPressed} disabled={!videoSelected}/>
+                <MyTouchableOpacity text={playbackSpeed == 1.0 ? "X1" : 'X2'} onPress={this.speedBtnPressed} disabled={!videoSelected}/>
+
                 <MyTouchableOpacity text={'Seek +10s'} onPress={this.seekBtnPressed} disabled={!videoSelected}/>
               </View>
               <TouchableOpacity

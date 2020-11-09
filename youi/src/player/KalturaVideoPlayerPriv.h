@@ -27,6 +27,7 @@ public:
     void LoadMedia_(const CYIString &assetId, folly::dynamic options);
     void SetMedia_(const CYIUrl &videoURI);
     void Replay_();
+    void ChangePlaybackRate_(float playbackRate);
 
     bool SelectVideoTrack_(uint32_t uID);
     std::vector<KalturaVideoPlayer::VideoTrackInfo> GetVideoTracks_() const;
