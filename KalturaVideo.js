@@ -21,7 +21,97 @@ export default class KalturaVideo extends React.Component {
   componentDidMount() {
     // Must be called before any other method on the native module
     NativeModules.KalturaVideo.ConnectToPlayer(findNodeHandle(this.videoRef.current));
-    
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_BREAK_STARTED_EVENT', () => {
+      if (this.props.onAdBreakStartedEvent) {
+        this.props.onAdBreakStartedEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_BREAK_ENDED_EVENT', () => {
+      if (this.props.onAdBreakEndedEvent) {
+        this.props.onAdBreakEndedEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_STARTED_EVENT', (adInfo) => {
+      if (this.props.onAdStartedEvent) {
+        this.props.onAdStartedEvent(adInfo);
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_COMPLETED_EVENT', () => {
+      if (this.props.onAdCompletedEvent) {
+        this.props.onAdCompletedEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_PAUSED_EVENT', () => {
+      if (this.props.onAdPausedEvent) {
+        this.props.onAdPausedEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_RESUMED_EVENT', () => {
+      if (this.props.onAdResumedEvent) {
+        this.props.onAdAdResumedEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_BUFFER_START_EVENT', () => {
+      if (this.props.onAdBufferStartEvent) {
+        this.props.onAdBufferStartEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_SKIPPED_EVENT', () => {
+      if (this.props.onAdSkippedEvent) {
+        this.props.onAdSkippedEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_CONTENT_PAUSE_REQUESTED_EVENT', () => {
+      if (this.props.onAdContentPauseRequested) {
+        this.props.onAdContentPauseRequested();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_CONTENT_RESUME_REQUESTED_EVENT', () => {
+      if (this.props.onAdContentResumeRequestedEvent) {
+        this.props.onAdContentResumeRequestedEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_ALL_ADS_COMPLETED_EVENT', () => {
+      if (this.props.onAllAdsCompletedEvent) {
+        this.props.onAllAdsCompletedEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_PROGRESS_EVENT', (adPosition) => {
+      if (this.props.onAdProgressEvent) {
+        this.props.onAdProgressEvent(adPosition);
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_CUEPOINTS_CHANGED_EVENT', (cuePoints) => {
+      if (this.props.onAdCuepointsChangedEvent) {
+        this.props.onAdCuepointsChangedEvent(cuePoints);
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_CLICKED_EVENT', (clickThruUrl) => {
+      if (this.props.onAdClickedEvent) {
+        this.props.onAdClickedEvent(clickThruUrl);
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_REQUESTED_EVENT', (adTagUrl) => {
+      if (this.props.onAdRequestedEvent) {
+        this.props.onAdRequestedEvent(adTagUrl);
+      }
+    })
+
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYING_EVENT', () => {
       if (this.props.onPlayingEvent) {
         this.props.onPlayingEvent();

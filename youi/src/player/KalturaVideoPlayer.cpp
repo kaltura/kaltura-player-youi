@@ -32,6 +32,8 @@ static const char *concurrencyErrorEvent = "concurrencyError";
 
 static const char *adProgressEvent = "adProgress";
 static const char *adCuepointsChangedEvent = "adCuepointsChanged";
+static const char *adBreakStartedEvent = "adBreakStarted";
+static const char *adBreakEndedEvent = "adBreakEnded";
 static const char *adStartedEvent = "adStarted";
 static const char *adCompletedEvent = "adCompleted";
 static const char *adPausedEvent = "adPaused";
@@ -477,26 +479,44 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(adProgressEvent) == 0)
     {
         YI_LOGD(TAG, "adProgressEvent");
+        const auto adCurrentTime = content["currentAdPosition"].asDouble();
+        uint64_t adCurrentTimeMs = static_cast<uint64_t>(adCurrentTime * 1000);
+        AdProgressEvent.Emit(adCurrentTimeMs);
     }
     else if (name.Compare(adCuepointsChangedEvent) == 0)
     {
-        YI_LOGD(TAG, "adCuepointsChangedEvent");
+        YI_LOGD(TAG, "adCuepointsChangedEvent %s", JSONFromDynamic(content).c_str());
+        AdCuepointsChangedEvent.Emit(content);
+    }
+    else if (name.Compare(adBreakStartedEvent) == 0)
+    {
+        YI_LOGD(TAG, "adBreakStartedEvent");
+        AdBreakStartedEvent.Emit();
+    }
+    else if (name.Compare(adBreakEndedEvent) == 0)
+    {
+        YI_LOGD(TAG, "adBreakEndedEvent");
+        AdBreakEndedEvent.Emit();
     }
     else if (name.Compare(adStartedEvent) == 0)
     {
-        YI_LOGD(TAG, "adStartedEvent");
+        YI_LOGD(TAG, "adStartedEvent %s", JSONFromDynamic(content).c_str());
+
         if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready) {
             m_pStateManager->TransitionToPlaybackPlaying();
         }
+        AdStartedEvent.Emit(content);
     }
     else if (name.Compare(adCompletedEvent) == 0)
     {
         YI_LOGD(TAG, "adCompletedEvent");
+        AdCompletedEvent.Emit();
     }
     else if (name.Compare(adPausedEvent) == 0)
     {
         YI_LOGD(TAG, "adPausedEvent");
         m_pStateManager->TransitionToPlaybackPaused();
+        AdPausedEvent.Emit();
     }
     else if (name.Compare(adResumedEvent) == 0)
     {
@@ -504,34 +524,44 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready) {
             m_pStateManager->TransitionToPlaybackPlaying();
         }
+        AdResumedEvent.Emit();
     }
     else if (name.Compare(adBufferStartEvent) == 0)
     {
         YI_LOGD(TAG, "adBufferStartEvent");
+        AdBufferStartEvent.Emit();
     }
     else if (name.Compare(adClickedEvent) == 0)
     {
-        YI_LOGD(TAG, "adClickedEvent");
+        YI_LOGD(TAG, "adClickedEvent %s", JSONFromDynamic(content).c_str());
+
+        AdClickedEvent.Emit(content);
     }
     else if (name.Compare(adSkippedEvent) == 0)
     {
-        YI_LOGD(TAG, "adSkipped");
+        YI_LOGD(TAG, "adSkippedEvent");
+        AdSkippedEvent.Emit();
     }
     else if (name.Compare(adRequestedEvent) == 0)
     {
-        YI_LOGD(TAG, "adRequestedEvent");
+        YI_LOGD(TAG, "adRequestedEvent %s", JSONFromDynamic(content).c_str());
+
+        AdRequestedEvent.Emit(content);
     }
     else if (name.Compare(adContentPauseRequestedEvent) == 0)
     {
-        YI_LOGD(TAG, "adContentPauseRequested");
+        YI_LOGD(TAG, "adContentPauseRequestedEvent");
+        AdContentPauseRequested.Emit();
     }
     else if (name.Compare(adContentResumeRequestedEvent) == 0)
     {
         YI_LOGD(TAG, "adContentResumeRequestedEvent");
+        AdContentResumeRequestedEvent.Emit();
     }
     else if (name.Compare(allAdsCompletedEvent) == 0)
     {
         YI_LOGD(TAG, "allAdsCompletedEvent");
+        AllAdsCompletedEvent.Emit();
     }
     else if (name.Compare(adErrorEvent) == 0)
     {

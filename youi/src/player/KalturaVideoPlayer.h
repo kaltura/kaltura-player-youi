@@ -87,6 +87,24 @@ public:
     std::vector<VideoTrackInfo> GetVideoTracks();
     VideoTrackInfo GetActiveVideoTrack();
 
+
+    CYISignal<uint64_t> AdProgressEvent;
+    CYISignal<folly::dynamic> AdCuepointsChangedEvent;
+    CYISignal<folly::dynamic> AdClickedEvent;
+    CYISignal<folly::dynamic> AdRequestedEvent;
+
+    CYISignal<> AdBreakStartedEvent;
+    CYISignal<> AdBreakEndedEvent;
+    CYISignal<folly::dynamic> AdStartedEvent;
+    CYISignal<> AdCompletedEvent;
+    CYISignal<> AdPausedEvent;
+    CYISignal<> AdResumedEvent;
+    CYISignal<> AdBufferStartEvent;
+    CYISignal<> AdSkippedEvent;
+    CYISignal<> AdContentPauseRequested;
+    CYISignal<> AdContentResumeRequestedEvent;
+    CYISignal<> AllAdsCompletedEvent;
+
     CYISignal<> PlayerCanPlayEvent;
     CYISignal<> PlayerPlayingEvent;
     CYISignal<> PlayerEndedEvent;

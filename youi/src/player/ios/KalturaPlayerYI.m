@@ -313,11 +313,38 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         [weakSender sendEvent:@"adProgress" payload:@{@"currentAdPosition": event.adMediaTime}];
     }];
     [self.kalturaPlayer addObserver:self event:AdEvent.adStarted block:^(PKEvent * _Nonnull event) {
-        [weakSender sendEvent:@"adStarted" payload:@{}];
+        [weakSender sendEvent:@"adStarted" payload:@{
+            @"adId": event.adInfo.adId,
+            @"adPosition": @(event.adInfo.adPosition),
+            @"adDuration": @(event.adInfo.duration),
+            @"adDescription": event.adInfo.adDescription,
+            @"adSystem": event.adInfo.adSystem,
+            @"isBumper": @(event.adInfo.isBumper),
+            @"isSkippable": @(event.adInfo.isSkippable),
+            @"podIndex": @(event.adInfo.podIndex),
+            @"positionType": @(event.adInfo.positionType),
+            @"totalAds": @(event.adInfo.totalAds),
+            @"mediaBitrate": @(event.adInfo.mediaBitrate),
+            @"width": @(event.adInfo.width),
+            @"height": @(event.adInfo.height),
+            //@"adTitle": event.adInfo.adTitle,
+            // @"creativeId": event.adInfo.creativeId,
+            //@"advertiserName": event.adInfo.advertiserName,
+            @"timeOffset": @(event.adInfo.timeOffset)
+        }];
     }];
     [self.kalturaPlayer addObserver:self event:AdEvent.adComplete block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"adCompleted" payload:@{}];
     }];
+    
+    [self.kalturaPlayer addObserver:self event:AdEvent.adBreakStarted block:^(PKEvent * _Nonnull event) {
+        [weakSender sendEvent:@"adBreakStarted" payload:@{}];
+    }];
+    
+    [self.kalturaPlayer addObserver:self event:AdEvent.adBreakEnded block:^(PKEvent * _Nonnull event) {
+        [weakSender sendEvent:@"adBreakEnded" payload:@{}];
+    }];
+    
     [self.kalturaPlayer addObserver:self event:AdEvent.adPaused block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"adPaused" payload:@{}];
     }];
