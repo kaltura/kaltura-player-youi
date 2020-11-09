@@ -9,7 +9,6 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <PlayKit/PlayKit-Swift.h>
-#import <PlayKitUtils/PlayKitUtils-Swift.h>
 
 #import <KalturaNetKit/KalturaNetKit-Swift.h>
 #import <PlayKitProviders/PlayKitProviders-Swift.h>
