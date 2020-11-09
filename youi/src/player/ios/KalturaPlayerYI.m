@@ -220,10 +220,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self observeAllEvents];
     
     __weak EventSender *playerInitializedWeakSender = self.eventSender;
-    [playerInitializedWeakSender sendEvent:@"playerInitialized" payload:@{
-            @"playerName": @"kaltura-vp-ios",
-            @"playerVersion": PlayKitManager.versionString
-    }];
+    [playerInitializedWeakSender sendEvent:@"playerInitialized" payload:@{}];
 
     return self;
 }

@@ -93,12 +93,13 @@ KalturaVideoPlayer::VideoTrackInfo KalturaVideoPlayer::GetActiveVideoTrack() {
 
 CYIString KalturaVideoPlayer::GetName_() const
 {
-    return m_playerName;
+    return m_pPriv->GetName_();
 }
 
 CYIString KalturaVideoPlayer::GetVersion_() const
 {
-    return m_playerVersion;
+    CYIString bridgeVersion = "v0.0.1";
+    return bridgeVersion;
 }
 
 CYIAbstractVideoPlayer::Statistics KalturaVideoPlayer::GetStatistics_() const
@@ -222,8 +223,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     if (name.Compare(playerInitializedEvent) == 0)
     {
         YI_LOGD(TAG, "playerInitializedEvent");
-        m_playerName = content["playerName"].asString();
-        m_playerVersion = content["playerVersion"].asString();
         PlayerInitializedEvent.Emit();
     }
     else if (name.Compare(loadMediaSuccessEvent) == 0)

@@ -169,6 +169,11 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
     GetEnv_KalturaPlayer()->DeleteLocalRef(url);
 }
 
+CYIString KalturaVideoPlayerPriv::GetName_() const
+{
+    return "kaltura-yi-android";
+}
+
 CYIAbstractVideoPlayer::Statistics KalturaVideoPlayerPriv::GetStatistics_() const
 {
     CYIAbstractVideoPlayer::Statistics stats;
@@ -257,7 +262,7 @@ void KalturaVideoPlayerPriv::Seek_(uint64_t uSeekPositionMs)
     }
 
     double seekTime = static_cast<double>(uSeekPositionMs) / 1000.f;
-    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, seekToMethodID, seekTime);
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, seekToMethodID, (float)seekTime);
 
 }
 

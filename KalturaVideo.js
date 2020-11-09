@@ -71,6 +71,13 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
+    this.videoRef.current.getPlayerInformation().then((playerInformation) => {
+      console.log({
+        name: playerInformation.name,
+        version: playerInformation.version
+      })
+     })
+     
     NativeModules.KalturaVideo.Setup(this.props.ottPartnerId, this.props.initOptions)
 
     if (this.props.media) {

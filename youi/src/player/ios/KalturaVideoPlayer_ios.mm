@@ -199,6 +199,11 @@ void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic
     m_pPub->HandleEvent(name, content);
 }
 
+CYIString KalturaVideoPlayerPriv::GetName_() const
+{
+    return "kaltura-yi-ios";
+}
+
 CYIAbstractVideoPlayer::Statistics KalturaVideoPlayerPriv::GetStatistics_() const
 {
     CYIAbstractVideoPlayer::Statistics stats;

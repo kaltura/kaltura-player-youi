@@ -200,20 +200,11 @@ public class PKPlayerWrapper {
 
             initialized = true;
 
-            sendPlayerInitializedEvent(context);
+            sendPlayerEvent("playerInitialized");
             if (onEventListener != null) {
                 onEventListener.onKalturaPlayerInitialized();
             }
         });
-    }
-
-    private static void sendPlayerInitializedEvent(Context context) {
-        String playerName = "kaltura-vp-android";
-        String playerVersion = PlayKitManager.VERSION_STRING;
-
-        sendPlayerEvent("playerInitialized", "{ \"playerName\": \"" + playerName +
-                "\" , \"playerVersion\": \"" + playerVersion +
-                "\" }");
     }
 
     private static CYIActivity.LifecycleListener getLifeCycleListener() {
