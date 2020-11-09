@@ -105,7 +105,7 @@ export default class KalturaVideo extends React.Component {
     }
 
     if (this.props.logLevel !== prevProps.logLevel && this.props.logLevel) {
-      this.setLogLevel(this.props.logLevel);
+      NativeModules.KalturaVideo.SetLogLevel(this.props.logLevel)
     }
   }
 
