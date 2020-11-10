@@ -37,7 +37,7 @@ export default class YiReactApp extends Component {
 
   loadBtnPressed = () => {
     if (this.state.videoSelected) {
-      this.setState({changeMedia: false, sources: null, media: null, videoSelected: false, partnerId: null, initOptions: null});
+      this.setState({changeMedia: false, sources: null, media: null, videoSelected: false, partnerId: null, initOptions: null, isMuted: false, playbackSpeed: 1.0});
     }
   }
   changeMediaPressed = () => {

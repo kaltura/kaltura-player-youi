@@ -83,6 +83,10 @@ export default class KalturaVideo extends React.Component {
     } else if (this.props.source) {
       this.setMedia(this.props.source.uri);
     }
+
+    if (this.props.playbackSpeed) {
+      NativeModules.KalturaVideo.ChangePlaybackRate(this.props.playbackSpeed)
+    }
   }
 
   componentDidUpdate(prevProps) {
