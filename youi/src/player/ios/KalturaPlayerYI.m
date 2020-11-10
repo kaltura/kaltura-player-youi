@@ -443,7 +443,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
 
     __weak EventSender *weakSender = self.eventSender;
     [self.kalturaPlayer setMedia:mediaEntry options:nil];
-    [weakSender sendEvent:@"loadMediaSuccess" payload:nil];
+    [weakSender sendEvent:@"loadMediaSuccess" payload:@{@"id": mediaEntry.id}];
 }
 
 - (void)loadMedia:(NSString *)assetId options:(NSDictionary *)dyn_options {
@@ -502,9 +502,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
             }];
         } else {
             // TODO send PKMeidaEntry ??
-            [weakSender sendEvent:@"loadMediaSuccess" payload:@{@"id": assetId,
-                                                                @"mediaType": @"Vod"
-            }];
+            [weakSender sendEvent:@"loadMediaSuccess" payload:@{@"id": assetId}];
         }
     }];
     

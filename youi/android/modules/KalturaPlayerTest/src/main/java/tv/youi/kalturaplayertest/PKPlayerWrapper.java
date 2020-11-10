@@ -438,13 +438,13 @@ public class PKPlayerWrapper {
             } else {
                 player.loadMedia(mediaAsset.buildOttMediaOptions(assetId, player.getKS()), (entry, error) -> {
                     if (error != null) {
-                        log.d("ott media load error: " + error);
+                        log.d("ott media load error: " + error + " assetId = " + assetId);
                         //code, extra, message, name
                         sendPlayerEvent("loadMediaFailed", gson.toJson(error));
 
                     } else {
-                        log.d("ott media load success name = " + entry.getName());
-                        sendPlayerEvent("loadMediaSuccess", gson.toJson(entry));
+                        log.d("ott media load success name = " + entry.getName() + " id = " + assetId);
+                        sendPlayerEvent("loadMediaSuccess", "{ \"id\": \"" + entry.getId() + "\" }");
                     }
                 });
             }

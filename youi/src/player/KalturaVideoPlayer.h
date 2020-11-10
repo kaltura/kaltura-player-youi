@@ -98,7 +98,6 @@ public:
 
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
     CYISignal<folly::dynamic> LoadMediaSuccess;
-    CYISignal<folly::dynamic> LoadMediaFailed;
     CYISignal<folly::dynamic> VolumeChanged;
 
     virtual void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle) override;
@@ -133,7 +132,10 @@ private:
     virtual void SetMaxBitrate_(uint64_t uMaxBitrate) override;
 
     void HandleEvent(const CYIString& name, folly::dynamic content);
-    
+
+    const CYIString FATAL = "Fatal";
+    const CYIString RECOVERABLE = "Recoverable";
+
     std::unique_ptr<KalturaVideoPlayerPriv> m_pPriv;
     
     uint64_t m_durationMs = 0;

@@ -223,8 +223,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     if (name.Compare(loadMediaSuccessEvent) == 0)
     {
         const CYIString id = content["id"].asString();
-        const CYIString mediaType = content["mediaType"].asString();
-        YI_LOGD(TAG, "loadMediaSuccessEvent id = %s mediaType = %s", id.GetData(), mediaType.GetData());
+        YI_LOGD(TAG, "loadMediaSuccessEvent id = %s", id.GetData());
         LoadMediaSuccess.Emit(content);
         m_pStateManager->TransitionToMediaReady();
     }
@@ -236,18 +235,15 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             const CYIString message = content["message"].asString();
 
             YI_LOGD(TAG, "loadMediaFailedEvent code = %s message = %s", code.GetData(), message.GetData());
-//            CYIAbstractVideoPlayer::Error error;
-//            error.errorCode = CYIAbstractVideoPlayer::ErrorCode::InitializationError;
-//            error.message = JSONFromDynamic(content).c_str();
-//
-//            error.nativePlayerErrorCode = code;
-//            ErrorOccurred.Emit(error);
-            LoadMediaFailed.Emit(content);
+            CYIAbstractVideoPlayer::Error error;
+            error.errorCode = CYIAbstractVideoPlayer::ErrorCode::InitializationError;
+            error.message = JSONFromDynamic(content).c_str();
+
+            error.nativePlayerErrorCode = code;
+            ErrorOccurred.Emit(error);
         }
 
         m_pStateManager->TransitionToMediaUnloaded();
-        
-       
 
 //Example:
 //        //buffering / playing // paused
@@ -455,7 +451,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         error.nativePlayerErrorCode = errorType;
 
         ErrorOccurred.Emit(error);
-        if (errorSeverity == "Fatal") {
+        if (errorSeverity == FATAL) {
             YI_LOGD(TAG, "errorEvent fatal");
             m_pStateManager->TransitionToMediaUnloaded();
         }
