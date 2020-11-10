@@ -300,6 +300,32 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer addObserver:self event:PlayerEvent.seeked block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"seeked" payload:@{}];
     }];
+    
+    [self.kalturaPlayer addObserver:self event:PlayerEvent.loadedTimeRanges block:^(PKEvent * _Nonnull event) {
+    //NSArray<PKTimeRange>
+
+        NSMutableArray *timeRangesArray = [[NSMutableArray alloc] init];
+
+        unsigned long i;
+        for (i = 0; i < [event.timeRanges count]; i++) {
+          id pkTimeRangeElement = [event.timeRanges objectAtIndex:i];
+            PKTimeRange *pkTimeRange = pkTimeRangeElement;
+            NSLog(@"pkTimeRangeElement start : %f",  pkTimeRange.start);
+            NSLog(@"pkTimeRangeElement end : %f",  pkTimeRange.end);
+            
+            NSDictionary *dictionary = @{
+                @"start": @(pkTimeRange.start),
+                @"end": @(pkTimeRange.end)
+            };
+            [timeRangesArray addObject:dictionary];
+        }
+        
+        if (timeRangesArray == nil || [timeRangesArray count] == 0) {
+            return;
+        }
+        
+        [weakSender sendEvent:@"loadedTimeRanges" payload:@{@"timeRanges" : timeRangesArray}];
+    }];
 
     [self.kalturaPlayer addObserver:self events:@[OttEvent.bookmarkError] block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"bookmarkError" payload:@{@"errorMessage": event.ottEventMessage}];
