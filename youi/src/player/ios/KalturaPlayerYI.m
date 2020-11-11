@@ -520,15 +520,15 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     logLevel = [logLevel lowercaseString];
     NSLog(@"*** setLogLevel level: %@", logLevel);
 
-    if ([logLevel  isEqual: @"verbose"]) {
+    if ([logLevel isEqual: @"verbose"]) {
         level = PKLogLevelVerbose;
-    } else if ([logLevel  isEqual: @"debug"]) {
+    } else if ([logLevel isEqual: @"debug"]) {
         level = PKLogLevelDebug;
-    } else if ([logLevel  isEqual: @"info"]) {
+    } else if ([logLevel isEqual: @"info"]) {
         level = PKLogLevelInfo;
-    } else if ([logLevel  isEqual: @"warning"]) {
+    } else if ([logLevel isEqual: @"warning"]) {
         level = PKLogLevelWarning;
-    } else if ([logLevel  isEqual: @"error"]) {
+    } else if ([logLevel isEqual: @"error"]) {
         level = PKLogLevelError;
     } else {
         NSLog(@"*** setLogLevel unknown level: %@", logLevel);
