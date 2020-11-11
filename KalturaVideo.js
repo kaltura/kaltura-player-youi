@@ -46,6 +46,12 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYBACK_RATE_CHANGED_EVENT', (rate) => {
+      if (this.props.onPlaybackRateChangedEvent) {
+        this.props.onPlaybackRateChangedEvent(rate);
+      }
+    })
+
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_SEEKED_EVENT', () => {
       if (this.props.onSeekedEvent) {
         this.props.onSeekedEvent();
@@ -64,9 +70,9 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_VOLUME_CHANGED', (event) => {
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_VOLUME_CHANGED', (volume) => {
       if (this.props.onVolumeChanged) {
-        this.props.onVolumeChanged(event.volume);
+        this.props.onVolumeChanged(volume);
       }
     })
 
@@ -76,12 +82,26 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
-    NativeModules.KalturaVideo.Setup(this.props.ottPartnerId, this.props.initOptions)
+    if (this.props.logLevel) {
+       NativeModules.KalturaVideo.SetLogLevel(this.props.logLevel)
+    }
 
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_BUFFER_TIME_UPDATED', (bufferPosition) => {
+      if (this.props.onBufferTimeUpdated) {
+        this.props.onBufferTimeUpdated(bufferPosition);
+      }
+    })
+
+    NativeModules.KalturaVideo.Setup(this.props.ottPartnerId, this.props.initOptions)
+    
     if (this.props.media) {
       this.loadMedia(this.props.media.id, this.props.media.asset);
     } else if (this.props.source) {
       this.setMedia(this.props.source.uri);
+    }
+
+    if (this.props.playbackSpeed) {
+      NativeModules.KalturaVideo.ChangePlaybackRate(this.props.playbackSpeed)
     }
   }
 
@@ -103,6 +123,14 @@ export default class KalturaVideo extends React.Component {
 
     if (this.props.source !== prevProps.source && this.props.source) {
       this.setMedia(this.props.source.uri);
+    }
+
+    if (this.props.playbackSpeed != prevProps.playbackSpeed && this.props.playbackSpeed) {
+        NativeModules.KalturaVideo.ChangePlaybackRate(this.props.playbackSpeed)
+    }
+    
+    if (this.props.logLevel !== prevProps.logLevel && this.props.logLevel) {
+      NativeModules.KalturaVideo.SetLogLevel(this.props.logLevel)
     }
   }
 
