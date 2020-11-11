@@ -255,7 +255,6 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         if (bufferedTime.doubleValue < currentTime.doubleValue) {
             bufferedTime = currentTime;
         }
-        printf("Nilit currentTime: %f bufferedTime: %f\n", currentTime.doubleValue, bufferedTime.doubleValue);
         [weakSender sendEvent:@"timeUpdate" payload:@{@"position": currentTime,
                                                       @"bufferPosition": bufferedTime
         }];
