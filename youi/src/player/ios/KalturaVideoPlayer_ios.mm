@@ -398,11 +398,6 @@ CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayerPriv::GetActiv
     return CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo();
 }
 
-bool KalturaVideoPlayerPriv::IsMuted_() const
-{
-    return false;
-}
-
 void KalturaVideoPlayerPriv::Mute_(bool bMute)
 {
     if (bMute) {

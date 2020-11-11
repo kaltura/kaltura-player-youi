@@ -25,8 +25,8 @@ public:
 
     YI_RN_EXPORT_METHOD(SelectVideoTrack)(uint32_t trackId);
 
-  private:    
-    void EmitEventPriv(const std::string& event, const folly::dynamic &obj);
+  private:
+    void EmitEventPriv(const std::string& event, const folly::dynamic &value);
     
     KalturaVideoPlayer *m_pPlayer;
 };
