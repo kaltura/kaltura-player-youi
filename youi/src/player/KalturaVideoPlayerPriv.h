@@ -27,6 +27,7 @@ public:
     void LoadMedia_(const CYIString &assetId, folly::dynamic options);
     void SetMedia_(const CYIUrl &videoURI);
     void Replay_();
+    void ChangePlaybackRate_(float playbackRate);
     void SetLogLevel_(const CYIString &logLevel);
 
     bool SelectVideoTrack_(uint32_t uID);

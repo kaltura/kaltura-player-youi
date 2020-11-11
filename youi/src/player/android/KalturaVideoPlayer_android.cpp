@@ -262,6 +262,15 @@ void KalturaVideoPlayerPriv::Replay_()
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, replayMethodID);
 }
 
+void KalturaVideoPlayerPriv::ChangePlaybackRate_(float playbackRate)
+{
+    if (!playerWrapperBridgeClass)
+    {
+        return;
+    }
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, changePlaybackRateMethodID, playbackRate);
+}
+
 uint64_t KalturaVideoPlayerPriv::GetDurationMs_() const
 {
     return m_pPub->m_durationMs;

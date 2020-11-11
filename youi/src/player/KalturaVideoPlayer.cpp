@@ -22,6 +22,7 @@ static const char *playingEvent = "playing";
 static const char *endedEvent = "ended";
 static const char *stoppedEvent = "stopped";
 static const char *replayEvent = "replay";
+static const char *playbackRateChangedEvent = "playbackRateChanged";
 static const char *tracksAvailableEvent = "tracksAvailable";
 static const char *videoTrackChangedEvent = "videoTrackChanged";
 static const char *audioTrackChangedEvent = "audioTrackChanged";
@@ -91,6 +92,13 @@ void KalturaVideoPlayer::SetLogLevel(const CYIString &logLevel)
 void KalturaVideoPlayer::Replay()
 {
     m_pPriv->Replay_();
+}
+
+void KalturaVideoPlayer::ChangePlaybackRate(float playbackRate)
+{
+    YI_LOGD(TAG, "ChangePlaybackRate %f", playbackRate);
+    m_pPriv->ChangePlaybackRate_(playbackRate);
+    PlaybackRateChangedEvent.Emit(playbackRate);
 }
 
 bool KalturaVideoPlayer::SelectVideoTrack(uint32_t uID) {
@@ -346,6 +354,12 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         YI_LOGD(TAG, "replayEvent");
         PlayerReplayEvent.Emit();
     }
+    else if (name.Compare(playbackRateChangedEvent) == 0)
+    {
+        float playbackRate = static_cast<float>(content["playbackRate"].asDouble());
+        YI_LOGD(TAG, "playbackRateChangedEvent %f", playbackRate);
+    }
+
     else if (name.Compare(tracksAvailableEvent) == 0)
     {
         YI_LOGD(TAG, "tracksAvailable %s", JSONFromDynamic(content).c_str());

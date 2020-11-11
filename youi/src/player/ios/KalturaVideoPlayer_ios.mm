@@ -293,6 +293,14 @@ void KalturaVideoPlayerPriv::Replay_()
     }
 }
 
+void KalturaVideoPlayerPriv::ChangePlaybackRate_(float playbackRate)
+{
+    if (m_player)
+    {
+        [m_player changePlaybackRate:playbackRate];
+    }
+}
+
 uint64_t KalturaVideoPlayerPriv::GetDurationMs_() const
 {
     return m_pPub->m_durationMs;

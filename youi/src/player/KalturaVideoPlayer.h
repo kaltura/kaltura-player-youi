@@ -82,6 +82,7 @@ public:
     void LoadMedia(const CYIString &assetId, folly::dynamic options);
     void SetMedia(const CYIUrl &videoURI);
     void Replay();
+    void ChangePlaybackRate(float playbackRate);
     void SetLogLevel(const CYIString &logLevel);
 
     bool SelectVideoTrack(uint32_t uID);
@@ -93,6 +94,7 @@ public:
     CYISignal<> PlayerEndedEvent;
     CYISignal<> PlayerStoppedEvent;
     CYISignal<> PlayerReplayEvent;
+    CYISignal<float> PlaybackRateChangedEvent;
 
     CYISignal<uint64_t> PlayerSeekingEvent;
     CYISignal<> PlayerSeekedEvent;

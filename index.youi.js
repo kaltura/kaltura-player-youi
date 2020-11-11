@@ -25,6 +25,7 @@ export default class YiReactApp extends Component {
     isMuted: false,
     videoSelected: false,
     changeMedia: false,
+    playbackSpeed: 1.0,
     logLevel: "VERBOSE"
   }
 
@@ -37,7 +38,7 @@ export default class YiReactApp extends Component {
 
   loadBtnPressed = () => {
     if (this.state.videoSelected) {
-      this.setState({changeMedia: false, sources: null, media: null, videoSelected: false, partnerId: null, initOptions: null});
+      this.setState({changeMedia: false, sources: null, media: null, videoSelected: false, partnerId: null, initOptions: null, isMuted: false, playbackSpeed: 1.0});
     }
   }
   changeMediaPressed = () => {
@@ -48,9 +49,10 @@ export default class YiReactApp extends Component {
   seekBtnPressed = () => this.videoRef.current.seek(this.state.currentTime + 10000);
   logLevelBtnPressed = () => this.setState({ logLevel:  this.state.logLevel === "VERBOSE" ? "ERROR" : "VERBOSE"}); 
   muteBtnPressed = () => this.setState({ 'isMuted': !this.state.isMuted });
+  speedBtnPressed = () => this.setState({playbackSpeed: this.state.playbackSpeed == 1.0 ? 2.0 : 1.0 });
 
   render() {
-    const {isMuted, isPlaying, videoSelected, media, sources, partnerId, initOptions, changeMedia, logLevel} = this.state;
+    const {isMuted, isPlaying, videoSelected, media, sources, partnerId, initOptions, changeMedia, logLevel, playbackSpeed} = this.state;
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.header}>Kaltura Video Sample</Text>
@@ -64,6 +66,7 @@ export default class YiReactApp extends Component {
                   logLevel={logLevel}
                   source={sources}
                   media={media}
+                  playbackSpeed={playbackSpeed}
                   muted={isMuted}
                   style={styles.video}
                   ref={this.videoRef}
@@ -103,6 +106,7 @@ export default class YiReactApp extends Component {
                 {/*<MyTouchableOpacity text={'Change Media'} onPress={this.changeMediaPressed} />*/}
                 <MyTouchableOpacity text={isPlaying ? 'Pause' : 'Play'} onPress={this.pauseBtnPressed} disabled={!videoSelected} />
                 <MyTouchableOpacity text={isMuted ? 'Unmute' : 'Mute'} onPress={this.muteBtnPressed} disabled={!videoSelected}/>
+                <MyTouchableOpacity text={playbackSpeed == 1.0 ? "X1" : 'X2'} onPress={this.speedBtnPressed} disabled={!videoSelected}/>
                 <MyTouchableOpacity text={'Seek +10s'} onPress={this.seekBtnPressed} disabled={!videoSelected}/>
                 <MyTouchableOpacity text={'LOG'} onPress={this.logLevelBtnPressed} disabled={!videoSelected}/>
               </View>
