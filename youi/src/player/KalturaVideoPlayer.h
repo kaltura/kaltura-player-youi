@@ -97,7 +97,8 @@ public:
     CYISignal<> PlayerSeekedEvent;
 
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
-    CYISignal<folly::dynamic> VolumeChanged;
+    CYISignal<float> VolumeChanged;
+    CYISignal<uint64_t> CurrentBufferTimeUpdated;
 
     virtual void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle) override;
 
@@ -134,8 +135,10 @@ private:
     
     std::unique_ptr<KalturaVideoPlayerPriv> m_pPriv;
     
+    CYIString m_devicOSName;
     uint64_t m_durationMs = 0;
     uint64_t m_currentTimeMs = 0;
+    bool m_isMuted = false;
 
     std::vector<KalturaVideoPlayer::VideoTrackInfo> m_videoTracks;
     int32_t m_selectedVideoTrack = -1;

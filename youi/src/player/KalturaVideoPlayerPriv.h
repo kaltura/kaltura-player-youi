@@ -58,7 +58,6 @@ public:
     bool SelectClosedCaptionsTrack_(uint32_t uID);
     std::vector<CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo> GetClosedCaptionsTracks_() const;
     CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo GetActiveClosedCaptionsTrack_() const;
-    bool IsMuted_() const;
     void Mute_(bool bMute);
     void DisableClosedCaptions_();
 

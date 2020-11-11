@@ -5,6 +5,9 @@
 
 #include "player/KalturaVideoPlayerPriv.h"
 
+#include <platform/YiDeviceInformationBridge.h>
+#include <platform/YiDeviceBridgeLocator.h>
+
 static const CYIString TAG("KalturaVideoPlayer");
 
 static const char *loadMediaSuccessEvent = "loadMediaSuccess";
@@ -51,6 +54,13 @@ YI_TYPE_DEF(KalturaVideoPlayer, CYIAbstractVideoPlayer)
 KalturaVideoPlayer::KalturaVideoPlayer()
 {
     m_pPriv = std::make_unique<KalturaVideoPlayerPriv>(this);
+    CYIDeviceInformationBridge *pDeviceInformationBridge = CYIDeviceBridgeLocator::GetDeviceInformationBridge();
+    if (pDeviceInformationBridge)
+    {
+        m_devicOSName = pDeviceInformationBridge->GetDeviceOSName();
+    } else {
+        m_devicOSName = "UNKNOWN";
+    }
 }
 
 KalturaVideoPlayer::~KalturaVideoPlayer()
@@ -202,12 +212,32 @@ CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayer::GetActiveClo
 
 bool KalturaVideoPlayer::IsMuted_() const
 {
-    return m_pPriv->IsMuted_();
+    return m_isMuted;
 }
 
 void KalturaVideoPlayer::Mute_(bool bMute)
 {
+    YI_LOGD(TAG, "Mute_  = %d", bMute);
+
+    if (bMute == m_isMuted) {
+        return;
+    }
+    
     m_pPriv->Mute_(bMute);
+    float volume;
+    if (bMute) {
+        m_isMuted = true;
+        volume = 0.0f;
+    } else {
+        m_isMuted = false;
+        volume = 1.0f;
+    }
+    
+    if (m_devicOSName.Contains("iOS") || m_devicOSName.Contains("tvOS"))
+    {
+        YI_LOGD(TAG, "%s VolumeChanged isMuted = %d", m_devicOSName.GetData(), m_isMuted);
+        VolumeChanged.Emit(volume);
+    }
 }
 
 void KalturaVideoPlayer::DisableClosedCaptions_()
@@ -275,8 +305,13 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     {
         const auto currentTime = content["position"].asDouble();
         m_currentTimeMs = static_cast<uint64_t>(currentTime * 1000);
-        //YI_LOGW(TAG, "timeUpdateEvent - <%lu>", m_currentTimeMs);
+       // YI_LOGE(TAG, "timeUpdateEvent - %" PRIu64, m_currentTimeMs);
         CurrentTimeUpdated.Emit(m_currentTimeMs);
+
+        const auto currentBufferTime = content["bufferPosition"].asDouble();
+        //YI_LOGE(TAG, "bufferPosition - %" PRIu64, currentBufferTime);
+        uint64_t currentBufferTimeMs = static_cast<uint64_t>(currentBufferTime * 1000);
+        CurrentBufferTimeUpdated.Emit(currentBufferTimeMs);
     }
     else if (name.Compare(canPlayEvent) == 0)
     {
@@ -423,10 +458,20 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         YI_LOGD(TAG, "seekedEvent");
         PlayerSeekedEvent.Emit();
     }
-    else if (name.Compare(volumeChangedEvent) == 0)
-    {
-        YI_LOGD(TAG, "volumeChangedEvent");
-        VolumeChanged.Emit(content);
+    else if (name.Compare(volumeChangedEvent) == 0) {
+            YI_LOGD(TAG, "volumeChangedEvent");
+            if (!content["volume"].isNull()) {
+                const auto currentVolume = content["volume"].asDouble();
+                float volume = static_cast<float>(currentVolume);
+
+                if (volume <= 0.0f) {
+                    m_isMuted = true;
+                } else {
+                    m_isMuted = false;
+                }
+                YI_LOGD(TAG, "%s VolumeChanged isMuted = %d", m_devicOSName.GetData(), m_isMuted);
+                VolumeChanged.Emit(volume);
+            }
     }
     else if (name.Compare(errorEvent) == 0)
     {
@@ -439,7 +484,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         CYIString errorType = content["errorType"].asString();
         CYIString errorSeverity = content["errorSeverity"].asString();
         error.nativePlayerErrorCode = errorType;
-
         ErrorOccurred.Emit(error);
         if (errorSeverity == "fatal") {
             YI_LOGD(TAG, "errorEvent fatal");
@@ -476,7 +520,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     }
     else if (name.Compare(adProgressEvent) == 0)
     {
-        YI_LOGD(TAG, "adProgressEvent");
+        //YI_LOGD(TAG, "adProgressEvent");
     }
     else if (name.Compare(adCuepointsChangedEvent) == 0)
     {
