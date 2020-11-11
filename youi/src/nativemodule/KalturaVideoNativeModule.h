@@ -21,7 +21,8 @@ public:
     YI_RN_EXPORT_METHOD(LoadMedia)(std::string assetId, folly::dynamic options);
     YI_RN_EXPORT_METHOD(SetMedia)(const CYIUrl &videoURI);
     YI_RN_EXPORT_METHOD(Replay)();
-        
+    YI_RN_EXPORT_METHOD(SetLogLevel)(std::string logLevel);
+
     YI_RN_EXPORT_METHOD(SelectVideoTrack)(uint32_t trackId);
 
   private:

@@ -70,6 +70,10 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
+    if (this.props.logLevel) {
+       NativeModules.KalturaVideo.SetLogLevel(this.props.logLevel)
+    }
+
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_BUFFER_TIME_UPDATED', (bufferPosition) => {
       if (this.props.onBufferTimeUpdated) {
         this.props.onBufferTimeUpdated(bufferPosition);
@@ -77,7 +81,7 @@ export default class KalturaVideo extends React.Component {
     })
 
     NativeModules.KalturaVideo.Setup(this.props.ottPartnerId, this.props.initOptions)
-
+    
     if (this.props.media) {
       this.loadMedia(this.props.media.id, this.props.media.asset);
     } else if (this.props.source) {
@@ -103,6 +107,10 @@ export default class KalturaVideo extends React.Component {
 
     if (this.props.source !== prevProps.source && this.props.source) {
       this.setMedia(this.props.source.uri);
+    }
+
+    if (this.props.logLevel !== prevProps.logLevel && this.props.logLevel) {
+      NativeModules.KalturaVideo.SetLogLevel(this.props.logLevel)
     }
   }
 

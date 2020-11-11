@@ -158,6 +158,14 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, Replay)()
     }
 }
 
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SetLogLevel)(std::string logLevel)
+{
+    if (m_pPlayer)
+    {
+        m_pPlayer->SetLogLevel(logLevel);
+    }
+}
+
 YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SelectVideoTrack)(uint32_t trackId)
 {
     if (m_pPlayer)
