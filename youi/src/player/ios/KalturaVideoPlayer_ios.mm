@@ -194,6 +194,12 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &videoURI)
     [m_player setMedia:url];
 }
 
+void KalturaVideoPlayerPriv::SetLogLevel_(const CYIString &logLevel)
+{
+    NSLog(@"*** SetLogLevel_(%s)", logLevel.GetData());
+    [KalturaPlayerYI setLogLevel:logLevel.ToNSString()];
+}
+
 void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic &content)
 {
     m_pPub->HandleEvent(name, content);
@@ -279,6 +285,14 @@ void KalturaVideoPlayerPriv::Replay_()
     if (m_player)
     {
         [m_player replay];
+    }
+}
+
+void KalturaVideoPlayerPriv::ChangePlaybackRate_(float playbackRate)
+{
+    if (m_player)
+    {
+        [m_player changePlaybackRate:playbackRate];
     }
 }
 
@@ -385,11 +399,6 @@ CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayerPriv::GetActiv
     }
 
     return CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo();
-}
-
-bool KalturaVideoPlayerPriv::IsMuted_() const
-{
-    return false;
 }
 
 void KalturaVideoPlayerPriv::Mute_(bool bMute)

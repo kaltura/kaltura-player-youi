@@ -169,6 +169,19 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
     GetEnv_KalturaPlayer()->DeleteLocalRef(url);
 }
 
+void KalturaVideoPlayerPriv::SetLogLevel_(const CYIString &logLevel) {
+
+    if (!playerWrapperBridgeClass)
+    {
+        return;
+    }
+
+    jstring logLevelStr = GetEnv_KalturaPlayer()->NewStringUTF(logLevel.GetData());
+
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setLogLevelMethodID, logLevelStr);
+    GetEnv_KalturaPlayer()->DeleteLocalRef(logLevelStr);
+}
+
 CYIString KalturaVideoPlayerPriv::GetName_() const
 {
     return "kaltura-yi-android";
@@ -242,6 +255,15 @@ void KalturaVideoPlayerPriv::Replay_()
         return;
     }
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, replayMethodID);
+}
+
+void KalturaVideoPlayerPriv::ChangePlaybackRate_(float playbackRate)
+{
+    if (!playerWrapperBridgeClass)
+    {
+        return;
+    }
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, changePlaybackRateMethodID, playbackRate);
 }
 
 uint64_t KalturaVideoPlayerPriv::GetDurationMs_() const
@@ -360,11 +382,6 @@ CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayerPriv::GetActiv
     }
 
     return CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo();
-}
-
-bool KalturaVideoPlayerPriv::IsMuted_() const
-{
-    return false;
 }
 
 void KalturaVideoPlayerPriv::Mute_(bool bMute)
