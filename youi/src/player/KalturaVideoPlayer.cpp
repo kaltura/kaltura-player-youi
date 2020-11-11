@@ -358,7 +358,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     {
         float playbackRate = static_cast<float>(content["playbackRate"].asDouble());
         YI_LOGD(TAG, "playbackRateChangedEvent %f", playbackRate);
-        //PlaybackRateChangedEvent.Emit(playbackRate);
     }
 
     else if (name.Compare(tracksAvailableEvent) == 0)
