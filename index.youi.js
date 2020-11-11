@@ -26,7 +26,6 @@ export default class YiReactApp extends Component {
     videoSelected: false,
     changeMedia: false,
     logLevel: "VERBOSE"
-
   }
 
   videoRef = React.createRef()
