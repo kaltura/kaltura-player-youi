@@ -747,43 +747,43 @@ public class PKPlayerWrapper {
             return;
         }
         logLevel = logLevel.toUpperCase();
-        String logMeaasge = "setLogLevel: " + logLevel;
+        String logMessage = "setLogLevel: " + logLevel;
         switch (logLevel) {
             case "VERBOSE":
                 PKLog.setGlobalLevel(PKLog.Level.verbose);
                 NKLog.setGlobalLevel(NKLog.Level.verbose);
                 YouboraLog.setDebugLevel(YouboraLog.Level.VERBOSE);
-                log.v(logMeaasge);
+                log.v(logMessage);
                 break;
             case "DEBUG":
                 PKLog.setGlobalLevel(PKLog.Level.debug);
                 NKLog.setGlobalLevel(NKLog.Level.debug);
                 YouboraLog.setDebugLevel(YouboraLog.Level.DEBUG);
-                log.d(logMeaasge);
+                log.d(logMessage);
                 break;
             case "WARN":
                 PKLog.setGlobalLevel(PKLog.Level.warn);
                 NKLog.setGlobalLevel(NKLog.Level.warn);
                 YouboraLog.setDebugLevel(YouboraLog.Level.WARNING);
-                log.w(logMeaasge);
+                log.w(logMessage);
                 break;
             case "INFO":
                 PKLog.setGlobalLevel(PKLog.Level.info);
                 NKLog.setGlobalLevel(NKLog.Level.info);
                 YouboraLog.setDebugLevel(YouboraLog.Level.NOTICE);
-                log.i(logMeaasge);
-
+                log.i(logMessage);
                 break;
             case "ERROR":
                 PKLog.setGlobalLevel(PKLog.Level.error);
                 NKLog.setGlobalLevel(NKLog.Level.error);
                 YouboraLog.setDebugLevel(YouboraLog.Level.ERROR);
-                log.e(logMeaasge);
+                log.e(logMessage);
                 break;
             case "OFF":
                 PKLog.setGlobalLevel(PKLog.Level.off);
                 NKLog.setGlobalLevel(NKLog.Level.off);
                 YouboraLog.setDebugLevel(YouboraLog.Level.SILENT);
+                break;
             default:
                 log.e("setLogLevel unknown level: " + logLevel);
         }
