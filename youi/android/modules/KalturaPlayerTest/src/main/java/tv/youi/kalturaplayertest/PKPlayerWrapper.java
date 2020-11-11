@@ -787,7 +787,6 @@ public class PKPlayerWrapper {
             default:
                 log.e("setLogLevel unknown level: " + logLevel);
         }
-
     }
 
     static void sendPlayerEvent(String type, String payload) {
