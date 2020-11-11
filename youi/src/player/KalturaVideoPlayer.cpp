@@ -482,8 +482,13 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         error.message = JSONFromDynamic(content).c_str();
 
         CYIString errorType = content["errorType"].asString();
+        CYIString errorSeverity = content["errorSeverity"].asString();
         error.nativePlayerErrorCode = errorType;
-        m_pStateManager->TransitionToMediaUnloaded();
+        ErrorOccurred.Emit(error);
+        if (errorSeverity == "fatal") {
+            YI_LOGD(TAG, "errorEvent fatal");
+            m_pStateManager->TransitionToMediaUnloaded();
+        }
     }
     else if (name.Compare(bookmarkErrorEvent) == 0)
     {
