@@ -27,6 +27,7 @@ static const std::string KALTURA_SEEKING_EVENT = "KALTURA_SEEKING_EVENT";
 static const std::string KALTURA_SEEKED_EVENT = "KALTURA_SEEKED_EVENT";
 static const std::string KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED = "KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED";
 static const std::string KALTURA_VOLUME_CHANGED = "KALTURA_VOLUME_CHANGED";
+static const std::string KALTURA_BUFFER_TIME_UPDATED = "KALTURA_BUFFER_TIME_UPDATED";
 
 KalturaVideoNativeModule::KalturaVideoNativeModule()
 {
@@ -41,15 +42,25 @@ KalturaVideoNativeModule::KalturaVideoNativeModule()
         KALTURA_SEEKING_EVENT,
         KALTURA_SEEKED_EVENT,
         KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED,
-        KALTURA_VOLUME_CHANGED
+        KALTURA_VOLUME_CHANGED,
+        KALTURA_BUFFER_TIME_UPDATED
     });
 }
 
 KalturaVideoNativeModule::~KalturaVideoNativeModule() = default;
 
-void KalturaVideoNativeModule::EmitEventPriv(const std::string& event, const folly::dynamic &obj)
+void KalturaVideoNativeModule::EmitEventPriv(const std::string& event, const folly::dynamic &value)
 {
-    EmitEvent(event, obj);
+    if (!value.isObject() && !value.isArray())
+    {
+        EmitEvent(event, value);
+    }
+    else
+    {
+        // Wraps the folly object in a nativeEvent to match RN convention.
+        folly::dynamic nativeEvent = folly::dynamic::object("nativeEvent", value);
+        EmitEvent(event, nativeEvent);
+    }
 }
 
 YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t tag)
@@ -101,11 +112,17 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
                 {
                     dynamicTracks.push_back(track.ToDynamic());
                 }
-                this->EmitEventPriv(KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED, ToDynamic(dynamicTracks));
+
+                auto tracksArray = ToDynamic(dynamicTracks);
+                this->EmitEventPriv(KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED, tracksArray);
             });
-            
-            m_pPlayer->VolumeChanged.Connect(*this, [this](folly::dynamic data) {
-                this->EmitEventPriv(KALTURA_VOLUME_CHANGED, data);
+
+            m_pPlayer->VolumeChanged.Connect(*this, [this](float volume) {
+                this->EmitEventPriv(KALTURA_VOLUME_CHANGED, volume);
+            });
+
+            m_pPlayer->CurrentBufferTimeUpdated.Connect(*this, [this](uint64_t bufferTime) {
+                this->EmitEventPriv(KALTURA_BUFFER_TIME_UPDATED, bufferTime);
             });
         }
     }
@@ -152,6 +169,14 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ChangePlaybackRate)(float p
     if (m_pPlayer)
     {
         m_pPlayer->ChangePlaybackRate(playbackRate);
+    }
+}
+
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SetLogLevel)(std::string logLevel)
+{
+    if (m_pPlayer)
+    {
+        m_pPlayer->SetLogLevel(logLevel);
     }
 }
 

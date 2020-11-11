@@ -22,11 +22,11 @@ public:
     YI_RN_EXPORT_METHOD(SetMedia)(const CYIUrl &videoURI);
     YI_RN_EXPORT_METHOD(Replay)();
     YI_RN_EXPORT_METHOD(ChangePlaybackRate)(float playbackRate);
-        
+    YI_RN_EXPORT_METHOD(SetLogLevel)(std::string logLevel);
     YI_RN_EXPORT_METHOD(SelectVideoTrack)(uint32_t trackId);
 
-  private:    
-    void EmitEventPriv(const std::string& event, const folly::dynamic &obj);
+  private:
+    void EmitEventPriv(const std::string& event, const folly::dynamic &value);
     
     KalturaVideoPlayer *m_pPlayer;
 };

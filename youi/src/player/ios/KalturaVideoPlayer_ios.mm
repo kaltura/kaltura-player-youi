@@ -194,6 +194,12 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &videoURI)
     [m_player setMedia:url];
 }
 
+void KalturaVideoPlayerPriv::SetLogLevel_(const CYIString &logLevel)
+{
+    NSLog(@"*** SetLogLevel_(%s)", logLevel.GetData());
+    [KalturaPlayerYI setLogLevel:logLevel.ToNSString()];
+}
+
 void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic &content)
 {
     m_pPub->HandleEvent(name, content);
@@ -398,11 +404,6 @@ CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayerPriv::GetActiv
     }
 
     return CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo();
-}
-
-bool KalturaVideoPlayerPriv::IsMuted_() const
-{
-    return false;
 }
 
 void KalturaVideoPlayerPriv::Mute_(bool bMute)
