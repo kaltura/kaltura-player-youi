@@ -18,6 +18,18 @@ YI_RN_REGISTER_MODULE(KalturaVideoNativeModule);
 
 #define TAG "KalturaVideoNativeModule"
 
+static const std::string KALTURA_CAN_PLAY_EVENT = "KALTURA_CAN_PLAY_EVENT";
+static const std::string KALTURA_REPLAY_EVENT = "KALTURA_REPLAY_EVENT";
+static const std::string KALTURA_STOPPED_EVENT = "KALTURA_STOPPED_EVENT";
+static const std::string KALTURA_PLAYING_EVENT = "KALTURA_PLAYING_EVENT";
+
+static const std::string KALTURA_PLAYBACK_RATE_CHANGED_EVENT = "KALTURA_PLAYBACK_RATE_CHANGED_EVENT";
+static const std::string KALTURA_SEEKING_EVENT = "KALTURA_SEEKING_EVENT";
+static const std::string KALTURA_SEEKED_EVENT = "KALTURA_SEEKED_EVENT";
+static const std::string KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED = "KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED";
+static const std::string KALTURA_VOLUME_CHANGED = "KALTURA_VOLUME_CHANGED";
+static const std::string KALTURA_BUFFER_TIME_UPDATED = "KALTURA_BUFFER_TIME_UPDATED";
+
 static const std::string KALTURA_AD_BREAK_STARTED_EVENT = "KALTURA_AD_BREAK_STARTED_EVENT";
 static const std::string KALTURA_AD_BREAK_ENDED_EVENT = "KALTURA_AD_BREAK_ENDED_EVENT";
 static const std::string KALTURA_AD_STARTED_EVENT = "KALTURA_AD_STARTED_EVENT";
@@ -35,20 +47,22 @@ static const std::string KALTURA_AD_CUEPOINTS_CHANGED_EVENT = "KALTURA_AD_CUEPOI
 static const std::string KALTURA_AD_CLICKED_EVENT = "KALTURA_AD_CLICKED_EVENT";
 static const std::string KALTURA_AD_REQUESTED_EVENT = "KALTURA_AD_REQUESTED_EVENT";
 
-static const std::string KALTURA_CAN_PLAY_EVENT = "KALTURA_CAN_PLAY_EVENT";
-static const std::string KALTURA_PLAYING_EVENT = "KALTURA_PLAYING_EVENT";
-static const std::string KALTURA_ENDED_EVENT = "KALTURA_ENDED_EVENT";
-static const std::string KALTURA_STOPPED_EVENT = "KALTURA_STOPPED_EVENT";
-static const std::string KALTURA_REPLAY_EVENT = "KALTURA_REPLAY_EVENT";
-static const std::string KALTURA_SEEKING_EVENT = "KALTURA_SEEKING_EVENT";
-static const std::string KALTURA_SEEKED_EVENT = "KALTURA_SEEKED_EVENT";
-static const std::string KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED = "KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED";
-static const std::string KALTURA_VOLUME_CHANGED = "KALTURA_VOLUME_CHANGED";
-
 KalturaVideoNativeModule::KalturaVideoNativeModule()
 {
     SetSupportedEvents
     ({
+        KALTURA_CAN_PLAY_EVENT,
+        KALTURA_PLAYING_EVENT,
+        KALTURA_STOPPED_EVENT,
+        KALTURA_REPLAY_EVENT,
+        KALTURA_STOPPED_EVENT,
+        KALTURA_PLAYBACK_RATE_CHANGED_EVENT,
+        KALTURA_SEEKING_EVENT,
+        KALTURA_SEEKED_EVENT,
+        KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED,
+        KALTURA_VOLUME_CHANGED,
+        KALTURA_BUFFER_TIME_UPDATED,
+
         KALTURA_AD_BREAK_STARTED_EVENT,
         KALTURA_AD_BREAK_ENDED_EVENT,
         KALTURA_AD_STARTED_EVENT,
@@ -64,25 +78,24 @@ KalturaVideoNativeModule::KalturaVideoNativeModule()
         KALTURA_AD_PROGRESS_EVENT,
         KALTURA_AD_CUEPOINTS_CHANGED_EVENT,
         KALTURA_AD_CLICKED_EVENT,
-        KALTURA_AD_REQUESTED_EVENT,
-
-        KALTURA_CAN_PLAY_EVENT,
-        KALTURA_PLAYING_EVENT,
-        KALTURA_ENDED_EVENT,
-        KALTURA_STOPPED_EVENT,
-        KALTURA_REPLAY_EVENT,
-        KALTURA_SEEKING_EVENT,
-        KALTURA_SEEKED_EVENT,
-        KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED,
-        KALTURA_VOLUME_CHANGED
+        KALTURA_AD_REQUESTED_EVENT
     });
 }
 
 KalturaVideoNativeModule::~KalturaVideoNativeModule() = default;
 
-void KalturaVideoNativeModule::EmitEventPriv(const std::string& event, const folly::dynamic &obj)
+void KalturaVideoNativeModule::EmitEventPriv(const std::string& event, const folly::dynamic &value)
 {
-    EmitEvent(event, obj);
+    if (!value.isObject() && !value.isArray())
+    {
+        EmitEvent(event, value);
+    }
+    else
+    {
+        // Wraps the folly object in a nativeEvent to match RN convention.
+        folly::dynamic nativeEvent = folly::dynamic::object("nativeEvent", value);
+        EmitEvent(event, nativeEvent);
+    }
 }
 
 YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t tag)
@@ -95,6 +108,58 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
         if (pShadowVideo)
         {
             m_pPlayer = dynamic_cast<KalturaVideoPlayer *>(&pShadowVideo->GetPlayer());
+
+            m_pPlayer->PlayerCanPlayEvent.Connect(*this, [this]() {
+                this->EmitEventPriv(KALTURA_CAN_PLAY_EVENT, nullptr);
+            });
+
+            m_pPlayer->PlayerPlayingEvent.Connect(*this, [this]() {
+                this->EmitEventPriv(KALTURA_PLAYING_EVENT, nullptr);
+            });
+
+            m_pPlayer->PlayerReplayEvent.Connect(*this, [this]() {
+                this->EmitEventPriv(KALTURA_REPLAY_EVENT, nullptr);
+
+            });
+
+            m_pPlayer->PlayerStoppedEvent.Connect(*this, [this]() {
+                this->EmitEventPriv(KALTURA_STOPPED_EVENT, nullptr);
+            });
+
+            m_pPlayer->PlayerReplayEvent.Connect(*this, [this]() {
+                this->EmitEventPriv(KALTURA_REPLAY_EVENT, nullptr);
+            });
+
+            m_pPlayer->PlaybackRateChangedEvent.Connect(*this, [this](float playbackRate) {
+                this->EmitEventPriv(KALTURA_PLAYBACK_RATE_CHANGED_EVENT, playbackRate);
+            });
+
+            m_pPlayer->PlayerSeekingEvent.Connect(*this, [this](uint64_t targetPosition) {
+                this->EmitEventPriv(KALTURA_SEEKING_EVENT, targetPosition);
+            });
+
+            m_pPlayer->PlayerSeekedEvent.Connect(*this, [this]() {
+                this->EmitEventPriv(KALTURA_SEEKED_EVENT, nullptr);
+            });
+
+            m_pPlayer->AvailableVideoTracksChanged.Connect(*this, [this](std::vector<KalturaVideoPlayer::VideoTrackInfo> tracks) {
+                std::vector<folly::dynamic> dynamicTracks;
+                for (const auto& track : tracks)
+                {
+                    dynamicTracks.push_back(track.ToDynamic());
+                }
+
+                auto tracksArray = ToDynamic(dynamicTracks);
+                this->EmitEventPriv(KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED, tracksArray);
+            });
+
+            m_pPlayer->VolumeChanged.Connect(*this, [this](float volume) {
+                this->EmitEventPriv(KALTURA_VOLUME_CHANGED, volume);
+            });
+
+            m_pPlayer->CurrentBufferTimeUpdated.Connect(*this, [this](uint64_t bufferTime) {
+                this->EmitEventPriv(KALTURA_BUFFER_TIME_UPDATED, bufferTime);
+            });
 
             m_pPlayer->AdBreakStartedEvent.Connect(*this, [this]() {
                 this->EmitEventPriv(KALTURA_AD_BREAK_STARTED_EVENT, nullptr);
@@ -156,46 +221,6 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
                 this->EmitEventPriv(KALTURA_AD_REQUESTED_EVENT, adTagUrl);
             });
 
-            m_pPlayer->PlayerCanPlayEvent.Connect(*this, [this]() {
-                this->EmitEventPriv(KALTURA_CAN_PLAY_EVENT, nullptr);
-            });
-
-            m_pPlayer->PlayerPlayingEvent.Connect(*this, [this]() {
-                this->EmitEventPriv(KALTURA_PLAYING_EVENT, nullptr);
-            });
-
-            m_pPlayer->PlayerEndedEvent.Connect(*this, [this]() {
-                this->EmitEventPriv(KALTURA_ENDED_EVENT, nullptr);
-            });
-
-            m_pPlayer->PlayerStoppedEvent.Connect(*this, [this]() {
-                this->EmitEventPriv(KALTURA_STOPPED_EVENT, nullptr);
-            });
-
-            m_pPlayer->PlayerReplayEvent.Connect(*this, [this]() {
-                this->EmitEventPriv(KALTURA_REPLAY_EVENT, nullptr);
-            });
-
-            m_pPlayer->PlayerSeekingEvent.Connect(*this, [this](uint64_t targetPosition) {
-                this->EmitEventPriv(KALTURA_SEEKING_EVENT, targetPosition);
-            });
-
-            m_pPlayer->PlayerSeekedEvent.Connect(*this, [this]() {
-                this->EmitEventPriv(KALTURA_SEEKED_EVENT, nullptr);
-            });
-
-            m_pPlayer->AvailableVideoTracksChanged.Connect(*this, [this](std::vector<KalturaVideoPlayer::VideoTrackInfo> tracks) {
-                std::vector<folly::dynamic> dynamicTracks;
-                for (const auto& track : tracks)
-                {
-                    dynamicTracks.push_back(track.ToDynamic());
-                }
-                this->EmitEventPriv(KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED, ToDynamic(dynamicTracks));
-            });
-            
-            m_pPlayer->VolumeChanged.Connect(*this, [this](folly::dynamic data) {
-                this->EmitEventPriv(KALTURA_VOLUME_CHANGED, data);
-            });
         }
     }
     else
@@ -233,6 +258,22 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, Replay)()
     if (m_pPlayer)
     {
         m_pPlayer->Replay();
+    }
+}
+
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ChangePlaybackRate)(float playbackRate)
+{
+    if (m_pPlayer)
+    {
+        m_pPlayer->ChangePlaybackRate(playbackRate);
+    }
+}
+
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SetLogLevel)(std::string logLevel)
+{
+    if (m_pPlayer)
+    {
+        m_pPlayer->SetLogLevel(logLevel);
     }
 }
 

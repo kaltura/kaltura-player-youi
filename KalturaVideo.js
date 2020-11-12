@@ -22,6 +22,60 @@ export default class KalturaVideo extends React.Component {
     // Must be called before any other method on the native module
     NativeModules.KalturaVideo.ConnectToPlayer(findNodeHandle(this.videoRef.current));
 
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYING_EVENT', () => {
+      if (this.props.onPlayingEvent) {
+        this.props.onPlayingEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_REPLAY_EVENT', () => {
+      if (this.props.onReplayEvent) {
+        this.props.onReplayEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_STOPPED_EVENT', () => {
+      if (this.props.onStoppedEvent) {
+        this.props.onStoppedEvent();
+      }
+    })
+    
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYBACK_RATE_CHANGED_EVENT', (rate) => {
+      if (this.props.onPlaybackRateChangedEvent) {
+        this.props.onPlaybackRateChangedEvent(rate);
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_SEEKED_EVENT', () => {
+      if (this.props.onSeekedEvent) {
+        this.props.onSeekedEvent();
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_SEEKING_EVENT', (targetPosition) => {
+      if (this.props.onSeekingEvent) {
+        this.props.onSeekingEvent(targetPosition);
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_VOLUME_CHANGED', (volume) => {
+      if (this.props.onVolumeChanged) {
+        this.props.onVolumeChanged(volume);
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED', (event) => {
+      if (this.props.onAvailableVideoTracksChanged) {
+        this.props.onAvailableVideoTracksChanged(event);
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_BUFFER_TIME_UPDATED', (bufferPosition) => {
+      if (this.props.onBufferTimeUpdated) {
+        this.props.onBufferTimeUpdated(bufferPosition);
+      }
+    })
+
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AD_BREAK_STARTED_EVENT', () => {
       if (this.props.onAdBreakStartedEvent) {
         this.props.onAdBreakStartedEvent();
@@ -112,60 +166,27 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYING_EVENT', () => {
-      if (this.props.onPlayingEvent) {
-        this.props.onPlayingEvent();
-      }
-    })
-
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_ENDED_EVENT', () => {
-      if (this.props.onEndedEvent) {
-        this.props.onEndedEvent();
-      }
-    })
-
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_STOPPED_EVENT', () => {
-      if (this.props.onStoppedEvent) {
-        this.props.onStoppedEvent();
-      }
-    })
-
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_REPLAY_EVENT', () => {
-      if (this.props.onReplayEvent) {
-        this.props.onReplayEvent();
-      }
-    })
-
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_SEEKED_EVENT', () => {
-      if (this.props.onSeekedEvent) {
-        this.props.onSeekedEvent();
-      }
-    })
-
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_SEEKING_EVENT', (targetPosition) => {
-      if (this.props.onSeekingEvent) {
-        this.props.onSeekingEvent(targetPosition);
-      }
-    })
-
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_VOLUME_CHANGED', (event) => {
-      if (this.props.onVolumeChanged) {
-        this.props.onVolumeChanged(event.volume);
-      }
-    })
-
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED', (event) => {
-      if (this.props.onAvailableVideoTracksChanged) {
-        this.props.onAvailableVideoTracksChanged(event);
-      }
-    })
+    this.videoRef.current.getPlayerInformation().then((playerInformation) => {
+      console.log({
+        name: playerInformation.name,
+        version: playerInformation.version
+      })
+     })
+     
+    if (this.props.logLevel) {
+       NativeModules.KalturaVideo.SetLogLevel(this.props.logLevel)
+    }
 
     NativeModules.KalturaVideo.Setup(this.props.ottPartnerId, this.props.initOptions)
-
+    
     if (this.props.media) {
       this.loadMedia(this.props.media.id, this.props.media.asset);
     } else if (this.props.source) {
       this.setMedia(this.props.source.uri);
+    }
+
+    if (this.props.playbackSpeed) {
+      NativeModules.KalturaVideo.ChangePlaybackRate(this.props.playbackSpeed)
     }
   }
 
@@ -187,6 +208,14 @@ export default class KalturaVideo extends React.Component {
 
     if (this.props.source !== prevProps.source && this.props.source) {
       this.setMedia(this.props.source.uri);
+    }
+
+    if (this.props.playbackSpeed != prevProps.playbackSpeed && this.props.playbackSpeed) {
+        NativeModules.KalturaVideo.ChangePlaybackRate(this.props.playbackSpeed)
+    }
+    
+    if (this.props.logLevel !== prevProps.logLevel && this.props.logLevel) {
+      NativeModules.KalturaVideo.SetLogLevel(this.props.logLevel)
     }
   }
 
