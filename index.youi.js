@@ -4,6 +4,7 @@ import {
   AppRegistry,
   Text,
   View,
+  Image,
   SafeAreaView,
   StyleSheet,
   Button,
@@ -11,6 +12,7 @@ import {
 } from 'react-native';
 
 import KalturaVideo from "./KalturaVideo";
+import VideoGallery from './VideoGallery';
 
 export default class YiReactApp extends Component {
 
@@ -20,127 +22,154 @@ export default class YiReactApp extends Component {
     currentTime: 0,
     sources: null,
     media: null,
-    isMuted: false
+    isMuted: false,
+    videoSelected: false,
+    changeMedia: false,
+    playbackSpeed: 1.0,
+    logLevel: "VERBOSE"
   }
 
   videoRef = React.createRef()
   pauseBtnRef = React.createRef()
 
+  onVideoSelected = (source) => {
+    this.setState({...source, videoSelected: true, changeMedia: false,});
+  }
+
   loadBtnPressed = () => {
-    if (this.state.sources) {
-      this.setState({ sources: null });
-    } else {
-      this.setState(
-        {
-          sources: {
-            uri: "https://pubads.g.doubleclick.net/ondemand/hls/content/2528370/vid/tears-of-steel/GRQ/streams/4d4a2b0d-baed-4c39-932b-02d91bbcfdd9/master.m3u8"
-          }
-        }
-      );
+    if (this.state.videoSelected) {
+      this.setState({changeMedia: false, sources: null, media: null, videoSelected: false, partnerId: null, initOptions: null, isMuted: false, playbackSpeed: 1.0});
     }
+  }
+  changeMediaPressed = () => {
+    this.setState({changeMedia: true, sources: null, media: null, partnerId: null, initOptions: null});
   }
 
-  pauseBtnPressed = () => {
-    if (this.state.isPlaying) {
-      this.videoRef.current.pause()
-    } else {
-      this.videoRef.current.play()
-    }
-  }
-
-  seekBtnPressed = () => {
-    if (this.videoRef.current) {
-      this.videoRef.current.seek(this.state.currentTime + 10000);
-    }
-  }
+  pauseBtnPressed = () => this.state.isPlaying ? this.videoRef.current.pause() : this.videoRef.current.play();
+  seekBtnPressed = () => this.videoRef.current.seek(this.state.currentTime + 10000);
+  logLevelBtnPressed = () => this.setState({ logLevel:  this.state.logLevel === "VERBOSE" ? "ERROR" : "VERBOSE"}); 
+  muteBtnPressed = () => this.setState({ 'isMuted': !this.state.isMuted });
+  speedBtnPressed = () => this.setState({playbackSpeed: this.state.playbackSpeed == 1.0 ? 2.0 : 1.0 });
 
   render() {
+    const {isMuted, isPlaying, videoSelected, media, sources, partnerId, initOptions, changeMedia, logLevel, playbackSpeed} = this.state;
     return (
       <SafeAreaView style={styles.container}>
-
         <Text style={styles.header}>Kaltura Video Sample</Text>
-        <View style={styles.videoContainer}>
-          {this.state.sources ?
-            <KalturaVideo
-              ottPartnerId={OttPartnerId}
-              initOptions={initOptions}
-              source={this.state.sources}
-              // media={{
-              //   id: OttMediaId,
-              //   asset: asset
-              // }}
-              muted={this.state.isMuted}
-              style={styles.video}
-              ref={this.videoRef}
-              onPreparing={() => console.log("onPreparing called.")}
-              onReady={() => console.log("onReady called.")}
-              onPlaying={() => this.setState({ isPlaying: true })}
-              onPaused={() => this.setState({ isPlaying: false })}
-              onBufferingStarted={() => console.log("onBufferingStarted called.")}
-              onBufferingEnded={() => console.log("onBufferingEnded called.")}
-              onCurrentTimeUpdated={(currentTime) => {
-                console.log("currentTime " + currentTime)
-                this.setState({ currentTime: currentTime })
-              }}
-              onDurationChanged={(duration) => this.setState({ duration: duration })}
-              onAvailableAudioTracksChanged={(tracks) => {
-                console.log("onAvailableAudioTracksChanged")
-                console.log(tracks.nativeEvent)
-              }}
-              onAvailableClosedCaptionsTracksChanged={(tracks) => {
-                console.log("onAvailableClosedCaptionsTracksChanged")
-                console.log(tracks.nativeEvent)
-              }}
-              onAvailableVideoTracksChanged={(tracks) => {
-                console.log("onAvailableVideoTracksChanged")
-                console.log(tracks.nativeEvent)
-              }}
-              onErrorOccurred={(error) => {
-                console.log("onErrorOccurred")
-                console.log(error.nativeEvent.message)
-              }}
-              onTimedMetadata={(metadata) => {
-                console.log("onTimedMetadata")
-                console.log(metadata.nativeEvent.identifier)
-              }}
-            /> : undefined}
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={this.loadBtnPressed}>
-            <Text style={styles.buttonText}>{this.state.sources || this.state.media ? 'Unload' : 'Load'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={this.pauseBtnPressed}>
-            <Text style={styles.buttonText}>{this.state.isPlaying ? 'Pause' : 'Play'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => this.setState({ 'isMuted': !this.state.isMuted })}>
-            <Text style={styles.buttonText}>{this.state.isMuted ? 'Unmute' : 'Mute'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={this.seekBtnPressed}>
-            <Text style={styles.buttonText}>{'Seek +10s'}</Text>
-          </TouchableOpacity>
-        </View>
-
+        {videoSelected || changeMedia ?
+          <View style={styles.mainContainer}>
+            <View style={changeMedia ? styles.hide : styles.videoContainer}>
+              <View style={styles.videoContainer}>
+                <KalturaVideo
+                  ottPartnerId={partnerId}
+                  initOptions={initOptions}
+                  logLevel={logLevel}
+                  source={sources}
+                  media={media}
+                  playbackSpeed={playbackSpeed}
+                  muted={isMuted}
+                  style={styles.video}
+                  ref={this.videoRef}
+                  onPreparing={() => console.log("onPreparing called.")}
+                  onReady={() => console.log("onReady called.")}
+                  onPlaying={() => this.setState({ isPlaying: true })}
+                  onPaused={() => this.setState({ isPlaying: false })}
+                  onPlaybackComplete={() => console.log("onPlaybackComplete called.")}
+                  onBufferingStarted={() => console.log("onBufferingStarted called.")}
+                  onBufferingEnded={() => console.log("onBufferingEnded called.")}
+                  onCurrentTimeUpdated={(currentTime) => {
+                    console.log("currentTime " + currentTime)
+                    this.setState({ currentTime: currentTime })
+                  }}
+                  onDurationChanged={(duration) => this.setState({ duration: duration })}
+                  onSeekingEvent={(targetPosition) => {
+                    console.log("onSeekingEvent " + targetPosition)
+                  }}
+                  onAvailableAudioTracksChanged={(tracks) => {
+                    console.log("onAvailableAudioTracksChanged")
+                    console.log(tracks.nativeEvent)
+                  }}
+                  onAvailableClosedCaptionsTracksChanged={(tracks) => {
+                    console.log("onAvailableClosedCaptionsTracksChanged")
+                    console.log(tracks.nativeEvent)
+                  }}
+                  onAvailableVideoTracksChanged={(tracks) => {
+                    console.log("onAvailableVideoTracksChanged")
+                    console.log(tracks.nativeEvent)
+                  }}
+                  onErrorOccurred={(error) => {
+                    console.log("onErrorOccurred")
+                    console.log(error.nativeEvent.message)
+                  }}/>
+              </View>
+              <View style={styles.buttonContainer}>
+                {/*<MyTouchableOpacity text={videoSelected ? 'Unload' : 'Load'} onPress={this.loadBtnPressed} />*/}
+                {/*<MyTouchableOpacity text={'Change Media'} onPress={this.changeMediaPressed} />*/}
+                <MyTouchableOpacity text={isPlaying ? 'Pause' : 'Play'} onPress={this.pauseBtnPressed} disabled={!videoSelected} />
+                <MyTouchableOpacity text={isMuted ? 'Unmute' : 'Mute'} onPress={this.muteBtnPressed} disabled={!videoSelected}/>
+                <MyTouchableOpacity text={playbackSpeed == 1.0 ? "X1" : 'X2'} onPress={this.speedBtnPressed} disabled={!videoSelected}/>
+                <MyTouchableOpacity text={'Seek +10s'} onPress={this.seekBtnPressed} disabled={!videoSelected}/>
+                <MyTouchableOpacity text={'LOG'} onPress={this.logLevelBtnPressed} disabled={!videoSelected}/>
+              </View>
+              <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={this.loadBtnPressed}
+                  style={{...styles.touchableOpacityStyle, ...styles.closeButton}}>
+                <Image
+                    source={require('./assets/close.png')}
+                    style={styles.floatingButtonStyle}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={this.changeMediaPressed}
+                  style={{...styles.touchableOpacityStyle, ...styles.changeMediaButton}}>
+                <Image
+                    source={require('./assets/menu_icon.png')}
+                    style={styles.floatingButtonStyle}
+                />
+              </TouchableOpacity>
+            </View>
+            {changeMedia ?  <VideoGallery onVideoSelected={this.onVideoSelected}/> : undefined}
+          </View>
+          : <VideoGallery onVideoSelected={this.onVideoSelected}/>}
       </SafeAreaView>
     );
   }
 }
 
+export function MyTouchableOpacity(props) {
+  return <TouchableOpacity
+      disabled={props.disabled}
+      style={props.disabled ? { ...(props.style? props.style : styles.button), ...styles.buttonDisabled } : props.style? props.style : styles.button }
+      onPress={props.onPress}>
+      <Text style={styles.buttonText}>{props.text}</Text>
+  </TouchableOpacity>;
+}
+
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'darkgrey',
+    backgroundColor: 'black',
     flex: 1
   },
   header: {
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
-    flex: 1,
-    marginBottom: 3
+    flex: 0.2,
+    marginBottom: 1
+  },
+  mainContainer: {
+    // backgroundColor: 'darkgrey',
+    width: "100%",
+    height: "100%"
   },
   videoContainer: {
     flex: 10,
     backgroundColor: 'black',
+  },
+  hide: {
+    display: 'none'
   },
   video: {
     width: "100%",
@@ -160,84 +189,33 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     maxWidth: 100
   },
+  buttonDisabled: {
+    backgroundColor: "#ccc",
+    color: "#999"
+  },
   buttonText: {
+  },
+  touchableOpacityStyle: {
+    position: 'absolute',
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  floatingButtonStyle: {
+    resizeMode: 'contain',
+    width: 40,
+    height: 40,
+    //backgroundColor:'black'
+  },
+  closeButton: {
+    left: 0,
+    top: 0,
+  },
+  changeMediaButton: {
+    right: 0,
+    top: 0,
   }
 })
 
 AppRegistry.registerComponent("YiReactApp", () => YiReactApp);
-
-
-//OTT 3009
-
-//not working
-// const PhoenixBaseUrl = "https://3207.frs1.ott.kaltura.com/api_v3/";
-// const OttPartnerId = 3207;
-// const OttMediaId = "2305718";
-// const OttMediaFormat = "STB_Devices_Main_HLS";
-// const OttMediaProtocol = "https"; // "https"
-
-const PhoenixBaseUrl = "https://rest-us.ott.kaltura.com/v4_5/api_v3/";
-const OttPartnerId = 3009;
-const OttMediaId = "548576";
-const OttMediaFormat = "Mobile_Main";
-const OttMediaProtocol = "http"; // "https"
-const OttAssetType = "media";
-const OttPlaybackContextType = "playback";
-
-var initOptions = {
-  "serverUrl": PhoenixBaseUrl,
-  "autoplay": true,
-  "preload": true,
-  "allowCrossProtocolRedirect": true,
-  "allowFairPlayOnExternalScreens": true,
-  "shouldPlayImmediately": true,
-  "networkSettings": {
-    "autoBuffer": true,
-    "preferredForwardBufferDuration": 30000,
-    "automaticallyWaitsToMinimizeStalling": true
-  },
-  "abrSettings": {
-    "minVideoBitrate": 600000,
-    "maxVideoBitrate": 1500000
-  },
-  "trackSelection": {
-    "textMode": "AUTO",
-    "textLanguage": "en",
-    "audioMode": "AUTO",
-    "audioLanguage": "en",
-  },
-  "plugins": {
-    "ima": {},
-    "youbora": {
-      "accountCode": "kalturatest"
-    }
-  }
-}
-
-var asset = {
-  "format": OttMediaFormat,
-  "assetType": OttAssetType,
-  "protocol": OttMediaProtocol,
-  "playbackContextType": OttPlaybackContextType,
-  "urlType": "DIRECT",
-  "startPosition": 0,
-  "plugins": {
-    "ima": {
-      "adTagUrl": "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=",
-      "alwaysStartWithPreroll": true,
-      "enableDebugMode": false
-    },
-    "youbora": {
-      "accountCode": "kalturatest",
-      "username": "aaa",
-      "userEmail": "aaa@gmail.com",
-      "userType": "paid",       // optional any string - free / paid etc.
-      "houseHoldId": "qwerty",   // optional which device is used to play
-      "httpSecure": true,        // youbora events will be sent via https
-      "appName": "YouiBridgeTesdtApp",
-      "appReleaseVersion": "v1.0.0",
-      "extraParam1": "param1",
-      "extraParam2": "param2"
-    }
-  }
-}

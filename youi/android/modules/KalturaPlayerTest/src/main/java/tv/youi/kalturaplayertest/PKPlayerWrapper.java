@@ -25,6 +25,7 @@ import com.kaltura.playkit.plugins.ads.AdCuePoints;
 import com.kaltura.playkit.plugins.ads.AdEvent;
 import com.kaltura.playkit.plugins.ima.IMAConfig;
 import com.kaltura.playkit.plugins.ima.IMAPlugin;
+import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsEvent;
 import com.kaltura.playkit.plugins.youbora.YouboraPlugin;
 import com.kaltura.playkit.utils.Consts;
 import com.kaltura.tvplayer.KalturaOttPlayer;
@@ -199,6 +200,8 @@ public class PKPlayerWrapper {
             addKalturaPlayerListeners();
 
             initialized = true;
+
+            sendPlayerEvent("playerInitialized");
             if (onEventListener != null) {
                 onEventListener.onKalturaPlayerInitialized();
             }
@@ -249,32 +252,25 @@ public class PKPlayerWrapper {
                 " }"));
         player.addListener(self, PlayerEvent.stateChanged, event -> sendPlayerEvent("stateChanged", "{ \"newState\": \"" + event.newState.name() + "\" }"));
         player.addListener(self, PlayerEvent.volumeChanged, event -> sendPlayerEvent("volumeChanged", "{ \"volume\": \"" + event.volume + "\" }"));
-
-
-        player.addListener(self, PlayerEvent.tracksAvailable, event -> {
-            Gson gson = new Gson();
-            sendPlayerEvent("tracksAvailable", gson.toJson(getTracksInfo(event.tracksInfo)));
-        });
+        player.addListener(self, PlayerEvent.tracksAvailable, event -> { sendPlayerEvent("tracksAvailable", new Gson().toJson(getTracksInfo(event.tracksInfo))); });
+        player.addListener(self, PlayerEvent.playbackRateChanged, event -> { sendPlayerEvent("playbackRateChanged", "{ \"playbackRate\": \"" + event.rate + "\" }"); });
 
         player.addListener(self, PlayerEvent.videoTrackChanged, event -> {
             final com.kaltura.playkit.player.VideoTrack newTrack = event.newTrack;
             VideoTrack videoTrack = new VideoTrack(newTrack.getUniqueId(), newTrack.getWidth(), newTrack.getHeight(), newTrack.getBitrate(), true, newTrack.isAdaptive());
-            Gson gson = new Gson();
-            sendPlayerEvent("videoTrackChanged", gson.toJson(videoTrack));
+            sendPlayerEvent("videoTrackChanged", new Gson().toJson(videoTrack));
         });
 
         player.addListener(self, PlayerEvent.audioTrackChanged, event -> {
             final com.kaltura.playkit.player.AudioTrack newTrack = event.newTrack;
             AudioTrack audioTrack = new AudioTrack(newTrack.getUniqueId(), newTrack.getBitrate(), newTrack.getLanguage(), newTrack.getLabel(), newTrack.getChannelCount(), true);
-            Gson gson = new Gson();
-            sendPlayerEvent("audioTrackChanged", gson.toJson(audioTrack));
+            sendPlayerEvent("audioTrackChanged", new Gson().toJson(audioTrack));
         });
 
         player.addListener(self, PlayerEvent.textTrackChanged, event -> {
             final com.kaltura.playkit.player.TextTrack newTrack = event.newTrack;
             TextTrack textTrack = new TextTrack(newTrack.getUniqueId(), newTrack.getLanguage(), newTrack.getLabel(), true);
-            Gson gson = new Gson();
-            sendPlayerEvent("textTrackChanged", gson.toJson(textTrack));
+            sendPlayerEvent("textTrackChanged", new Gson().toJson(textTrack));
         });
 
         player.addListener(self, PlayerEvent.seeking, event -> sendPlayerEvent("seeking", "{ \"targetPosition\": " + (event.targetPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
@@ -292,6 +288,10 @@ public class PKPlayerWrapper {
                 sendPlayerEvent("timedMetadata", gson.toJson(pkMetadata));
             }
         });
+
+        player.addListener(self, PhoenixAnalyticsEvent.bookmarkError, event -> sendPlayerEvent("bookmarkError", "{ \"errorMessage\": \"" + event.errorMessage + "\" }"));
+        player.addListener(self, PhoenixAnalyticsEvent.concurrencyError, event -> sendPlayerEvent("concurrencyError", "{ \"errorMessage\": \"" + event.errorMessage + "\" }"));
+
         player.addListener(self, AdEvent.adProgress, event -> sendPlayerEvent("adProgress", "{ \"currentAdPosition\": " + (event.currentAdPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
         player.addListener(self, AdEvent.cuepointsChanged, event -> sendPlayerEvent("adCuepointsChanged", getCuePointsJson(event.cuePoints)));
         player.addListener(self, AdEvent.started, event -> sendPlayerEvent("adStarted"));
@@ -439,7 +439,7 @@ public class PKPlayerWrapper {
             if (localPlaybackEntry != null) {
                 player.setMedia(localPlaybackEntry);
             } else {
-                player.loadMedia(mediaAsset.buildOttMediaOptions(assetId), (entry, error) -> {
+                player.loadMedia(mediaAsset.buildOttMediaOptions(assetId, player.getKS()), (entry, error) -> {
                     if (error != null) {
                         log.d("ott media load error: " + error);
                         //code, extra, message, name
@@ -747,43 +747,49 @@ public class PKPlayerWrapper {
     @SuppressWarnings("unused") // Called from C++
     public static void setLogLevel(String logLevel) {
 
-        log.d("setLogLevel: " + logLevel);
         if (TextUtils.isEmpty(logLevel)) {
             return;
         }
         logLevel = logLevel.toUpperCase();
-
+        String logMessage = "setLogLevel: " + logLevel;
         switch (logLevel) {
             case "VERBOSE":
                 PKLog.setGlobalLevel(PKLog.Level.verbose);
                 NKLog.setGlobalLevel(NKLog.Level.verbose);
                 YouboraLog.setDebugLevel(YouboraLog.Level.VERBOSE);
+                log.v(logMessage);
                 break;
             case "DEBUG":
                 PKLog.setGlobalLevel(PKLog.Level.debug);
                 NKLog.setGlobalLevel(NKLog.Level.debug);
                 YouboraLog.setDebugLevel(YouboraLog.Level.DEBUG);
+                log.d(logMessage);
                 break;
             case "WARN":
                 PKLog.setGlobalLevel(PKLog.Level.warn);
                 NKLog.setGlobalLevel(NKLog.Level.warn);
                 YouboraLog.setDebugLevel(YouboraLog.Level.WARNING);
+                log.w(logMessage);
                 break;
             case "INFO":
                 PKLog.setGlobalLevel(PKLog.Level.info);
                 NKLog.setGlobalLevel(NKLog.Level.info);
                 YouboraLog.setDebugLevel(YouboraLog.Level.NOTICE);
+                log.i(logMessage);
                 break;
             case "ERROR":
                 PKLog.setGlobalLevel(PKLog.Level.error);
                 NKLog.setGlobalLevel(NKLog.Level.error);
                 YouboraLog.setDebugLevel(YouboraLog.Level.ERROR);
+                log.e(logMessage);
                 break;
             case "OFF":
-            default:
                 PKLog.setGlobalLevel(PKLog.Level.off);
                 NKLog.setGlobalLevel(NKLog.Level.off);
                 YouboraLog.setDebugLevel(YouboraLog.Level.SILENT);
+                break;
+            default:
+                log.e("setLogLevel unknown level: " + logLevel);
         }
     }
 

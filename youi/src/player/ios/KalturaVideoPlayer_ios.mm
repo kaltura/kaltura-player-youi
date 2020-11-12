@@ -118,20 +118,24 @@ static NSString* nsstring(std::string str) {
     return [NSString stringWithUTF8String:str.c_str()];
 }
 
+#pragma mark -
+
 @implementation EventSender
 
-+(instancetype)newWithWrapper:(KalturaVideoPlayerPriv*)wrapper {
-    EventSender* sender = [EventSender new];
++ (instancetype)newWithWrapper:(KalturaVideoPlayerPriv *)wrapper {
+    EventSender *sender = [EventSender new];
     sender->wrapper = wrapper;
     return sender;
 }
 
--(void)sendEvent:(NSString*)name payload:(id _Nullable)payload {
+- (void)sendEvent:(NSString *)name payload:(id _Nullable)payload {
     folly::dynamic dynPayload = convertIdToFollyDynamic(payload);
     reinterpret_cast<KalturaVideoPlayerPriv*>(wrapper)->Emit_(name.UTF8String, dynPayload);
 }
 
 @end
+
+#pragma mark - KalturaVideoPlayerPriv
 
 KalturaVideoPlayerPriv::KalturaVideoPlayerPriv(KalturaVideoPlayer *pPub)
 : m_pPub(pPub)
@@ -155,17 +159,24 @@ void KalturaVideoPlayerPriv::Setup_(int32_t partnerId, folly::dynamic options)
         return;
     }
 
-    UIView* parentView = YiRootViewController.sharedInstance.view;
+    UIView *parentView = YiRootViewController.sharedInstance.view;
     parentView.backgroundColor = UIColor.clearColor;
 
-    EventSender* sender = [EventSender newWithWrapper:this];
-    m_player = [[KalturaPlayerYI alloc] initWithPartnerId:partnerId options:convertFollyDynamicToId(options)
-                                               parentView:parentView eventSender:sender];
+    EventSender *sender = [EventSender newWithWrapper:this];
+    m_player = [[KalturaPlayerYI alloc] initWithPartnerId:partnerId
+                                                  options:convertFollyDynamicToId(options)
+                                               parentView:parentView
+                                              eventSender:sender];
 }
 
 void KalturaVideoPlayerPriv::LoadMedia_(const CYIString &assetId, folly::dynamic options)
 {
     NSLog(@"*** LoadMedia_(%s, %s)", assetId.GetData(), JSONFromDynamic(options).c_str());
+
+    if (m_pPub->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready)
+    {
+        m_pPub->m_pStateManager->TransitionToMediaUnloaded();
+    }
 
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
     [m_player loadMedia:assetId.ToNSString() options:convertFollyDynamicToId(options)];
@@ -173,10 +184,20 @@ void KalturaVideoPlayerPriv::LoadMedia_(const CYIString &assetId, folly::dynamic
 
 void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &videoURI)
 {
+    if (m_pPub->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready)
+    {
+        m_pPub->m_pStateManager->TransitionToMediaUnloaded();
+    }
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
     NSURL *url = [NSURL URLWithString:videoURI.ToString().ToNSString()];
     NSLog(@"*** SetMedia_(%s)", videoURI.ToString().ToStdString().c_str());
     [m_player setMedia:url];
+}
+
+void KalturaVideoPlayerPriv::SetLogLevel_(const CYIString &logLevel)
+{
+    NSLog(@"*** SetLogLevel_(%s)", logLevel.GetData());
+    [KalturaPlayerYI setLogLevel:logLevel.ToNSString()];
 }
 
 void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic &content)
@@ -186,12 +207,7 @@ void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic
 
 CYIString KalturaVideoPlayerPriv::GetName_() const
 {
-    return "Kaltura Video Player";
-}
-
-CYIString KalturaVideoPlayerPriv::GetVersion_() const
-{
-    return "1";
+    return "kaltura-yi-ios";
 }
 
 CYIAbstractVideoPlayer::Statistics KalturaVideoPlayerPriv::GetStatistics_() const
@@ -261,6 +277,22 @@ void KalturaVideoPlayerPriv::Stop_()
     if (m_player)
     {
         [m_player stop];
+    }
+}
+
+void KalturaVideoPlayerPriv::Replay_()
+{
+    if (m_player)
+    {
+        [m_player replay];
+    }
+}
+
+void KalturaVideoPlayerPriv::ChangePlaybackRate_(float playbackRate)
+{
+    if (m_player)
+    {
+        [m_player changePlaybackRate:playbackRate];
     }
 }
 
@@ -369,13 +401,13 @@ CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayerPriv::GetActiv
     return CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo();
 }
 
-bool KalturaVideoPlayerPriv::IsMuted_() const
-{
-    return false;
-}
-
 void KalturaVideoPlayerPriv::Mute_(bool bMute)
 {
+    if (bMute) {
+        [m_player setVolume:0];
+    } else {
+        [m_player setVolume:1];
+    }
 }
 
 void KalturaVideoPlayerPriv::DisableClosedCaptions_()
