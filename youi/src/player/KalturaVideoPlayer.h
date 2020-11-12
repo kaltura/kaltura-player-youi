@@ -89,8 +89,6 @@ public:
     std::vector<VideoTrackInfo> GetVideoTracks();
     VideoTrackInfo GetActiveVideoTrack();
 
-    CYISignal<> PlayerInitializedEvent;
-    CYISignal<> PlayerCanPlayEvent;
     CYISignal<> PlayerReplayEvent;
     CYISignal<> PlayerStoppedEvent;
     CYISignal<float> PlaybackRateChangedEvent;

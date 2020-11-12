@@ -33,8 +33,6 @@ KalturaVideoNativeModule::KalturaVideoNativeModule()
 {
     SetSupportedEvents
     ({
-        KALTURA_PLAYER_INITIALIZED_EVENT,
-        KALTURA_CAN_PLAY_EVENT,
         KALTURA_REPLAY_EVENT,
         KALTURA_STOPPED_EVENT,
         KALTURA_PLAYBACK_RATE_CHANGED_EVENT,
@@ -72,14 +70,6 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
         if (pShadowVideo)
         {
             m_pPlayer = dynamic_cast<KalturaVideoPlayer *>(&pShadowVideo->GetPlayer());
-
-            m_pPlayer->PlayerInitializedEvent.Connect(*this, [this]() {
-                this->EmitEventPriv(KALTURA_PLAYER_INITIALIZED_EVENT, nullptr);
-            });
-
-            m_pPlayer->PlayerCanPlayEvent.Connect(*this, [this]() {
-                this->EmitEventPriv(KALTURA_CAN_PLAY_EVENT, nullptr);
-            });
 
             m_pPlayer->PlayerReplayEvent.Connect(*this, [this]() {
                 this->EmitEventPriv(KALTURA_REPLAY_EVENT, nullptr);

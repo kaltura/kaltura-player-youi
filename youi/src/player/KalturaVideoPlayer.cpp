@@ -266,7 +266,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     if (name.Compare(playerInitializedEvent) == 0)
     {
         YI_LOGD(TAG, "playerInitializedEvent");
-        PlayerInitializedEvent.Emit();
     }
     else if (name.Compare(loadMediaSuccessEvent) == 0)
     {
@@ -336,7 +335,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(canPlayEvent) == 0)
     {
         YI_LOGD(TAG, "canPlayEvent");
-        PlayerCanPlayEvent.Emit();
     }
     else if (name.Compare(playingEvent) == 0)
     {
