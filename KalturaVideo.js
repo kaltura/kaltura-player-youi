@@ -22,15 +22,9 @@ export default class KalturaVideo extends React.Component {
     // Must be called before any other method on the native module
     NativeModules.KalturaVideo.ConnectToPlayer(findNodeHandle(this.videoRef.current));
     
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYING_EVENT', () => {
-      if (this.props.onPlayingEvent) {
-        this.props.onPlayingEvent();
-      }
-    })
-
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_ENDED_EVENT', () => {
-      if (this.props.onEndedEvent) {
-        this.props.onEndedEvent();
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_REPLAY_EVENT', () => {
+      if (this.props.onReplayEvent) {
+        this.props.onReplayEvent();
       }
     })
 
@@ -39,10 +33,10 @@ export default class KalturaVideo extends React.Component {
         this.props.onStoppedEvent();
       }
     })
-
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_REPLAY_EVENT', () => {
-      if (this.props.onReplayEvent) {
-        this.props.onReplayEvent();
+    
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYBACK_RATE_CHANGED_EVENT', (rate) => {
+      if (this.props.onPlaybackRateChangedEvent) {
+        this.props.onPlaybackRateChangedEvent(rate);
       }
     })
 
@@ -58,9 +52,9 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_VOLUME_CHANGED', (event) => {
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_VOLUME_CHANGED', (volume) => {
       if (this.props.onVolumeChanged) {
-        this.props.onVolumeChanged(event.volume);
+        this.props.onVolumeChanged(volume);
       }
     })
 
@@ -70,12 +64,33 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
-    NativeModules.KalturaVideo.Setup(this.props.ottPartnerId, this.props.initOptions)
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_BUFFER_TIME_UPDATED', (bufferPosition) => {
+      if (this.props.onBufferTimeUpdated) {
+        this.props.onBufferTimeUpdated(bufferPosition);
+      }
+    })
 
+    this.videoRef.current.getPlayerInformation().then((playerInformation) => {
+      console.log({
+        name: playerInformation.name,
+        version: playerInformation.version
+      })
+     })
+     
+    if (this.props.logLevel) {
+       NativeModules.KalturaVideo.SetLogLevel(this.props.logLevel)
+    }
+
+    NativeModules.KalturaVideo.Setup(this.props.ottPartnerId, this.props.initOptions)
+    
     if (this.props.media) {
       this.loadMedia(this.props.media.id, this.props.media.asset);
     } else if (this.props.source) {
       this.setMedia(this.props.source.uri);
+    }
+
+    if (this.props.playbackSpeed) {
+      NativeModules.KalturaVideo.ChangePlaybackRate(this.props.playbackSpeed)
     }
   }
 
@@ -97,6 +112,14 @@ export default class KalturaVideo extends React.Component {
 
     if (this.props.source !== prevProps.source && this.props.source) {
       this.setMedia(this.props.source.uri);
+    }
+
+    if (this.props.playbackSpeed != prevProps.playbackSpeed && this.props.playbackSpeed) {
+        NativeModules.KalturaVideo.ChangePlaybackRate(this.props.playbackSpeed)
+    }
+    
+    if (this.props.logLevel !== prevProps.logLevel && this.props.logLevel) {
+      NativeModules.KalturaVideo.SetLogLevel(this.props.logLevel)
     }
   }
 
