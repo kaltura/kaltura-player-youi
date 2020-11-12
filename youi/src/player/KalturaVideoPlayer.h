@@ -101,7 +101,6 @@ public:
 
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
     CYISignal<folly::dynamic> LoadMediaSuccess;
-    CYISignal<folly::dynamic> VolumeChanged;
     CYISignal<float> VolumeChanged;
     CYISignal<uint64_t> CurrentBufferTimeUpdated;
 
