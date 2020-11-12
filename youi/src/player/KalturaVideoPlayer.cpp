@@ -121,7 +121,7 @@ CYIString KalturaVideoPlayer::GetName_() const
 
 CYIString KalturaVideoPlayer::GetVersion_() const
 {
-    CYIString bridgeVersion = "v0.0.1";
+    CYIString bridgeVersion = "0.0.1";
     return bridgeVersion;
 }
 
@@ -621,6 +621,5 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         YI_LOGW(TAG, "Unhandled event received - <%s>", name.GetData());
     }
 }
-
 
 
