@@ -82,22 +82,23 @@ public:
     void LoadMedia(const CYIString &assetId, folly::dynamic options);
     void SetMedia(const CYIUrl &videoURI);
     void Replay();
+    void ChangePlaybackRate(float playbackRate);
+    void SetLogLevel(const CYIString &logLevel);
 
     bool SelectVideoTrack(uint32_t uID);
     std::vector<VideoTrackInfo> GetVideoTracks();
     VideoTrackInfo GetActiveVideoTrack();
 
-    CYISignal<> PlayerCanPlayEvent;
-    CYISignal<> PlayerPlayingEvent;
-    CYISignal<> PlayerEndedEvent;
-    CYISignal<> PlayerStoppedEvent;
     CYISignal<> PlayerReplayEvent;
+    CYISignal<> PlayerStoppedEvent;
+    CYISignal<float> PlaybackRateChangedEvent;
 
     CYISignal<uint64_t> PlayerSeekingEvent;
     CYISignal<> PlayerSeekedEvent;
 
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
-    CYISignal<folly::dynamic> VolumeChanged;
+    CYISignal<float> VolumeChanged;
+    CYISignal<uint64_t> CurrentBufferTimeUpdated;
 
     virtual void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle) override;
 
@@ -134,8 +135,10 @@ private:
     
     std::unique_ptr<KalturaVideoPlayerPriv> m_pPriv;
     
+    CYIString m_devicOSName;
     uint64_t m_durationMs = 0;
     uint64_t m_currentTimeMs = 0;
+    bool m_isMuted = false;
 
     std::vector<KalturaVideoPlayer::VideoTrackInfo> m_videoTracks;
     int32_t m_selectedVideoTrack = -1;
@@ -145,7 +148,7 @@ private:
 
     std::vector<KalturaClosedCaptionTrack> m_closedCaptionsTracks;
     int32_t m_selectedClosedCaptionTrack = -1;
-    
+
     YI_RECT_REL m_currentVideoRectangle;
 
     YI_TYPE_BASES(KalturaVideoPlayer, CYIAbstractVideoPlayer)

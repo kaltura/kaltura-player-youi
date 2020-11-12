@@ -105,9 +105,10 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
 @interface KalturaPlayerYI ()
 
 @property EventSender *eventSender;
-@property UInt32 partnerId;
+@property (assign) UInt32 partnerId;
 @property KalturaOTTPlayer *kalturaPlayer;
 @property PlayerOptions *playerOptions;
+@property (assign) NSTimeInterval bufferedTime;
 
 @end
 
@@ -123,6 +124,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     
     self.partnerId = pid;
     self.eventSender = sender;
+    self.bufferedTime = 0;
     
     NSString *serverUrl = dyn_options[@"serverUrl"];
     NSLog(@"serverUrl: %@", serverUrl);
@@ -218,13 +220,18 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     
     [self observeAllEvents];
     
+    __weak EventSender *playerInitializedWeakSender = self.eventSender;
+    [playerInitializedWeakSender sendEvent:@"playerInitialized" payload:@{}];
+
     return self;
 }
 
 - (void)observeAllEvents {
     __weak EventSender *weakSender = self.eventSender;
     __weak KalturaPlayer *weakPlayer = self.kalturaPlayer;
+    __weak KalturaPlayerYI *weakSelf = self;
     
+    // PlayBack
     [self.kalturaPlayer addObserver:self event:PlayerEvent.canPlay block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"canPlay" payload:@{}];
     }];
@@ -240,13 +247,28 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer addObserver:self event:PlayerEvent.stopped block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"stopped" payload:@{}];
     }];
+    [self.kalturaPlayer addObserver:self event:PlayerEvent.ended block:^(PKEvent * _Nonnull event) {
+        [weakSender sendEvent:@"ended" payload:@{}];
+    }];
     
+    // Duration and progress
     [self.kalturaPlayer addObserver:self event:PlayerEvent.durationChanged block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"durationChanged" payload:@{@"duration": event.duration}];
     }];
     [self.kalturaPlayer addObserver:self event:PlayerEvent.playheadUpdate block:^(PKEvent * _Nonnull event) {
-        [weakSender sendEvent:@"timeUpdate" payload:@{@"position": event.currentTime}];
+        NSNumber *currentTime = event.currentTime;
+        NSNumber *bufferedTime = [NSNumber numberWithDouble: weakSelf.bufferedTime];
+        if (bufferedTime.doubleValue < currentTime.doubleValue) {
+            bufferedTime = currentTime;
+        }
+        [weakSender sendEvent:@"timeUpdate" payload:@{@"position": currentTime,
+                                                      @"bufferPosition": bufferedTime
+        }];
     }];
+    [self.kalturaPlayer addObserver:self event:PlayerEvent.loadedTimeRanges block:^(PKEvent * _Nonnull event) {
+       weakSelf.bufferedTime = weakPlayer.bufferedTime;
+    }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.tracksAvailable block:^(PKEvent * _Nonnull event) {
         
         NSMutableArray *audioTracks = [NSMutableArray array];
@@ -273,6 +295,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         [weakSender sendEvent:@"textTrackChanged"
                       payload:trackToDict(event.selectedTrack, event.selectedTrack.id)];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.playbackInfo block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"playbackInfoUpdated"
                       payload:@{
@@ -281,6 +304,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
                          // @"totalBitrate": @(event.playbackInfo.bitrate)
         }];
     }];
+
     [self.kalturaPlayer addObserver:self event:PlayerEvent.error block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"error" payload:@{@"errorType": @(event.error.code)}];   // TODO more details
     }];
@@ -302,6 +326,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         }
         [weakSender sendEvent:@"stateChanged" payload:@{@"newState": stateName}];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.seeking block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"seeking" payload:@{@"targetPosition": event.targetSeekPosition}];
     }];
@@ -312,10 +337,9 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer addObserver:self events:@[OttEvent.bookmarkError] block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"bookmarkError" payload:@{@"errorMessage": event.ottEventMessage}];
     }];
-
-//    [self.kalturaPlayer addObserver:self events:@[OttEvent.concurrency] block:^(PKEvent * _Nonnull event) {
-//        [weakSender sendEvent:@"concurrencyError" payload:@{@"errorMessage": event.ottEventMessage}];
-//    }];
+    [self.kalturaPlayer addObserver:self events:@[OttEvent.concurrency] block:^(PKEvent * _Nonnull event) {
+        [weakSender sendEvent:@"concurrencyError" payload:@{@"errorMessage": event.ottEventMessage}];
+    }];
 
     [self.kalturaPlayer addObserver:self event:AdEvent.adDidProgressToTime block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"adProgress" payload:@{@"currentAdPosition": event.adMediaTime}];
@@ -504,18 +528,26 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
 + (void)setLogLevel:(NSString *)logLevel {
     PKLogLevel level = PKLogLevelError;
     
-    if ([logLevel  isEqual: @"verbose"]) {
+    if (logLevel == nil || [logLevel length] == 0) {
+        return;
+    }
+
+    logLevel = [logLevel lowercaseString];
+    NSLog(@"*** setLogLevel level: %@", logLevel);
+
+    if ([logLevel isEqual: @"verbose"]) {
         level = PKLogLevelVerbose;
-    } else if ([logLevel  isEqual: @"debug"]) {
+    } else if ([logLevel isEqual: @"debug"]) {
         level = PKLogLevelDebug;
-    } else if ([logLevel  isEqual: @"info"]) {
+    } else if ([logLevel isEqual: @"info"]) {
         level = PKLogLevelInfo;
-    } else if ([logLevel  isEqual: @"warning"]) {
+    } else if ([logLevel isEqual: @"warning"]) {
         level = PKLogLevelWarning;
-    } else if ([logLevel  isEqual: @"error"]) {
+    } else if ([logLevel isEqual: @"error"]) {
         level = PKLogLevelError;
     } else {
-        NSLog(@"*** Unknown log level: %@", logLevel);
+        NSLog(@"*** setLogLevel unknown level: %@", logLevel);
+        return;
     }
     
     PlayKitManager.logLevel = level;
