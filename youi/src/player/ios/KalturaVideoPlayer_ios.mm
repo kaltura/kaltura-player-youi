@@ -207,12 +207,7 @@ void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic
 
 CYIString KalturaVideoPlayerPriv::GetName_() const
 {
-    return "Kaltura Video Player";
-}
-
-CYIString KalturaVideoPlayerPriv::GetVersion_() const
-{
-    return "1";
+    return "kaltura-yi-ios";
 }
 
 CYIAbstractVideoPlayer::Statistics KalturaVideoPlayerPriv::GetStatistics_() const

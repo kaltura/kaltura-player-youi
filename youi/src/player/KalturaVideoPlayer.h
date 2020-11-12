@@ -89,11 +89,8 @@ public:
     std::vector<VideoTrackInfo> GetVideoTracks();
     VideoTrackInfo GetActiveVideoTrack();
 
-    CYISignal<> PlayerCanPlayEvent;
-    CYISignal<> PlayerPlayingEvent;
-    CYISignal<> PlayerEndedEvent;
-    CYISignal<> PlayerStoppedEvent;
     CYISignal<> PlayerReplayEvent;
+    CYISignal<> PlayerStoppedEvent;
     CYISignal<float> PlaybackRateChangedEvent;
 
     CYISignal<uint64_t> PlayerSeekingEvent;
@@ -151,7 +148,7 @@ private:
 
     std::vector<KalturaClosedCaptionTrack> m_closedCaptionsTracks;
     int32_t m_selectedClosedCaptionTrack = -1;
-    
+
     YI_RECT_REL m_currentVideoRectangle;
 
     YI_TYPE_BASES(KalturaVideoPlayer, CYIAbstractVideoPlayer)

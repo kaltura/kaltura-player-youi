@@ -10,6 +10,7 @@
 
 static const CYIString TAG("KalturaVideoPlayer");
 
+static const char *playerInitializedEvent = "playerInitialized";
 static const char *loadMediaSuccessEvent = "loadMediaSuccess";
 static const char *loadMediaFailedEvent = "loadMediaFailed";
 static const char *stateChangedEvent = "stateChanged";
@@ -120,7 +121,8 @@ CYIString KalturaVideoPlayer::GetName_() const
 
 CYIString KalturaVideoPlayer::GetVersion_() const
 {
-    return m_pPriv->GetVersion_();
+    CYIString bridgeVersion = "0.0.1";
+    return bridgeVersion;
 }
 
 CYIAbstractVideoPlayer::Statistics KalturaVideoPlayer::GetStatistics_() const
@@ -261,7 +263,11 @@ void KalturaVideoPlayer::DisableClosedCaptions_()
 void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic content)
 {
 
-    if (name.Compare(loadMediaSuccessEvent) == 0)
+    if (name.Compare(playerInitializedEvent) == 0)
+    {
+        YI_LOGD(TAG, "playerInitializedEvent");
+    }
+    else if (name.Compare(loadMediaSuccessEvent) == 0)
     {
         YI_LOGD(TAG, "loadMediaSuccessEvent");
         m_pStateManager->TransitionToMediaReady();
@@ -329,7 +335,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(canPlayEvent) == 0)
     {
         YI_LOGD(TAG, "canPlayEvent");
-        PlayerCanPlayEvent.Emit();
     }
     else if (name.Compare(playingEvent) == 0)
     {
@@ -337,12 +342,12 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready) {
             m_pStateManager->TransitionToPlaybackPlaying();
         }
-        PlayerPlayingEvent.Emit();
     }
     else if (name.Compare(endedEvent) == 0)
     {
         YI_LOGD(TAG, "endedEvent");
-        PlayerEndedEvent.Emit();
+        m_pStateManager->TransitionToPlaybackPaused();
+        PlaybackComplete.Emit();
     }
     else if (name.Compare(stoppedEvent) == 0)
     {
@@ -614,6 +619,5 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         YI_LOGW(TAG, "Unhandled event received - <%s>", name.GetData());
     }
 }
-
 
 

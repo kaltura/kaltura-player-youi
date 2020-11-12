@@ -199,6 +199,8 @@ public class PKPlayerWrapper {
             addKalturaPlayerListeners();
 
             initialized = true;
+
+            sendPlayerEvent("playerInitialized");
             if (onEventListener != null) {
                 onEventListener.onKalturaPlayerInitialized();
             }
