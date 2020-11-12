@@ -220,6 +220,9 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     
     [self observeAllEvents];
     
+    __weak EventSender *playerInitializedWeakSender = self.eventSender;
+    [playerInitializedWeakSender sendEvent:@"playerInitialized" payload:@{}];
+
     return self;
 }
 
@@ -243,6 +246,9 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     }];
     [self.kalturaPlayer addObserver:self event:PlayerEvent.stopped block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"stopped" payload:@{}];
+    }];
+    [self.kalturaPlayer addObserver:self event:PlayerEvent.ended block:^(PKEvent * _Nonnull event) {
+        [weakSender sendEvent:@"ended" payload:@{}];
     }];
     
     // Duration and progress

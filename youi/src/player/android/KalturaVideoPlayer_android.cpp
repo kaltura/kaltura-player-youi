@@ -184,12 +184,7 @@ void KalturaVideoPlayerPriv::SetLogLevel_(const CYIString &logLevel) {
 
 CYIString KalturaVideoPlayerPriv::GetName_() const
 {
-    return "Kaltura Video Player";
-}
-
-CYIString KalturaVideoPlayerPriv::GetVersion_() const
-{
-    return "1";
+    return "kaltura-yi-android";
 }
 
 CYIAbstractVideoPlayer::Statistics KalturaVideoPlayerPriv::GetStatistics_() const
@@ -289,7 +284,7 @@ void KalturaVideoPlayerPriv::Seek_(uint64_t uSeekPositionMs)
     }
 
     double seekTime = static_cast<double>(uSeekPositionMs) / 1000.f;
-    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, seekToMethodID, seekTime);
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, seekToMethodID, (float)seekTime);
 
 }
 
