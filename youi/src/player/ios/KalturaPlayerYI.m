@@ -300,8 +300,8 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         [weakSender sendEvent:@"playbackInfoUpdated"
                       payload:@{
                           @"videoBitrate": @(event.playbackInfo.bitrate),
-                          @"audioBitrate": @(event.playbackInfo.bitrate)
-                         // @"totalBitrate": @(event.playbackInfo.bitrate)
+                          //@"audioBitrate": @(event.playbackInfo.bitrate),
+                          @"totalBitrate": @(event.playbackInfo.observedBitrate)
         }];
     }];
 
