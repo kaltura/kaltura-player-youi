@@ -275,7 +275,7 @@ public class PKPlayerWrapper {
         player.addListener(self, PlayerEvent.playbackInfoUpdated, event -> {
             sendPlayerEvent("playbackInfoUpdated", "{ \"videoBitrate\": " + event.playbackInfo.getVideoBitrate() +
                     ", \"audioBitrate\": " + event.playbackInfo.getAudioBitrate() +
-                    //", \"totalBitrate\": " + event.playbackInfo.getVideoBitrate() +
+                    ", \"totalBitrate\": " + (event.playbackInfo.getVideoBitrate() + event.playbackInfo.getAudioBitrate()) +
                     " }");
         });
 
