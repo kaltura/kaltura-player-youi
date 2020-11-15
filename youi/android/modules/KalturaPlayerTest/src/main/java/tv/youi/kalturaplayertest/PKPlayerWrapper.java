@@ -273,9 +273,12 @@ public class PKPlayerWrapper {
         });
 
         player.addListener(self, PlayerEvent.playbackInfoUpdated, event -> {
+            long videoBitrate = (event.playbackInfo.getVideoBitrate() > 0) ? event.playbackInfo.getVideoBitrate() : 0;
+            long audioBitrate = (event.playbackInfo.getAudioBitrate() > 0) ? event.playbackInfo.getAudioBitrate() : 0;
+            long totalBitrate = (videoBitrate + audioBitrate);
             sendPlayerEvent("playbackInfoUpdated", "{ \"videoBitrate\": " + event.playbackInfo.getVideoBitrate() +
                     ", \"audioBitrate\": " + event.playbackInfo.getAudioBitrate() +
-                    ", \"totalBitrate\": " + (event.playbackInfo.getVideoBitrate() + event.playbackInfo.getAudioBitrate()) +
+                    ", \"totalBitrate\": " + totalBitrate  +
                     " }");
         });
 
