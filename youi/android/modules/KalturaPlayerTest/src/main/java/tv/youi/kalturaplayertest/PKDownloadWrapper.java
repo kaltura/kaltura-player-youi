@@ -176,7 +176,7 @@ public class PKDownloadWrapper {
             return;
         }
 
-        manager.prepareAsset(mediaAsset.buildOttMediaOptions(assetId), prefs, new OfflineManager.PrepareCallback() {
+        manager.prepareAsset(mediaAsset.buildOttMediaOptions(assetId, null), prefs, new OfflineManager.PrepareCallback() {
             @Override
             public void onPrepared(@NonNull String assetId, @NonNull OfflineManager.AssetInfo assetInfo, @Nullable Map<OfflineManager.TrackType, List<OfflineManager.Track>> selected) {
                 manager.startAssetDownload(assetInfo);

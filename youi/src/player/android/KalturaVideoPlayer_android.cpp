@@ -34,7 +34,7 @@ void JNICALL Java_tv_youi_kalturaplayertest_PKPlayerWrapper_nativeSendEvent(JNIE
     {
         content = folly::parseJson(std_payload);
     }
-    
+
     pBridge->HandleEvent(event, content);
 }
 
@@ -169,25 +169,29 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
     GetEnv_KalturaPlayer()->DeleteLocalRef(url);
 }
 
-
 void KalturaVideoPlayerPriv::SetZIndex_(float zIndex)
 {
-    if (!playerWrapperBridgeClass)
-    {
+    if (!playerWrapperBridgeClass) {
         return;
     }
 
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setZIndexMethodID, zIndex);
 }
 
-CYIString KalturaVideoPlayerPriv::GetName_() const
-{
-    return "Kaltura Video Player";
+void KalturaVideoPlayerPriv::SetLogLevel_(const CYIString &logLevel) {
+
+    if (!playerWrapperBridgeClass) {
+        return;
+    }
+    jstring logLevelStr = GetEnv_KalturaPlayer()->NewStringUTF(logLevel.GetData());
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setLogLevelMethodID, logLevelStr);
+    GetEnv_KalturaPlayer()->DeleteLocalRef(logLevelStr);
+
 }
 
-CYIString KalturaVideoPlayerPriv::GetVersion_() const
+CYIString KalturaVideoPlayerPriv::GetName_() const
 {
-    return "1";
+    return "kaltura-yi-android";
 }
 
 CYIAbstractVideoPlayer::Statistics KalturaVideoPlayerPriv::GetStatistics_() const
@@ -251,6 +255,24 @@ void KalturaVideoPlayerPriv::Stop_()
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, stopMethodID);
 }
 
+void KalturaVideoPlayerPriv::Replay_()
+{
+    if (!playerWrapperBridgeClass)
+    {
+        return;
+    }
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, replayMethodID);
+}
+
+void KalturaVideoPlayerPriv::ChangePlaybackRate_(float playbackRate)
+{
+    if (!playerWrapperBridgeClass)
+    {
+        return;
+    }
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, changePlaybackRateMethodID, playbackRate);
+}
+
 uint64_t KalturaVideoPlayerPriv::GetDurationMs_() const
 {
     return m_pPub->m_durationMs;
@@ -269,7 +291,7 @@ void KalturaVideoPlayerPriv::Seek_(uint64_t uSeekPositionMs)
     }
 
     double seekTime = static_cast<double>(uSeekPositionMs) / 1000.f;
-    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, seekToMethodID, seekTime);
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, seekToMethodID, (float)seekTime);
 
 }
 
@@ -369,17 +391,12 @@ CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayerPriv::GetActiv
     return CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo();
 }
 
-bool KalturaVideoPlayerPriv::IsMuted_() const
-{
-    return false;
-}
-
 void KalturaVideoPlayerPriv::Mute_(bool bMute)
 {
     float volume = 1.0;
     if (bMute == true) {
         volume = 0;
-    } 
+    }
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setVolumeMethodID, volume);
 }
 

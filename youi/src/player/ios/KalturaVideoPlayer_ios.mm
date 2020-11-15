@@ -177,7 +177,7 @@ void KalturaVideoPlayerPriv::LoadMedia_(const CYIString &assetId, folly::dynamic
     {
         m_pPub->m_pStateManager->TransitionToMediaUnloaded();
     }
-    
+
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
     [m_player loadMedia:assetId.ToNSString() options:convertFollyDynamicToId(options)];
 }
@@ -188,7 +188,7 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &videoURI)
     {
         m_pPub->m_pStateManager->TransitionToMediaUnloaded();
     }
-    
+
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
     NSURL *url = [NSURL URLWithString:videoURI.ToString().ToNSString()];
     NSLog(@"*** SetMedia_(%s)", videoURI.ToString().ToStdString().c_str());
@@ -202,6 +202,12 @@ void KalturaVideoPlayerPriv::SetZIndex_(const float zIndex)
     [m_player setZIndex:zIndex];
 }
 
+void KalturaVideoPlayerPriv::SetLogLevel_(const CYIString &logLevel)
+{
+    NSLog(@"*** SetLogLevel_(%s)", logLevel.GetData());
+    [KalturaPlayerYI setLogLevel:logLevel.ToNSString()];
+}
+
 void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic &content)
 {
     m_pPub->HandleEvent(name, content);
@@ -209,12 +215,7 @@ void KalturaVideoPlayerPriv::Emit_(const std::string &name, const folly::dynamic
 
 CYIString KalturaVideoPlayerPriv::GetName_() const
 {
-    return "Kaltura Video Player";
-}
-
-CYIString KalturaVideoPlayerPriv::GetVersion_() const
-{
-    return "1";
+    return "kaltura-yi-ios";
 }
 
 CYIAbstractVideoPlayer::Statistics KalturaVideoPlayerPriv::GetStatistics_() const
@@ -284,6 +285,22 @@ void KalturaVideoPlayerPriv::Stop_()
     if (m_player)
     {
         [m_player stop];
+    }
+}
+
+void KalturaVideoPlayerPriv::Replay_()
+{
+    if (m_player)
+    {
+        [m_player replay];
+    }
+}
+
+void KalturaVideoPlayerPriv::ChangePlaybackRate_(float playbackRate)
+{
+    if (m_player)
+    {
+        [m_player changePlaybackRate:playbackRate];
     }
 }
 
@@ -390,11 +407,6 @@ CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayerPriv::GetActiv
     }
 
     return CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo();
-}
-
-bool KalturaVideoPlayerPriv::IsMuted_() const
-{
-    return false;
 }
 
 void KalturaVideoPlayerPriv::Mute_(bool bMute)

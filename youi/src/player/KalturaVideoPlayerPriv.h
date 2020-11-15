@@ -27,6 +27,9 @@ public:
     void LoadMedia_(const CYIString &assetId, folly::dynamic options);
     void SetMedia_(const CYIUrl &videoURI);
     void SetZIndex_(float zIndex);
+    void Replay_();
+    void ChangePlaybackRate_(float playbackRate);
+    void SetLogLevel_(const CYIString &logLevel);
     bool SelectVideoTrack_(uint32_t uID);
     std::vector<KalturaVideoPlayer::VideoTrackInfo> GetVideoTracks_() const;
     KalturaVideoPlayer::VideoTrackInfo GetActiveVideoTrack_() const;
@@ -57,7 +60,6 @@ public:
     bool SelectClosedCaptionsTrack_(uint32_t uID);
     std::vector<CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo> GetClosedCaptionsTracks_() const;
     CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo GetActiveClosedCaptionsTrack_() const;
-    bool IsMuted_() const;
     void Mute_(bool bMute);
     void DisableClosedCaptions_();
 
