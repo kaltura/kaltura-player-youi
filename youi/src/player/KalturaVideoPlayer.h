@@ -87,9 +87,7 @@ public:
     bool SelectVideoTrack(uint32_t uID);
     std::vector<VideoTrackInfo> GetVideoTracks();
     VideoTrackInfo GetActiveVideoTrack();
-    
-    CYISignal<> AdContentPauseRequested;
-    CYISignal<> AdContentResumeRequested;
+
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
     CYISignal<folly::dynamic> VolumeChanged;
 

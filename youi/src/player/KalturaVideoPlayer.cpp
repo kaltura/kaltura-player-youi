@@ -492,7 +492,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         if (m_isAutoZIndex == true) {
             m_pPriv->SetZIndex_(1.0f);
         }
-        AdContentPauseRequested.Emit();
     }
     else if (name.Compare(adContentResumeRequestedEvent) == 0)
     {
@@ -500,7 +499,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         if (m_isAutoZIndex == true) {
            m_pPriv->SetZIndex_(0.0f);
         }
-        AdContentResumeRequested.Emit();
     }
     else if (name.Compare(allAdsCompletedEvent) == 0)
     {
