@@ -352,6 +352,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer addObserver:self event:PlayerEvent.seeking block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"seeking" payload:@{@"targetPosition": event.targetSeekPosition}];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.seeked block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"seeked" payload:@{}];
     }];
