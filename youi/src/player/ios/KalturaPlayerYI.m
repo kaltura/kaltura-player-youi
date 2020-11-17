@@ -270,9 +270,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     }];
     
     [self.kalturaPlayer addObserver:self event:PlayerEvent.tracksAvailable block:^(PKEvent * _Nonnull event) {
-        
-        weakSelf.bufferedTime = weakPlayer.bufferedTime;
-        
+                
         NSMutableArray *audioTracks = [NSMutableArray array];
         NSString *selectedAudioTrackId = [weakPlayer currentAudioTrack];
         for (Track *track in event.tracks.audioTracks) {
@@ -328,6 +326,8 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     }];
     
     [self.kalturaPlayer addObserver:self event:PlayerEvent.loadedTimeRanges block:^(PKEvent * _Nonnull event) {
+
+         weakSelf.bufferedTime = weakPlayer.bufferedTime;
 
         NSMutableArray *timeRangesArray = [[NSMutableArray alloc] init];
 
