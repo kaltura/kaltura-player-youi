@@ -83,7 +83,7 @@ public class PKPlayerWrapper {
     }
 
     private static boolean initialized;
-
+    private static long reportedDuration = Consts.TIME_UNSET;
     static ByteBuffer bridgeInstance;
 
     static void sendEvent(String name, String payload) {
@@ -253,10 +253,13 @@ public class PKPlayerWrapper {
                 sendPlayerEvent("timeUpdate", "{ \"position\": " + (event.position / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
                         ", \"bufferPosition\": " + (event.bufferPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
                         " }");
-                if (player.getMediaEntry().getMediaType() != PKMediaEntry.MediaEntryType.Vod /*|| player.isLiveMedia()*/) {
-                    sendPlayerEvent("loadedTimeRanges", "{\"timeRanges\": [ { \"start\": " + 0 +
-                            ", \"end\": " + (event.duration / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
-                            " } ] }");
+                if (reportedDuration != event.duration) {
+                    reportedDuration = event.duration;
+                    if (player.getMediaEntry().getMediaType() != PKMediaEntry.MediaEntryType.Vod /*|| player.isLive()*/) {
+                        sendPlayerEvent("loadedTimeRanges", "{\"timeRanges\": [ { \"start\": " + 0 +
+                                ", \"end\": " + (event.duration / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
+                                " } ] }");
+                    }
                 }
             }
         });
@@ -411,6 +414,7 @@ public class PKPlayerWrapper {
     public static void loadMedia(final String assetId, final String jsonOptionsStr) {
 
         log.d("loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
+        reportedDuration = Consts.TIME_UNSET;
 
         if (TextUtils.isEmpty(assetId) || TextUtils.isEmpty(jsonOptionsStr)) {
             return;
@@ -470,6 +474,7 @@ public class PKPlayerWrapper {
     public static void setMedia(final String contentUrl) {
 
         log.d("setMedia contentUrl: " + contentUrl);
+        reportedDuration = Consts.TIME_UNSET;
 
         if (TextUtils.isEmpty(contentUrl)) {
             return;
@@ -587,6 +592,7 @@ public class PKPlayerWrapper {
     public static void prepare() {
 
         log.d("prepare");
+        reportedDuration = Consts.TIME_UNSET;
         if (player != null) {
             runOnUiThread(() -> player.prepare());
         }
@@ -680,6 +686,7 @@ public class PKPlayerWrapper {
         mainHandler = null;
         bridgeInstance = null;
         initialized = false;
+        reportedDuration = Consts.TIME_UNSET;
         self = null;
     }
 
