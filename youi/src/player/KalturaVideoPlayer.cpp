@@ -485,6 +485,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             AudioBitrateChanged.Emit(currentAudioBitrate);
         }
 
+        // in iOS only totalBitrate is used
         if (content.find("totalBitrate") != content.items().end() && !content["totalBitrate"].isNull()) {
             const auto totalBitrate = content["totalBitrate"].asDouble();
             float currentTotalBitrate = static_cast<float>(totalBitrate);
