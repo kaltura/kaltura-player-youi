@@ -265,30 +265,32 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
                                                       @"bufferPosition": bufferedTime
         }];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.loadedTimeRanges block:^(PKEvent * _Nonnull event) {
         weakSelf.bufferedTime = weakPlayer.bufferedTime;
-        
-        NSMutableArray *timeRangesArray = [[NSMutableArray alloc] init];
+        BOOL isLiveMedia = [ weakPlayer isLive ];
+        if (isLiveMedia) {
+            NSMutableArray *timeRangesArray = [[NSMutableArray alloc] init];
 
-        unsigned long i;
-        for (i = 0; i < [event.timeRanges count]; i++) {
-            id pkTimeRangeElement = [event.timeRanges objectAtIndex:i];
-            PKTimeRange *pkTimeRange = pkTimeRangeElement;
-            NSLog(@"pkTimeRangeElement start : %f",  pkTimeRange.start);
-            NSLog(@"pkTimeRangeElement end : %f",  pkTimeRange.end);
+            for (unsigned int i = 0; i < [event.timeRanges count]; i++) {
+                PKTimeRange *pkTimeRange = [event.timeRanges objectAtIndex:i];
+                NSLog(@"pkTimeRangeElement start : %f",  pkTimeRange.start);
+                NSLog(@"pkTimeRangeElement end : %f",  pkTimeRange.end);
+                
+                NSDictionary *dictionary = @{
+                    @"start": @(pkTimeRange.start),
+                    @"end": @(pkTimeRange.end)
+                };
+                [timeRangesArray addObject:dictionary];
+            }
             
-            NSDictionary *dictionary = @{
-                @"start": @(pkTimeRange.start),
-                @"end": @(pkTimeRange.end)
-            };
-            [timeRangesArray addObject:dictionary];
+            if (timeRangesArray == nil || [timeRangesArray count] == 0) {
+                return;
+            }
+            
+            [weakSender sendEvent:@"loadedTimeRanges" payload:@{@"timeRanges" : timeRangesArray}];
         }
         
-        if (timeRangesArray == nil || [timeRangesArray count] == 0) {
-            return;
-        }
-        
-        [weakSender sendEvent:@"loadedTimeRanges" payload:@{@"timeRanges" : timeRangesArray}];
     }];
     
     [self.kalturaPlayer addObserver:self event:PlayerEvent.tracksAvailable block:^(PKEvent * _Nonnull event) {
