@@ -299,8 +299,6 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer addObserver:self event:PlayerEvent.playbackInfo block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"playbackInfoUpdated"
                       payload:@{
-                          //@"videoBitrate": @(event.playbackInfo.bitrate),
-                          //@"audioBitrate": @(event.playbackInfo.bitrate),
                           @"totalBitrate": @(event.playbackInfo.indicatedBitrate)
         }];
     }];
