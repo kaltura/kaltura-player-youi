@@ -326,7 +326,6 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     }];
     
     [self.kalturaPlayer addObserver:self event:PlayerEvent.loadedTimeRanges block:^(PKEvent * _Nonnull event) {
-    //NSArray<PKTimeRange>
 
         NSMutableArray *timeRangesArray = [[NSMutableArray alloc] init];
 
