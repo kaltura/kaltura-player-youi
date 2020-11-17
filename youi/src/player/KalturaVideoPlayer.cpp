@@ -501,7 +501,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     }
     else if (name.Compare(loadedTimeRangesEvent) == 0)
     {
-        YI_LOGD(TAG, "loadedTimeRangesEvent");
         YI_LOGD(TAG, "loadedTimeRangesEvent - %s", JSONFromDynamic(content).c_str());
 
         if (!content["timeRanges"].isNull()) {
