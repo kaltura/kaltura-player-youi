@@ -318,6 +318,13 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
                       payload:trackToDict(event.selectedTrack, event.selectedTrack.id)];
     }];
     
+    [self.kalturaPlayer addObserver:self event:PlayerEvent.playbackInfo block:^(PKEvent * _Nonnull event) {
+        [weakSender sendEvent:@"playbackInfoUpdated"
+                      payload:@{
+                          @"totalBitrate": @(event.playbackInfo.indicatedBitrate)
+        }];
+    }];
+
     [self.kalturaPlayer addObserver:self event:PlayerEvent.error block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"error" payload:@{@"errorType": @(event.error.code)}];   // TODO more details
     }];
