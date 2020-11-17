@@ -253,7 +253,7 @@ public class PKPlayerWrapper {
                 sendPlayerEvent("timeUpdate", "{ \"position\": " + (event.position / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
                         ", \"bufferPosition\": " + (event.bufferPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
                         " }");
-                if (reportedDuration != event.duration) {
+                if (reportedDuration != event.duration && event.duration > 0) {
                     reportedDuration = event.duration;
                     if (player.getMediaEntry().getMediaType() != PKMediaEntry.MediaEntryType.Vod /*|| player.isLive()*/) {
                         sendPlayerEvent("loadedTimeRanges", "{\"timeRanges\": [ { \"start\": " + 0 +
