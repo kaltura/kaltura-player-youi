@@ -271,6 +271,8 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     
     [self.kalturaPlayer addObserver:self event:PlayerEvent.tracksAvailable block:^(PKEvent * _Nonnull event) {
         
+        weakSelf.bufferedTime = weakPlayer.bufferedTime;
+        
         NSMutableArray *audioTracks = [NSMutableArray array];
         NSString *selectedAudioTrackId = [weakPlayer currentAudioTrack];
         for (Track *track in event.tracks.audioTracks) {
@@ -353,6 +355,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer addObserver:self events:@[OttEvent.bookmarkError] block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"bookmarkError" payload:@{@"errorMessage": event.ottEventMessage}];
     }];
+    
     [self.kalturaPlayer addObserver:self events:@[OttEvent.concurrency] block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"concurrencyError" payload:@{@"errorMessage": event.ottEventMessage}];
     }];
