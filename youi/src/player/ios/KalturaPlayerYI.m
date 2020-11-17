@@ -331,7 +331,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
 
         unsigned long i;
         for (i = 0; i < [event.timeRanges count]; i++) {
-          id pkTimeRangeElement = [event.timeRanges objectAtIndex:i];
+            id pkTimeRangeElement = [event.timeRanges objectAtIndex:i];
             PKTimeRange *pkTimeRange = pkTimeRangeElement;
             NSLog(@"pkTimeRangeElement start : %f",  pkTimeRange.start);
             NSLog(@"pkTimeRangeElement end : %f",  pkTimeRange.end);
