@@ -74,9 +74,9 @@ export default class YiReactApp extends Component {
                   onReady={() => console.log("onReady called.")}
                   onPlaying={() => this.setState({ isPlaying: true })}
                   onPaused={() => this.setState({ isPlaying: false })}
-                  onVideoBitrateChanged={(bitrate) => console.log("onVideoBitrateChanged called. " + bitrate)}
-                  onAudioBitrateChanged={(bitrate) => console.log("onAudioBitrateChanged called. " + bitrate)}
-                  onTotalBitrateChanged={(bitrate) => console.log("onTotalBitrateChanged called. " + bitrate)}
+                  onVideoBitrateChanged={(videoBitrate) => console.log("onVideoBitrateChanged called. " + videoBitrate)}
+                  onAudioBitrateChanged={(audioBitrate) => console.log("onAudioBitrateChanged called. " + audioBitrate)}
+                  onTotalBitrateChanged={(totalBitrate) => console.log("onTotalBitrateChanged called. " + totalBitrate)}
                   onPlaybackComplete={() => console.log("onPlaybackComplete called.")}
                   onBufferingStarted={() => console.log("onBufferingStarted called.")}
                   onBufferingEnded={() => console.log("onBufferingEnded called.")}
