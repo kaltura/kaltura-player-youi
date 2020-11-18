@@ -273,6 +273,16 @@ public class PKPlayerWrapper {
             sendPlayerEvent("textTrackChanged", new Gson().toJson(textTrack));
         });
 
+        player.addListener(self, PlayerEvent.playbackInfoUpdated, event -> {
+            long videoBitrate = (event.playbackInfo.getVideoBitrate() > 0) ? event.playbackInfo.getVideoBitrate() : 0;
+            long audioBitrate = (event.playbackInfo.getAudioBitrate() > 0) ? event.playbackInfo.getAudioBitrate() : 0;
+            long totalBitrate = (videoBitrate + audioBitrate);
+            sendPlayerEvent("playbackInfoUpdated", "{ \"videoBitrate\": " + event.playbackInfo.getVideoBitrate() +
+                    ", \"audioBitrate\": " + event.playbackInfo.getAudioBitrate() +
+                    ", \"totalBitrate\": " + totalBitrate  +
+                    " }");
+        });
+
         player.addListener(self, PlayerEvent.seeking, event -> sendPlayerEvent("seeking", "{ \"targetPosition\": " + (event.targetPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
         player.addListener(self, PlayerEvent.seeked, event -> sendPlayerEvent("seeked"));
         player.addListener(self, PlayerEvent.error, event -> {
