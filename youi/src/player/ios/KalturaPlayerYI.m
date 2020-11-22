@@ -397,7 +397,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         
         DRMParams *drmParams;
         NSDictionary *drmData =  [dyn_mediaInfo valueForKey: @"drmData"][0];
-        if (drmData != nil) {
+        if (drmData != nil && ![drmData isEqual:[NSNull null]]) {
             NSString *licenseUri = drmData[@"licenseUri"];
             Scheme *schemeType = SchemeUnknown;
             
@@ -423,69 +423,62 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
             }
         }
         
-        NSArray<DRMParams*>* drmInfo = [[NSArray alloc] initWithObjects:drmParams, nil];
-        if (drmInfo != nil) {
-            
+        NSArray<DRMParams*>* drmInfo;
+        if (drmParams != nil) {
+            drmInfo = [[NSArray alloc] initWithObjects:drmParams, nil];
         }
+
         NSString *mediaFormat = [dyn_mediaInfo valueForKey: @"mediaFormat"][0];
         NSInteger mediaFormatType = MediaFormatUnknown;
-                
-        if ([mediaFormat caseInsensitiveCompare:@"hls"] == NSOrderedSame) {
-            mediaFormatType = MediaFormatHls;
-        } else if ([mediaFormat caseInsensitiveCompare:@"mp4"] == NSOrderedSame) {
-            mediaFormatType = MediaFormatMp4;
-        } else if ([mediaFormat caseInsensitiveCompare:@"mp3"] == NSOrderedSame) {
-            mediaFormatType = MediaFormatMp3;
-        } else if ([mediaFormat caseInsensitiveCompare:@"wvm"] == NSOrderedSame) {
-            mediaFormatType = MediaFormatWvm;
+        NSString *mimeType = @"application/x-mpegURL";
+        if (mediaFormat != nil && ![mediaFormat isEqual:[NSNull null]]) {
+            if ([mediaFormat caseInsensitiveCompare:@"hls"] == NSOrderedSame) {
+                mediaFormatType = MediaFormatHls;
+                mimeType = @"application/x-mpegURL";
+            } else if ([mediaFormat caseInsensitiveCompare:@"mp4"] == NSOrderedSame) {
+                mediaFormatType = MediaFormatMp4;
+                mimeType = @"video/mp4";
+            } else if ([mediaFormat caseInsensitiveCompare:@"mp3"] == NSOrderedSame) {
+                mediaFormatType = MediaFormatMp3;
+                mimeType = @"audio/mpeg";
+            } else if ([mediaFormat caseInsensitiveCompare:@"wvm"] == NSOrderedSame) {
+                mediaFormatType = MediaFormatWvm;
+                mimeType = @"video/wvm";
+            }
         }
-        
-        
-      //  NSString *mediaType = [dyn_mediaInfo valueForKey: @"mediaType"][0];
-//        NSString *mediaTypeType = MediaTypeUnknown;
-//
-//        if ([mediaType caseInsensitiveCompare:@"vod"] == NSOrderedSame) {
-//            mediaTypeType = MediaTypeVod
-//        } else if ([mediaType caseInsensitiveCompare:@"live"] == NSOrderedSame) {
-//            mediaTypeType = MediaTypeLive;
-//        } else if ([mediaType caseInsensitiveCompare:@"dvrlive"] == NSOrderedSame) {
-//            mediaTypeType = MediaTypeDvrLive;
-//        }
         
         NSURL *contentURL = [[NSURL alloc] initWithString:[dyn_mediaInfo valueForKey: @"uri"][0]];
         //NSURL *contentURL = [[NSURL alloc] initWithString:@"https://playertest.longtailvideo.com/adaptive/eleph-audio/playlist.m3u8"];
 
         PKMediaSource *source = [[PKMediaSource alloc] init:@"1234"
                                                    contentUrl:contentURL
-                                                   mimeType:nil
+                                                   mimeType:mimeType
                                                    drmData:drmInfo
                                                    mediaFormat:mediaFormatType];
         NSArray<PKMediaSource*> *sources = [[NSArray alloc] initWithObjects:source, nil];
         // setup media entry
         PKMediaEntry *mediaEntry = [[PKMediaEntry alloc] init:@"1234" sources:sources duration:-1];
-
+        
+        NSString *mediaType = [dyn_mediaInfo valueForKey: @"mediaType"][0];
+        NSInteger *mediaTypeType = MediaTypeUnknown;
+        if (mediaType != nil && ![mediaType isEqual:[NSNull null]]) {
+            if ([mediaType caseInsensitiveCompare:@"vod"] == NSOrderedSame) {
+                mediaTypeType = MediaTypeVod;
+            } else if ([mediaType caseInsensitiveCompare:@"live"] == NSOrderedSame) {
+                mediaTypeType = MediaTypeLive;
+            } else if ([mediaType caseInsensitiveCompare:@"dvrlive"] == NSOrderedSame) {
+                mediaTypeType = MediaTypeDvrLive;
+            }
+        }
+        
+        mediaEntry.mediaType = mediaTypeType;
+        
         [self.kalturaPlayer setMedia:mediaEntry options:nil];
         [weakSender sendEvent:@"loadMediaSuccess" payload:nil];
     } else {
         [weakSender sendEvent:@"loadMediaFailed" payload:nil];
     }
-    
 }
-
-//- (void)setMedia:(NSDictionary *)dyn_mediaInfo {
-//    PKMediaSource *source = [[PKMediaSource alloc] init:@"1234"
-//                                               contentUrl:dyn_mediaInfo[@"uri"]
-//                                               mimeType:dyn_mediaInfo[@"mediaType"]
-//                                                drmData:dyn_mediaInfo[@"drmData"]
-//                                            mediaFormat:dyn_mediaInfo[@"mediaFormat"]];
-//    NSArray<PKMediaSource*> *sources = [[NSArray alloc] initWithObjects:source, nil];
-//    // setup media entry
-//    PKMediaEntry *mediaEntry = [[PKMediaEntry alloc] init:@"1234" sources:sources duration:-1];
-//
-//    __weak EventSender *weakSender = self.eventSender;
-//    [self.kalturaPlayer setMedia:mediaEntry options:nil];
-//    [weakSender sendEvent:@"loadMediaSuccess" payload:nil];
-//}
 
 - (void)loadMedia:(NSString *)assetId options:(NSDictionary *)dyn_options {
     OTTMediaOptions *options = [OTTMediaOptions new];
