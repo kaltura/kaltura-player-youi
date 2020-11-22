@@ -81,9 +81,9 @@ void KalturaVideoPlayer::LoadMedia(const CYIString &assetId, folly::dynamic opti
     m_pPriv->LoadMedia_(assetId, options);
 }
 
-void KalturaVideoPlayer::SetMedia(const CYIUrl &videoURI)
+void KalturaVideoPlayer::SetMedia(folly::dynamic mediaInfo)
 {
-    m_pPriv->SetMedia_(videoURI);
+    m_pPriv->SetMedia_(mediaInfo);
 }
 
 void KalturaVideoPlayer::SetLogLevel(const CYIString &logLevel)
@@ -365,7 +365,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         float playbackRate = static_cast<float>(content["playbackRate"].asDouble());
         YI_LOGD(TAG, "playbackRateChangedEvent %f", playbackRate);
     }
-
     else if (name.Compare(tracksAvailableEvent) == 0)
     {
         YI_LOGD(TAG, "tracksAvailable %s", JSONFromDynamic(content).c_str());

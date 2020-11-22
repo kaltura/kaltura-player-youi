@@ -137,11 +137,11 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, LoadMedia)(std::string asse
     }
 }
 
-YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SetMedia)(const CYIUrl &videoURI)
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SetMedia)(folly::dynamic mediaInfo)
 {
     if (m_pPlayer)
     {
-        m_pPlayer->SetMedia(videoURI);
+        m_pPlayer->SetMedia(mediaInfo);
     }
 }
 

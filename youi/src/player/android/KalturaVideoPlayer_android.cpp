@@ -149,7 +149,7 @@ void KalturaVideoPlayerPriv::LoadMedia_(const CYIString &assetId, folly::dynamic
     GetEnv_KalturaPlayer()->DeleteLocalRef(optionsStr);
 }
 
-void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
+void KalturaVideoPlayerPriv::SetMedia_(folly::dynamic mediaInfo)
 {
   if (!playerWrapperBridgeClass)
     {
@@ -163,10 +163,11 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
 
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
 
-    jstring url = GetEnv_KalturaPlayer()->NewStringUTF(contentUrl.ToString().GetData());
+    auto jsonMediaInfoStr = folly::toJson(mediaInfo);
+    jstring mediaInfoStr = GetEnv_KalturaPlayer()->NewStringUTF(jsonMediaInfoStr.c_str());
 
-    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setMediaMethodID, url);
-    GetEnv_KalturaPlayer()->DeleteLocalRef(url);
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setMediaMethodID, mediaInfoStr);
+    GetEnv_KalturaPlayer()->DeleteLocalRef(mediaInfoStr);
 }
 
 void KalturaVideoPlayerPriv::SetLogLevel_(const CYIString &logLevel) {

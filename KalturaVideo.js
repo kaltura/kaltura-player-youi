@@ -86,7 +86,7 @@ export default class KalturaVideo extends React.Component {
     if (this.props.media) {
       this.loadMedia(this.props.media.id, this.props.media.asset);
     } else if (this.props.source) {
-      this.setMedia(this.props.source.uri);
+      this.setMedia(this.props.source.mediaInfo);
     }
 
     if (this.props.playbackSpeed) {
@@ -133,8 +133,8 @@ export default class KalturaVideo extends React.Component {
     NativeModules.KalturaVideo.LoadMedia(assetId, options)
   }
 
-  setMedia = (url) => {
-    NativeModules.KalturaVideo.SetMedia(url)
+  setMedia = (mediaInfo) => {
+    NativeModules.KalturaVideo.SetMedia(mediaInfo)
   }
 
   // Passthrough functions

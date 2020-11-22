@@ -19,7 +19,7 @@ public:
 
     YI_RN_EXPORT_METHOD(Setup)(int32_t partnerId, folly::dynamic options);
     YI_RN_EXPORT_METHOD(LoadMedia)(std::string assetId, folly::dynamic options);
-    YI_RN_EXPORT_METHOD(SetMedia)(const CYIUrl &videoURI);
+    YI_RN_EXPORT_METHOD(SetMedia)(folly::dynamic mediaInfo);
     YI_RN_EXPORT_METHOD(Replay)();
     YI_RN_EXPORT_METHOD(ChangePlaybackRate)(float playbackRate);
     YI_RN_EXPORT_METHOD(SetLogLevel)(std::string logLevel);

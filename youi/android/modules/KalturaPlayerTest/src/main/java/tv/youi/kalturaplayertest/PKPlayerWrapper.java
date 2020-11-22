@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.kaltura.netkit.utils.NKLog;
 import com.kaltura.playkit.PKError;
 import com.kaltura.playkit.PKLog;
@@ -32,6 +33,7 @@ import com.kaltura.tvplayer.KalturaPlayer;
 import com.kaltura.tvplayer.PlayerInitOptions;
 import com.npaw.youbora.lib6.YouboraLog;
 
+import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +41,7 @@ import java.util.List;
 
 import tv.youi.kalturaplayertest.model.InitOptions;
 import tv.youi.kalturaplayertest.model.MediaAsset;
+import tv.youi.kalturaplayertest.model.MediaInfo;
 import tv.youi.kalturaplayertest.model.NetworkSettings;
 import tv.youi.kalturaplayertest.model.WrapperIMAConfig;
 import tv.youi.kalturaplayertest.model.WrapperYouboraConfig;
@@ -456,36 +459,49 @@ public class PKPlayerWrapper {
     }
 
     @SuppressWarnings("unused") // Called from C++
-    public static void setMedia(final String contentUrl) {
+    public static void setMedia(final String jsonMediaInfoStr) {
 
-        log.d("setMedia contentUrl: " + contentUrl);
+        log.d("setMedia jsonMediaInfoStr: " + jsonMediaInfoStr);
+        Gson gson = new Gson();
+        Type mediaInfoType = new TypeToken<ArrayList<MediaInfo>>(){}.getType();
 
-        if (TextUtils.isEmpty(contentUrl)) {
+        ArrayList<MediaInfo> mediaInfoArrayList = gson.fromJson(jsonMediaInfoStr, mediaInfoType);
+       // MediaInfo[] mediaInfoModel = gson.fromJson(jsonMediaInfoStr, MediaInfo[].class);
+        if (mediaInfoArrayList == null || mediaInfoArrayList.size() == 0) {
             return;
         }
-
+        MediaInfo mediaInfo = mediaInfoArrayList.get(0);
+        if (mediaInfo == null || TextUtils.isEmpty(mediaInfo.getUri())) {
+            return;
+        }
+        String contentUrl = mediaInfo.getUri();
         if (!initialized) {
             onEventListener = () -> {
                 log.d("delayed setMedia contentUrl: " + contentUrl);
-                setMediaInUIThread(contentUrl);
+                setMediaInUIThread(mediaInfo);
             };
             return;
         }
 
         log.d("regular setMedia contentUrl: " + contentUrl);
-        setMediaInUIThread(contentUrl);
+        setMediaInUIThread(mediaInfo);
     }
 
-    private static void setMediaInUIThread(String contentUrl) {
+    private static void setMediaInUIThread(MediaInfo mediaInfo) {
         log.d("setMedia in UI thread");
 
         runOnUiThread(() -> {
             PKMediaEntry pkMediaEntry = new PKMediaEntry();
-            pkMediaEntry.setMediaType(PKMediaEntry.MediaEntryType.Vod);
+            pkMediaEntry.setMediaType(mediaInfo.getMediaType());
+
             pkMediaEntry.setId("1234");
             PKMediaSource pkMediaSource = new PKMediaSource();
             pkMediaSource.setId("1234");
-            pkMediaSource.setUrl(contentUrl);
+            pkMediaSource.setMediaFormat(mediaInfo.getMediaFormat());
+            pkMediaSource.setUrl(mediaInfo.getUri());
+            if (mediaInfo.getDrmData() != null && !TextUtils.isEmpty(mediaInfo.getDrmData().getLicenseUri())) {
+                pkMediaSource.setDrmData(Collections.singletonList(mediaInfo.getDrmData()));
+            }
             pkMediaEntry.setSources(Collections.singletonList(pkMediaSource));
             player.setMedia(pkMediaEntry);
             sendPlayerEvent("loadMediaSuccess", new Gson().toJson(pkMediaEntry));
