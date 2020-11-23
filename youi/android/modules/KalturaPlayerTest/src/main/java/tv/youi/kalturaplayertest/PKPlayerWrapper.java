@@ -351,7 +351,7 @@ public class PKPlayerWrapper {
         String errorCause = (error.exception != null) ? error.exception.getCause() + "" : "";
         JsonObject errorJson = new JsonObject();
         errorJson.addProperty("errorType", error.errorType.name());
-        errorJson.addProperty("errorCode", ((PKPlayerErrorType) error.errorType).errorCode);
+        errorJson.addProperty("errorCode", String.valueOf(((PKPlayerErrorType) error.errorType).errorCode));
         errorJson.addProperty("errorSeverity", error.severity.name());
         errorJson.addProperty("errorMessage", error.message);
         errorJson.addProperty("errorCause", errorCause);
