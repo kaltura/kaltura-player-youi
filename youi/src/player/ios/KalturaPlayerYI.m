@@ -94,6 +94,25 @@ static NSDictionary* trackToDict(Track *track, NSString *selectedId) {
     };
 }
 
+static NSInteger getMediaFormatType(NSString *mediaFormat) {
+    if ([mediaFormat caseInsensitiveCompare:@"hls"] == NSOrderedSame) return MediaFormatHls;
+    if ([mediaFormat caseInsensitiveCompare:@"mp4"] == NSOrderedSame) return MediaFormatMp4;
+    if ([mediaFormat caseInsensitiveCompare:@"mp3"] == NSOrderedSame) return MediaFormatMp3;
+    if ([mediaFormat caseInsensitiveCompare:@"wvm"] == NSOrderedSame) return MediaFormatWvm;
+    
+    return MediaFormatUnknown;
+}
+
+static NSString* getMediaMimeType(NSString *mediaFormat) {
+    if ([mediaFormat caseInsensitiveCompare:@"hls"] == NSOrderedSame) return @"application/x-mpegURL";
+    if ([mediaFormat caseInsensitiveCompare:@"mp4"] == NSOrderedSame) return @"video/mp4";
+    if ([mediaFormat caseInsensitiveCompare:@"mp3"] == NSOrderedSame) return @"audio/mpeg";
+    if ([mediaFormat caseInsensitiveCompare:@"wvm"] == NSOrderedSame) return @"video/wvm";
+    
+    return @"application/x-mpegURL";
+}
+
+
 static NSDictionary* entryToDict(PKMediaEntry *entry) {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     
