@@ -17,6 +17,7 @@ import com.kaltura.playkit.PKMediaSource;
 import com.kaltura.playkit.PKPluginConfigs;
 import com.kaltura.playkit.PlayKitManager;
 import com.kaltura.playkit.PlayerEvent;
+import com.kaltura.playkit.ads.PKAdErrorType;
 import com.kaltura.playkit.player.LoadControlBuffers;
 import com.kaltura.playkit.player.PKHttpClientManager;
 import com.kaltura.playkit.player.PKPlayerErrorType;
@@ -351,8 +352,13 @@ public class PKPlayerWrapper {
         String errorCause = (error.exception != null) ? error.exception.getCause() + "" : "";
         JsonObject errorJson = new JsonObject();
         errorJson.addProperty("errorType", error.errorType.name());
-        errorJson.addProperty("errorCode", String.valueOf(((PKPlayerErrorType) error.errorType).errorCode));
-        errorJson.addProperty("errorSeverity", error.severity.name());
+        if (error.errorType instanceof PKPlayerErrorType) {
+            errorJson.addProperty("errorCode", String.valueOf(((PKPlayerErrorType) error.errorType).errorCode));
+        } else if (error.errorType instanceof PKAdErrorType) {
+            errorJson.addProperty("errorCode", String.valueOf(((PKAdErrorType) error.errorType).errorCode));
+        } else {
+            errorJson.addProperty("errorCode", String.valueOf(((PKPlayerErrorType) PKPlayerErrorType.UNEXPECTED).errorCode));
+        }        errorJson.addProperty("errorSeverity", error.severity.name());
         errorJson.addProperty("errorMessage", error.message);
         errorJson.addProperty("errorCause", errorCause);
         return new Gson().toJson(errorJson);
