@@ -84,6 +84,7 @@ public:
     void Replay();
     void ChangePlaybackRate(float playbackRate);
     void SetLogLevel(const CYIString &logLevel);
+    void KeepDeviceScreenOn(bool keepOn);
 
     bool SelectVideoTrack(uint32_t uID);
     std::vector<VideoTrackInfo> GetVideoTracks();
@@ -99,6 +100,7 @@ public:
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
     CYISignal<float> VolumeChanged;
     CYISignal<uint64_t> CurrentBufferTimeUpdated;
+    CYISignal<bool> KeepDeviceScreenOnUpdated;
 
     virtual void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle) override;
 
@@ -132,7 +134,7 @@ private:
     virtual void SetMaxBitrate_(uint64_t uMaxBitrate) override;
 
     void HandleEvent(const CYIString& name, folly::dynamic content);
-    
+
     std::unique_ptr<KalturaVideoPlayerPriv> m_pPriv;
     
     CYIString m_devicOSName;
