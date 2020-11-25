@@ -69,24 +69,27 @@ KalturaVideoPlayer::KalturaVideoPlayer()
 
 KalturaVideoPlayer::~KalturaVideoPlayer()
 {
-    KeepDeviceScreenOn(false);
+    InternalKeepDeviceScreenOn(false);
     m_pPriv->Stop_();
 }
 
 void KalturaVideoPlayer::Setup(int32_t partnerId, folly::dynamic options)
 {
+    if (options.find("manageKeepScreenOnInternally") != options.items().end() && !options["manageKeepScreenOnInternally"].isNull()) {
+        m_manageKeepScreenOnInternally = options["manageKeepScreenOnInternally"].asBool();
+    }
     m_pPriv->Setup_(partnerId, options);
 }
 
 void KalturaVideoPlayer::LoadMedia(const CYIString &assetId, folly::dynamic options)
 {
-    KeepDeviceScreenOn(false);
+    InternalKeepDeviceScreenOn(false);
     m_pPriv->LoadMedia_(assetId, options);
 }
 
 void KalturaVideoPlayer::SetMedia(const CYIUrl &videoURI)
 {
-    KeepDeviceScreenOn(false);
+    InternalKeepDeviceScreenOn(false);
     m_pPriv->SetMedia_(videoURI);
 }
 
@@ -98,6 +101,13 @@ void KalturaVideoPlayer::KeepDeviceScreenOn(const bool keepOn)
     if (pPowerMgmtBridge) {
         pPowerMgmtBridge->KeepDeviceScreenOn(keepOn);
         KeepDeviceScreenOnUpdated.Emit(keepOn);
+    }
+}
+
+void KalturaVideoPlayer::InternalKeepDeviceScreenOn(const bool keepOn)
+{
+    if (m_manageKeepScreenOnInternally) {
+        KeepDeviceScreenOn(keepOn);
     }
 }
 
@@ -328,7 +338,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     {
         YI_LOGD(TAG, "pauseEvent");
         m_pStateManager->TransitionToPlaybackPaused();
-        KeepDeviceScreenOn(false);
+        InternalKeepDeviceScreenOn(false);
 
     }
     else if (name.Compare(durationChangedEvent) == 0)
@@ -359,7 +369,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         YI_LOGD(TAG, "playingEvent");
         if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready) {
             m_pStateManager->TransitionToPlaybackPlaying();
-            KeepDeviceScreenOn(true);
+            InternalKeepDeviceScreenOn(true);
         }
     }
     else if (name.Compare(endedEvent) == 0)
@@ -372,7 +382,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     {
         YI_LOGD(TAG, "stoppedEvent");
         PlayerStoppedEvent.Emit();
-        KeepDeviceScreenOn(false);
+        InternalKeepDeviceScreenOn(false);
     }
     else if (name.Compare(replayEvent) == 0)
     {
@@ -606,7 +616,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     {
         YI_LOGD(TAG, "adPausedEvent");
         m_pStateManager->TransitionToPlaybackPaused();
-        KeepDeviceScreenOn(false);
+        InternalKeepDeviceScreenOn(false);
 
     }
     else if (name.Compare(adResumedEvent) == 0)
@@ -614,7 +624,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         YI_LOGD(TAG, "adResumedEvent");
         if (m_pStateManager->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready) {
             m_pStateManager->TransitionToPlaybackPlaying();
-            KeepDeviceScreenOn(true);
+            InternalKeepDeviceScreenOn(true);
         }
     }
     else if (name.Compare(adBufferStartEvent) == 0)
@@ -636,7 +646,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(adContentPauseRequestedEvent) == 0)
     {
         YI_LOGD(TAG, "adContentPauseRequested");
-        KeepDeviceScreenOn(true);
+        InternalKeepDeviceScreenOn(true);
     }
     else if (name.Compare(adContentResumeRequestedEvent) == 0)
     {

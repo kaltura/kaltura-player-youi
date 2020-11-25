@@ -134,6 +134,7 @@ private:
     virtual void SetMaxBitrate_(uint64_t uMaxBitrate) override;
 
     void HandleEvent(const CYIString& name, folly::dynamic content);
+    void InternalKeepDeviceScreenOn(bool keepOn);
 
     std::unique_ptr<KalturaVideoPlayerPriv> m_pPriv;
     
@@ -141,6 +142,7 @@ private:
     uint64_t m_durationMs = 0;
     uint64_t m_currentTimeMs = 0;
     bool m_isMuted = false;
+    bool m_manageKeepScreenOnInternally = true;
 
     std::vector<KalturaVideoPlayer::VideoTrackInfo> m_videoTracks;
     int32_t m_selectedVideoTrack = -1;
