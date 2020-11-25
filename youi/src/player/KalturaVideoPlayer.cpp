@@ -80,11 +80,13 @@ void KalturaVideoPlayer::Setup(int32_t partnerId, folly::dynamic options)
 
 void KalturaVideoPlayer::LoadMedia(const CYIString &assetId, folly::dynamic options)
 {
+    KeepDeviceScreenOn(false);
     m_pPriv->LoadMedia_(assetId, options);
 }
 
 void KalturaVideoPlayer::SetMedia(const CYIUrl &videoURI)
 {
+    KeepDeviceScreenOn(false);
     m_pPriv->SetMedia_(videoURI);
 }
 
