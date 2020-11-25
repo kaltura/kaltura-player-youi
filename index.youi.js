@@ -117,7 +117,6 @@ export default class YiReactApp extends Component {
                 {/*<MyTouchableOpacity text={'Change Media'} onPress={this.changeMediaPressed} />*/}
                 <MyTouchableOpacity text={isPlaying ? 'Pause' : 'Play'} onPress={this.pauseBtnPressed} disabled={!videoSelected} />
                 <MyTouchableOpacity text={iskeepDeviceScreenOn ? 'UnLock' : 'Lock'} onPress={this.keepDeviceScreenOnBtnPressed} disabled={!videoSelected} />
-
                 <MyTouchableOpacity text={isMuted ? 'Unmute' : 'Mute'} onPress={this.muteBtnPressed} disabled={!videoSelected}/>
                 <MyTouchableOpacity text={playbackSpeed == 1.0 ? "X1" : 'X2'} onPress={this.speedBtnPressed} disabled={!videoSelected}/>
                 <MyTouchableOpacity text={'Seek +10s'} onPress={this.seekBtnPressed} disabled={!videoSelected}/>
