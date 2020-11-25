@@ -339,7 +339,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         YI_LOGD(TAG, "pauseEvent");
         m_pStateManager->TransitionToPlaybackPaused();
         InternalKeepDeviceScreenOn(false);
-
     }
     else if (name.Compare(durationChangedEvent) == 0)
     {
@@ -617,7 +616,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         YI_LOGD(TAG, "adPausedEvent");
         m_pStateManager->TransitionToPlaybackPaused();
         InternalKeepDeviceScreenOn(false);
-
     }
     else if (name.Compare(adResumedEvent) == 0)
     {
