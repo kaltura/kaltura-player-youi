@@ -286,16 +286,23 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         
         [weakSender sendEvent:@"tracksAvailable" payload:@{@"audio": audioTracks.copy, @"text": textTracks.copy}];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.videoTrackChanged block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"videoTrackChanged" payload:@{@"bitrate": event.bitrate}];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.audioTrackChanged block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"audioTrackChanged"
                       payload:trackToDict(event.selectedTrack, event.selectedTrack.id)];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.textTrackChanged block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"textTrackChanged"
                       payload:trackToDict(event.selectedTrack, event.selectedTrack.id)];
+    }];
+    
+    [self.kalturaPlayer addObserver:self event:PlayerEvent.playbackInfo block:^(PKEvent * _Nonnull event) {
+        [weakSender sendEvent:@"playbackInfoUpdated" payload:@{@"totalBitrate": @(event.playbackInfo.indicatedBitrate)}];
     }];
 
     [self.kalturaPlayer addObserver:self event:PlayerEvent.error block:^(PKEvent * _Nonnull event) {
@@ -333,6 +340,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
                                                  @"errorCause": errorCause
         }];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.stateChanged block:^(PKEvent * _Nonnull event) {
         PlayerState state = event.newState;
         NSString *stateName = nil;
@@ -355,6 +363,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer addObserver:self event:PlayerEvent.seeking block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"seeking" payload:@{@"targetPosition": event.targetSeekPosition}];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.seeked block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"seeked" payload:@{}];
     }];
