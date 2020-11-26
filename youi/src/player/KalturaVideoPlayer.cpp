@@ -279,19 +279,26 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(loadMediaFailedEvent) == 0)
     {
         YI_LOGD(TAG, "loadMediaFailedEvent");
+
+        CYIAbstractVideoPlayer::Error error;
+        error.errorCode = CYIAbstractVideoPlayer::ErrorCode::InitializationError;
+
+        CYIString code = "Unknown";
+        CYIString message = "Unknown";
+
         if (!content.isNull()) {
-            const CYIString code = content["code"].asString();
-            const CYIString message = content["message"].asString();
-
-            YI_LOGD(TAG, "loadMediaFailedEvent code = %s message = %s", code.GetData(), message.GetData());
-            CYIAbstractVideoPlayer::Error error;
-            error.errorCode = CYIAbstractVideoPlayer::ErrorCode::InitializationError;
+            if (content.find("code") != content.items().end() && !content["code"].isNull()) {
+                code = content["code"].asString();
+            }
+            if (content.find("message") != content.items().end() && !content["message"].isNull()) {
+                message = content["message"].asString();
+                error.message = JSONFromDynamic(content).c_str();
+            }
             error.message = JSONFromDynamic(content).c_str();
-
-            error.nativePlayerErrorCode = code;
-            ErrorOccurred.Emit(error);
         }
-
+        YI_LOGD(TAG, "loadMediaFailedEvent code = %s message = %s", code.GetData(), message.GetData());
+        error.nativePlayerErrorCode = code;
+        ErrorOccurred.Emit(error);
         m_pStateManager->TransitionToMediaUnloaded();
 
 //Example:
