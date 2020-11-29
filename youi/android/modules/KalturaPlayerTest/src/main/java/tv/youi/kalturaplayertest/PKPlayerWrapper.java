@@ -155,7 +155,7 @@ public class PKPlayerWrapper {
                     }
                 }
 
-                if (initOptionsModel.plugins.ottAnalytics != null && initOptionsModel.plugins.ottAnalytics instanceof JsonObject) {
+                if (initOptionsModel.plugins.ottAnalytics != null) {
                     createPhoenixAnalyticsPlugin(pluginConfigs, initOptionsModel.plugins.ottAnalytics); //DEFAULT
                 }
             }
