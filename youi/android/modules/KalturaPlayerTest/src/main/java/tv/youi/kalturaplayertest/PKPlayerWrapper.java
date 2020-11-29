@@ -528,11 +528,15 @@ public class PKPlayerWrapper {
             runOnUiThread(() -> player.updatePluginConfig(PhoenixAnalyticsPlugin.factory.getName(), wrapperPhoenixAnalyticsConfig.toJson()));
         }
     }
-    
+
     private static void createIMAPlugin(PKPluginConfigs pluginConfigs, JsonObject imaConfigJson) {
         PlayKitManager.registerPlugins(activity, IMAPlugin.factory);
         if (pluginConfigs != null) {
-            pluginConfigs.setPluginConfig(IMAPlugin.factory.getName(), imaConfigJson);
+            if (imaConfigJson == null) {
+                pluginConfigs.setPluginConfig(IMAPlugin.factory.getName(), new IMAConfig());
+            } else {
+                pluginConfigs.setPluginConfig(IMAPlugin.factory.getName(), imaConfigJson);
+            }
         }
     }
 
@@ -598,8 +602,12 @@ public class PKPlayerWrapper {
 
     private static void createPhoenixAnalyticsPlugin(PKPluginConfigs pluginConfigs, JsonObject phoenixAnalyticsConfigJson) {
         PlayKitManager.registerPlugins(activity, PhoenixAnalyticsPlugin.factory);
-        if (pluginConfigs != null && phoenixAnalyticsConfigJson != null) {
-            pluginConfigs.setPluginConfig(PhoenixAnalyticsPlugin.factory.getName(), phoenixAnalyticsConfigJson);
+        if (pluginConfigs != null) {
+            if (phoenixAnalyticsConfigJson == null) {
+                pluginConfigs.setPluginConfig(PhoenixAnalyticsPlugin.factory.getName(), new PhoenixAnalyticsConfig(-1, "", "", Consts.DEFAULT_ANALYTICS_TIMER_INTERVAL_HIGH));
+            } else {
+                pluginConfigs.setPluginConfig(PhoenixAnalyticsPlugin.factory.getName(), phoenixAnalyticsConfigJson);
+            }
         }
     }
 
