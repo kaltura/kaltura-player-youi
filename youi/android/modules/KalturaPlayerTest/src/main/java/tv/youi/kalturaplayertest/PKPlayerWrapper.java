@@ -440,6 +440,7 @@ public class PKPlayerWrapper {
             if (mediaAsset == null || player == null) {
                 return;
             }
+
             if (mediaAsset.getPlugins() != null) {
                 if (mediaAsset.getPlugins().ima != null) {
                     updatgeIMAPlugin(mediaAsset.getPlugins().ima);
@@ -453,6 +454,7 @@ public class PKPlayerWrapper {
                     updatePhoenixAnalyticsPlugin(mediaAsset.getPlugins().ottAnalytics);
                 }
             }
+
             final PKMediaEntry localPlaybackEntry = PKDownloadWrapper.getLocalPlaybackEntry(assetId);
             if (localPlaybackEntry != null) {
                 player.setMedia(localPlaybackEntry);
