@@ -528,9 +528,8 @@ public class PKPlayerWrapper {
             runOnUiThread(() -> player.updatePluginConfig(PhoenixAnalyticsPlugin.factory.getName(), wrapperPhoenixAnalyticsConfig.toJson()));
         }
     }
-
+    
     private static void createIMAPlugin(PKPluginConfigs pluginConfigs, JsonObject imaConfigJson) {
-
         PlayKitManager.registerPlugins(activity, IMAPlugin.factory);
         if (pluginConfigs != null) {
             pluginConfigs.setPluginConfig(IMAPlugin.factory.getName(), imaConfigJson);
