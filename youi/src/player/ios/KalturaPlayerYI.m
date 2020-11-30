@@ -255,6 +255,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer addObserver:self event:PlayerEvent.durationChanged block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"durationChanged" payload:@{@"duration": event.duration}];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.playheadUpdate block:^(PKEvent * _Nonnull event) {
         NSNumber *currentTime = event.currentTime;
         NSNumber *bufferedTime = [NSNumber numberWithDouble: weakSelf.bufferedTime];
@@ -265,12 +266,34 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
                                                       @"bufferPosition": bufferedTime
         }];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.loadedTimeRanges block:^(PKEvent * _Nonnull event) {
-       weakSelf.bufferedTime = weakPlayer.bufferedTime;
+        weakSelf.bufferedTime = weakPlayer.bufferedTime;
+        BOOL isLiveMedia = [ weakPlayer isLive ];
+        if (isLiveMedia) {
+            NSMutableArray *timeRangesArray = [[NSMutableArray alloc] init];
+            
+            for (PKTimeRange *pkTimeRange in event.timeRanges) {
+                NSLog(@"pkTimeRangeElement start : %f",  pkTimeRange.start);
+                NSLog(@"pkTimeRangeElement end : %f",  pkTimeRange.end);
+                
+                NSDictionary *dictionary = @{
+                    @"start": @(pkTimeRange.start),
+                    @"end": @(pkTimeRange.end)
+                };
+                [timeRangesArray addObject:dictionary];
+            }
+            
+            if (timeRangesArray == nil || [timeRangesArray count] == 0) {
+                return;
+            }
+            
+            [weakSender sendEvent:@"loadedTimeRanges" payload:@{@"timeRanges" : timeRangesArray}];
+        }
     }];
     
     [self.kalturaPlayer addObserver:self event:PlayerEvent.tracksAvailable block:^(PKEvent * _Nonnull event) {
-        
+                
         NSMutableArray *audioTracks = [NSMutableArray array];
         NSString *selectedAudioTrackId = [weakPlayer currentAudioTrack];
         for (Track *track in event.tracks.audioTracks) {
@@ -284,28 +307,61 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         
         [weakSender sendEvent:@"tracksAvailable" payload:@{@"audio": audioTracks.copy, @"text": textTracks.copy}];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.videoTrackChanged block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"videoTrackChanged" payload:@{@"bitrate": event.bitrate}];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.audioTrackChanged block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"audioTrackChanged"
                       payload:trackToDict(event.selectedTrack, event.selectedTrack.id)];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.textTrackChanged block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"textTrackChanged"
                       payload:trackToDict(event.selectedTrack, event.selectedTrack.id)];
     }];
     
     [self.kalturaPlayer addObserver:self event:PlayerEvent.playbackInfo block:^(PKEvent * _Nonnull event) {
-        [weakSender sendEvent:@"playbackInfoUpdated"
-                      payload:@{
-                          @"totalBitrate": @(event.playbackInfo.indicatedBitrate)
-        }];
+        [weakSender sendEvent:@"playbackInfoUpdated" payload:@{@"totalBitrate": @(event.playbackInfo.indicatedBitrate)}];
     }];
 
     [self.kalturaPlayer addObserver:self event:PlayerEvent.error block:^(PKEvent * _Nonnull event) {
-        [weakSender sendEvent:@"error" payload:@{@"errorType": @(event.error.code)}];   // TODO more details
+        NSError *playerError = event.error;
+        NSString *errorMessage = playerError.userInfo[NSLocalizedDescriptionKey];
+        NSString *errorCause = playerError.localizedFailureReason;
+
+        NSString *errorCode = @"";
+        NSString *errorType = @"";
+        switch (playerError.code) {
+            case 7000:
+            case 7001:
+                errorCode = @"7007";
+                errorType = @"LOAD_ERROR";
+                break;
+            case 7002:
+            case 7003:
+                errorCode = @"7000";
+                errorType = @"SOURCE_ERROR";
+               break;
+            default:
+                errorCode = @"7002";
+                errorType = @"UNEXPECTED";
+               break;
+        }
+
+        if (errorCause == nil || [errorCause length] == 0) {
+            errorCause = errorMessage;
+        }
+
+        [weakSender sendEvent:@"error" payload:@{@"errorType": errorType,
+                                                 @"errorCode": errorCode,
+                                                 @"errorSeverity": @"Fatal",
+                                                 @"errorMessage": errorMessage,
+                                                 @"errorCause": errorCause
+        }];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.stateChanged block:^(PKEvent * _Nonnull event) {
         PlayerState state = event.newState;
         NSString *stateName = nil;
@@ -328,13 +384,15 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer addObserver:self event:PlayerEvent.seeking block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"seeking" payload:@{@"targetPosition": event.targetSeekPosition}];
     }];
+    
     [self.kalturaPlayer addObserver:self event:PlayerEvent.seeked block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"seeked" payload:@{}];
     }];
-
+    
     [self.kalturaPlayer addObserver:self events:@[OttEvent.bookmarkError] block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"bookmarkError" payload:@{@"errorMessage": event.ottEventMessage}];
     }];
+    
     [self.kalturaPlayer addObserver:self events:@[OttEvent.concurrency] block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"concurrencyError" payload:@{@"errorMessage": event.ottEventMessage}];
     }];
@@ -402,7 +460,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
 
     __weak EventSender *weakSender = self.eventSender;
     [self.kalturaPlayer setMedia:mediaEntry options:nil];
-    [weakSender sendEvent:@"loadMediaSuccess" payload:nil];
+    [weakSender sendEvent:@"loadMediaSuccess" payload:@{@"id": mediaEntry.id}];
 }
 
 - (void)loadMedia:(NSString *)assetId options:(NSDictionary *)dyn_options {
@@ -452,11 +510,23 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer loadMediaWithOptions:options callback:^(NSError * _Nullable error) {
         if (error) {
             NSLog(@"Error in loadMedia: %@", error);
-            // TODO -  // send code, extra, message, name
-            [weakSender sendEvent:@"loadMediaFailed" payload:nil];
+            
+            NSString *serverErrorCode = error.userInfo[PKProvidersErrorUserInfoKey.ServerErrorCodeKey];
+            NSString *serverErrorMessage = error.userInfo[PKProvidersErrorUserInfoKey.ServerErrorMessageKey];
+            
+            if (serverErrorCode.length <= 0) {
+                serverErrorCode = [NSString stringWithFormat:@"%ld", (long)error.code];
+            }
+            if (serverErrorMessage.length <= 0) {
+                serverErrorMessage = error.localizedDescription;
+            }
+            
+            NSDictionary *payloadData = @{ @"code": serverErrorCode,
+                                           @"message": serverErrorMessage };
+            
+            [weakSender sendEvent:@"loadMediaFailed" payload:payloadData];
         } else {
-            // TODO send PKMeidaEntry ??
-            [weakSender sendEvent:@"loadMediaSuccess" payload:nil];
+            [weakSender sendEvent:@"loadMediaSuccess" payload:@{@"id": assetId}];
         }
     }];
     
