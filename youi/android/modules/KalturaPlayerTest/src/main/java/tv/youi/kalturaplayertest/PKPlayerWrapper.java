@@ -368,7 +368,8 @@ public class PKPlayerWrapper {
             errorJson.addProperty("errorCode", String.valueOf(((PKAdErrorType) error.errorType).errorCode));
         } else {
             errorJson.addProperty("errorCode", String.valueOf(((PKPlayerErrorType) PKPlayerErrorType.UNEXPECTED).errorCode));
-        }        errorJson.addProperty("errorSeverity", error.severity.name());
+        }        
+        errorJson.addProperty("errorSeverity", error.severity.name());
         errorJson.addProperty("errorMessage", error.message);
         errorJson.addProperty("errorCause", errorCause);
         return new Gson().toJson(errorJson);
