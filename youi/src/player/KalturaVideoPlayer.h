@@ -84,6 +84,7 @@ public:
     void Replay();
     void ChangePlaybackRate(float playbackRate);
     void SetLogLevel(const CYIString &logLevel);
+    void KeepDeviceScreenOn(bool keepOn);
 
     bool SelectVideoTrack(uint32_t uID);
     std::vector<VideoTrackInfo> GetVideoTracks();
@@ -100,6 +101,7 @@ public:
     CYISignal<folly::dynamic> LoadMediaSuccess;
     CYISignal<float> VolumeChanged;
     CYISignal<uint64_t> CurrentBufferTimeUpdated;
+    CYISignal<bool> KeepDeviceScreenOnUpdated;
 
     virtual void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle) override;
 
@@ -136,6 +138,7 @@ private:
 
     const CYIString FATAL = "Fatal";
     const CYIString RECOVERABLE = "Recoverable";
+    void InternalKeepDeviceScreenOn(bool keepOn);
 
     std::unique_ptr<KalturaVideoPlayerPriv> m_pPriv;
     
@@ -143,6 +146,7 @@ private:
     uint64_t m_durationMs = 0;
     uint64_t m_currentTimeMs = 0;
     bool m_isMuted = false;
+    bool m_manageKeepScreenOnInternally = true;
 
     std::vector<KalturaVideoPlayer::VideoTrackInfo> m_videoTracks;
     int32_t m_selectedVideoTrack = -1;

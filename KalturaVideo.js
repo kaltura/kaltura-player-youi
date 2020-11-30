@@ -76,6 +76,12 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_KEEP_SCREEN_ON_CHANGED', (keepOn) => {
+      if (this.props.onKeepDeviceScreenOnUpdated) {
+        this.props.onKeepDeviceScreenOnUpdated(keepOn);
+      }
+    })
+
     this.videoRef.current.getPlayerInformation().then((playerInformation) => {
       console.log({
         name: playerInformation.name,
@@ -162,6 +168,10 @@ export default class KalturaVideo extends React.Component {
 
   seek = (time) => {
     this.videoRef.current.seek(time)
+  }
+
+  keepDeviceScreenOn = (keepOn) => {
+    NativeModules.KalturaVideo.KeepDeviceScreenOn(keepOn)
   }
 
   getStatistics = () => {

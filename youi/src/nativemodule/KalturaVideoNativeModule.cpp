@@ -29,6 +29,7 @@ static const std::string KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED = "KALTURA_AVAIL
 static const std::string KALTURA_LOAD_MEDIA_SUCCESS = "KALTURA_LOAD_MEDIA_SUCCESS";
 static const std::string KALTURA_VOLUME_CHANGED = "KALTURA_VOLUME_CHANGED";
 static const std::string KALTURA_BUFFER_TIME_UPDATED = "KALTURA_BUFFER_TIME_UPDATED";
+static const std::string KALTURA_KEEP_SCREEN_ON_CHANGED = "KALTURA_KEEP_SCREEN_ON_CHANGED";
 
 KalturaVideoNativeModule::KalturaVideoNativeModule()
 {
@@ -42,7 +43,8 @@ KalturaVideoNativeModule::KalturaVideoNativeModule()
         KALTURA_LOAD_MEDIA_SUCCESS,
         KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED,
         KALTURA_VOLUME_CHANGED,
-        KALTURA_BUFFER_TIME_UPDATED
+        KALTURA_BUFFER_TIME_UPDATED,
+        KALTURA_KEEP_SCREEN_ON_CHANGED
     });
 }
 
@@ -123,6 +125,10 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
             m_pPlayer->CurrentBufferTimeUpdated.Connect(*this, [this](uint64_t bufferTime) {
                 this->EmitEventPriv(KALTURA_BUFFER_TIME_UPDATED, bufferTime);
             });
+
+            m_pPlayer->KeepDeviceScreenOnUpdated.Connect(*this, [this](bool keepOn) {
+                this->EmitEventPriv(KALTURA_KEEP_SCREEN_ON_CHANGED, keepOn);
+            });
         }
     }
     else
@@ -176,6 +182,14 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SetLogLevel)(std::string lo
     if (m_pPlayer)
     {
         m_pPlayer->SetLogLevel(logLevel);
+    }
+}
+
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, KeepDeviceScreenOn)(bool keepOn)
+{
+    if (m_pPlayer)
+    {
+        m_pPlayer->KeepDeviceScreenOn(keepOn);
     }
 }
 

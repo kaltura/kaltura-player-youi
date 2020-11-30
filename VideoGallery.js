@@ -61,6 +61,7 @@ const DATA = [
                 "serverUrl": "https://rest-us.ott.kaltura.com/v4_5/api_v3/",
                 "autoplay": true,
                 "preload": true,
+                "manageKeepScreenOnInternally": true,
                 "allowCrossProtocolRedirect": true,
                 "allowFairPlayOnExternalScreens": true,
                 "shouldPlayImmediately": true,
