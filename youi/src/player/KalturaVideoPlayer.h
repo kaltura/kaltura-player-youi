@@ -156,7 +156,8 @@ private:
 
     std::vector<KalturaClosedCaptionTrack> m_closedCaptionsTracks;
     int32_t m_selectedClosedCaptionTrack = -1;
-
+    std::vector<CYIAbstractVideoPlayer::SeekableRange> m_liveSeekableRanges;
+    
     YI_RECT_REL m_currentVideoRectangle;
 
     YI_TYPE_BASES(KalturaVideoPlayer, CYIAbstractVideoPlayer)

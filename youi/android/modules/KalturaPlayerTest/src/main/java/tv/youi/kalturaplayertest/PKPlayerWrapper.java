@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.kaltura.netkit.utils.NKLog;
 import com.kaltura.playkit.PKError;
+import com.kaltura.playkit.PKEvent;
 import com.kaltura.playkit.PKLog;
 import com.kaltura.playkit.PKMediaEntry;
 import com.kaltura.playkit.PKMediaSource;
@@ -84,7 +85,7 @@ public class PKPlayerWrapper {
     }
 
     private static boolean initialized;
-
+    private static long reportedDuration = Consts.TIME_UNSET;
     static ByteBuffer bridgeInstance;
 
     static void sendEvent(String name, String payload) {
@@ -248,9 +249,22 @@ public class PKPlayerWrapper {
         player.addListener(self, PlayerEvent.replay, event -> sendPlayerEvent("replay"));
 
         player.addListener(self, PlayerEvent.durationChanged, event -> sendPlayerEvent("durationChanged", "{ \"duration\": " +  (event.duration / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
-        player.addListener(self, PlayerEvent.playheadUpdated, event -> sendPlayerEvent("timeUpdate", "{ \"position\": " + (event.position / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
-                ", \"bufferPosition\": " + (event.bufferPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
-                " }"));
+        player.addListener(self, PlayerEvent.playheadUpdated, new PKEvent.Listener<PlayerEvent.PlayheadUpdated>() {
+            @Override
+            public void onEvent(PlayerEvent.PlayheadUpdated event) {
+                sendPlayerEvent("timeUpdate", "{ \"position\": " + (event.position / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
+                        ", \"bufferPosition\": " + (event.bufferPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
+                        " }");
+                if (reportedDuration != event.duration && event.duration > 0) {
+                    reportedDuration = event.duration;
+                    if (player.getMediaEntry().getMediaType() != PKMediaEntry.MediaEntryType.Vod /*|| player.isLive()*/) {
+                        sendPlayerEvent("loadedTimeRanges", "{\"timeRanges\": [ { \"start\": " + 0 +
+                                ", \"end\": " + (event.duration / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
+                                " } ] }");
+                    }
+                }
+            }
+        });
         player.addListener(self, PlayerEvent.stateChanged, event -> sendPlayerEvent("stateChanged", "{ \"newState\": \"" + event.newState.name() + "\" }"));
         player.addListener(self, PlayerEvent.volumeChanged, event -> sendPlayerEvent("volumeChanged", "{ \"volume\": \"" + event.volume + "\" }"));
         player.addListener(self, PlayerEvent.tracksAvailable, event -> { sendPlayerEvent("tracksAvailable", new Gson().toJson(getTracksInfo(event.tracksInfo))); });
@@ -408,6 +422,7 @@ public class PKPlayerWrapper {
     public static void loadMedia(final String assetId, final String jsonOptionsStr) {
 
         log.d("loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
+        reportedDuration = Consts.TIME_UNSET;
 
         if (TextUtils.isEmpty(assetId) || TextUtils.isEmpty(jsonOptionsStr)) {
             return;
@@ -467,6 +482,7 @@ public class PKPlayerWrapper {
     public static void setMedia(final String contentUrl) {
 
         log.d("setMedia contentUrl: " + contentUrl);
+        reportedDuration = Consts.TIME_UNSET;
 
         if (TextUtils.isEmpty(contentUrl)) {
             return;
@@ -584,6 +600,7 @@ public class PKPlayerWrapper {
     public static void prepare() {
 
         log.d("prepare");
+        reportedDuration = Consts.TIME_UNSET;
         if (player != null) {
             runOnUiThread(() -> player.prepare());
         }
@@ -677,6 +694,7 @@ public class PKPlayerWrapper {
         mainHandler = null;
         bridgeInstance = null;
         initialized = false;
+        reportedDuration = Consts.TIME_UNSET;
         self = null;
     }
 

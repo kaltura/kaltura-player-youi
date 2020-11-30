@@ -33,6 +33,8 @@ static const char *playbackInfoUpdatedEvent = "playbackInfoUpdated";
 static const char *seekingEvent = "seeking";
 static const char *seekedEvent = "seeked";
 static const char *volumeChangedEvent = "volumeChanged";
+static const char *loadedTimeRangesEvent = "loadedTimeRanges";
+
 static const char *errorEvent = "error";
 static const char *bookmarkErrorEvent = "bookmarkError";
 static const char *concurrencyErrorEvent = "concurrencyError";
@@ -235,7 +237,7 @@ CYIAbstractVideoPlayer::AudioTrackInfo KalturaVideoPlayer::GetActiveAudioTrack_(
 
 std::vector<CYIAbstractVideoPlayer::SeekableRange> KalturaVideoPlayer::GetLiveSeekableRanges_() const
 {
-    return m_pPriv->GetLiveSeekableRanges_();
+    return m_liveSeekableRanges;
 }
 
 bool KalturaVideoPlayer::SelectClosedCaptionsTrack_(uint32_t uID)
@@ -563,6 +565,25 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
                 YI_LOGD(TAG, "%s VolumeChanged isMuted = %d", m_devicOSName.GetData(), m_isMuted);
                 VolumeChanged.Emit(volume);
             }
+    }
+    else if (name.Compare(loadedTimeRangesEvent) == 0)
+    {
+        YI_LOGD(TAG, "loadedTimeRangesEvent - %s", JSONFromDynamic(content).c_str());
+
+        if (!content["timeRanges"].isNull()) {
+            m_liveSeekableRanges.clear();
+            auto timeRanges = content["timeRanges"];
+            for (auto& timeRange : timeRanges)
+            {
+               const auto start = timeRange["start"].asDouble();
+               uint64_t startSeek = static_cast<uint64_t>(start * 1000);
+               const auto end = timeRange["end"].asDouble();
+               uint64_t endSeek = static_cast<uint64_t>(end * 1000);
+               YI_LOGD(TAG, "loadedTimeRangesEvent %f %f", start, end);
+               CYIAbstractVideoPlayer::SeekableRange seekableRange = CYIAbstractVideoPlayer::SeekableRange(startSeek,endSeek);
+               m_liveSeekableRanges.push_back(seekableRange);
+            }
+        }
     }
     else if (name.Compare(errorEvent) == 0)
     {

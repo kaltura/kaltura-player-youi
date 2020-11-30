@@ -268,11 +268,32 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     }];
     
     [self.kalturaPlayer addObserver:self event:PlayerEvent.loadedTimeRanges block:^(PKEvent * _Nonnull event) {
-       weakSelf.bufferedTime = weakPlayer.bufferedTime;
+        weakSelf.bufferedTime = weakPlayer.bufferedTime;
+        BOOL isLiveMedia = [ weakPlayer isLive ];
+        if (isLiveMedia) {
+            NSMutableArray *timeRangesArray = [[NSMutableArray alloc] init];
+            
+            for (PKTimeRange *pkTimeRange in event.timeRanges) {
+                NSLog(@"pkTimeRangeElement start : %f",  pkTimeRange.start);
+                NSLog(@"pkTimeRangeElement end : %f",  pkTimeRange.end);
+                
+                NSDictionary *dictionary = @{
+                    @"start": @(pkTimeRange.start),
+                    @"end": @(pkTimeRange.end)
+                };
+                [timeRangesArray addObject:dictionary];
+            }
+            
+            if (timeRangesArray == nil || [timeRangesArray count] == 0) {
+                return;
+            }
+            
+            [weakSender sendEvent:@"loadedTimeRanges" payload:@{@"timeRanges" : timeRangesArray}];
+        }
     }];
     
     [self.kalturaPlayer addObserver:self event:PlayerEvent.tracksAvailable block:^(PKEvent * _Nonnull event) {
-        
+                
         NSMutableArray *audioTracks = [NSMutableArray array];
         NSString *selectedAudioTrackId = [weakPlayer currentAudioTrack];
         for (Track *track in event.tracks.audioTracks) {
@@ -367,10 +388,11 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer addObserver:self event:PlayerEvent.seeked block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"seeked" payload:@{}];
     }];
-
+    
     [self.kalturaPlayer addObserver:self events:@[OttEvent.bookmarkError] block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"bookmarkError" payload:@{@"errorMessage": event.ottEventMessage}];
     }];
+    
     [self.kalturaPlayer addObserver:self events:@[OttEvent.concurrency] block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"concurrencyError" payload:@{@"errorMessage": event.ottEventMessage}];
     }];
