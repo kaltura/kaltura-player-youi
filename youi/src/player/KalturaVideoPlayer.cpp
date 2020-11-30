@@ -318,11 +318,12 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             }
             if (content.find("message") != content.items().end() && !content["message"].isNull()) {
                 message = content["message"].asString();
-                error.message = JSONFromDynamic(content).c_str();
             }
         }
         YI_LOGD(TAG, "loadMediaFailedEvent code = %s message = %s", code.GetData(), message.GetData());
         error.nativePlayerErrorCode = code;
+        error.message = message;
+
         ErrorOccurred.Emit(error);
         m_pStateManager->TransitionToMediaUnloaded();
 
