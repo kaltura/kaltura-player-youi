@@ -18,7 +18,7 @@ public class WrapperPhoenixAnalyticsConfig {
     private int partnerId = -1;
     private String baseUrl = "";
     private String ks = "";
-    private int timerInterval = Consts.DEFAULT_ANALYTICS_TIMER_INTERVAL_HIGH;
+    private int timerInterval = Consts.DEFAULT_ANALYTICS_TIMER_INTERVAL_HIGH_SEC;
 
 
     public WrapperPhoenixAnalyticsConfig() {}

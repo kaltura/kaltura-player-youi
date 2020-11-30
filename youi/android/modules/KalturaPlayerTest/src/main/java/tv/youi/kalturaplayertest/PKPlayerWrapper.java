@@ -627,7 +627,7 @@ public class PKPlayerWrapper {
         PlayKitManager.registerPlugins(activity, PhoenixAnalyticsPlugin.factory);
         if (pluginConfigs != null) {
             if (phoenixAnalyticsConfigJson == null) {
-                pluginConfigs.setPluginConfig(PhoenixAnalyticsPlugin.factory.getName(), new PhoenixAnalyticsConfig(-1, "", "", Consts.DEFAULT_ANALYTICS_TIMER_INTERVAL_HIGH));
+                pluginConfigs.setPluginConfig(PhoenixAnalyticsPlugin.factory.getName(), new PhoenixAnalyticsConfig(-1, "", "", Consts.DEFAULT_ANALYTICS_TIMER_INTERVAL_HIGH_SEC));
             } else {
                 pluginConfigs.setPluginConfig(PhoenixAnalyticsPlugin.factory.getName(), phoenixAnalyticsConfigJson);
             }
