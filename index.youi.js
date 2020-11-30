@@ -27,7 +27,7 @@ export default class YiReactApp extends Component {
     changeMedia: false,
     playbackSpeed: 1.0,
     logLevel: "VERBOSE",
-    iskeepDeviceScreenOn: false
+    keepDeviceScreenOn: false
   }
 
   videoRef = React.createRef()
@@ -47,7 +47,7 @@ export default class YiReactApp extends Component {
   }
 
   pauseBtnPressed = () => this.state.isPlaying ? this.videoRef.current.pause() : this.videoRef.current.play();
-  keepDeviceScreenOnBtnPressed = () => this.state.iskeepDeviceScreenOn ? this.videoRef.current.keepDeviceScreenOn(false) : this.videoRef.current.keepDeviceScreenOn(true) ;
+  keepDeviceScreenOnBtnPressed = () => this.state.keepDeviceScreenOn ? this.videoRef.current.keepDeviceScreenOn(false) : this.videoRef.current.keepDeviceScreenOn(true) ;
 
   seekBtnPressed = () => this.videoRef.current.seek(this.state.currentTime + 10000);
   logLevelBtnPressed = () => this.setState({ logLevel:  this.state.logLevel === "VERBOSE" ? "ERROR" : "VERBOSE"}); 
@@ -55,7 +55,7 @@ export default class YiReactApp extends Component {
   speedBtnPressed = () => this.setState({playbackSpeed: this.state.playbackSpeed == 1.0 ? 2.0 : 1.0 });
 
   render() {
-    const {isMuted, isPlaying, iskeepDeviceScreenOn, videoSelected, media, sources, partnerId, initOptions, changeMedia, logLevel, playbackSpeed} = this.state;
+    const {isMuted, isPlaying, keepDeviceScreenOn, videoSelected, media, sources, partnerId, initOptions, changeMedia, logLevel, playbackSpeed} = this.state;
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.header}>Kaltura Video Sample</Text>
@@ -89,7 +89,7 @@ export default class YiReactApp extends Component {
                   }}
                   onKeepDeviceScreenOnUpdated={(keepOn) => {
                     console.log("onKeepDeviceScreenOnUpdated " + keepOn)
-                    this.setState({ iskeepDeviceScreenOn: keepOn });
+                    this.setState({ keepDeviceScreenOn: keepOn });
                   }}
                   onDurationChanged={(duration) => this.setState({ duration: duration })}
                   onSeekingEvent={(targetPosition) => {
@@ -116,7 +116,7 @@ export default class YiReactApp extends Component {
                 {/*<MyTouchableOpacity text={videoSelected ? 'Unload' : 'Load'} onPress={this.loadBtnPressed} />*/}
                 {/*<MyTouchableOpacity text={'Change Media'} onPress={this.changeMediaPressed} />*/}
                 <MyTouchableOpacity text={isPlaying ? 'Pause' : 'Play'} onPress={this.pauseBtnPressed} disabled={!videoSelected} />
-                <MyTouchableOpacity text={iskeepDeviceScreenOn ? 'UnLock' : 'Lock'} onPress={this.keepDeviceScreenOnBtnPressed} disabled={!videoSelected} />
+                <MyTouchableOpacity text={keepDeviceScreenOn ? 'UnLock' : 'Lock'} onPress={this.keepDeviceScreenOnBtnPressed} disabled={!videoSelected} />
                 <MyTouchableOpacity text={isMuted ? 'Unmute' : 'Mute'} onPress={this.muteBtnPressed} disabled={!videoSelected}/>
                 <MyTouchableOpacity text={playbackSpeed == 1.0 ? "X1" : 'X2'} onPress={this.speedBtnPressed} disabled={!videoSelected}/>
                 <MyTouchableOpacity text={'Seek +10s'} onPress={this.seekBtnPressed} disabled={!videoSelected}/>
