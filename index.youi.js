@@ -77,6 +77,7 @@ export default class YiReactApp extends Component {
                   onReady={() => console.log("onReady called.")}
                   onPlaying={() => this.setState({ isPlaying: true })}
                   onPaused={() => this.setState({ isPlaying: false })}
+                  onFinalized={() => console.log("onFinalized called.")}
                   onVideoBitrateChanged={(videoBitrate) => console.log("onVideoBitrateChanged called. " + videoBitrate)}
                   onAudioBitrateChanged={(audioBitrate) => console.log("onAudioBitrateChanged called. " + audioBitrate)}
                   onTotalBitrateChanged={(totalBitrate) => console.log("onTotalBitrateChanged called. " + totalBitrate)}
@@ -108,8 +109,7 @@ export default class YiReactApp extends Component {
                     console.log(tracks.nativeEvent)
                   }}
                   onErrorOccurred={(error) => {
-                    console.log("onErrorOccurred")
-                    console.log(error.nativeEvent.message)
+                    console.log("onErrorOccurred: " + error.nativeEvent.errorCode + "-" + error.nativeEvent.nativePlayerErrorCode + "-" + error.nativeEvent.message)
                   }}/>
               </View>
               <View style={styles.buttonContainer}>

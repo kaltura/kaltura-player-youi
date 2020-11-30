@@ -57,6 +57,7 @@ YI_TYPE_DEF(KalturaVideoPlayer, CYIAbstractVideoPlayer)
 
 KalturaVideoPlayer::KalturaVideoPlayer()
 {
+    YI_LOGD(TAG, "construct  KalturaVideoPlayer");
     m_pPriv = std::make_unique<KalturaVideoPlayerPriv>(this);
     CYIDeviceInformationBridge *pDeviceInformationBridge = CYIDeviceBridgeLocator::GetDeviceInformationBridge();
     if (pDeviceInformationBridge)
@@ -69,6 +70,7 @@ KalturaVideoPlayer::KalturaVideoPlayer()
 
 KalturaVideoPlayer::~KalturaVideoPlayer()
 {
+    YI_LOGD(TAG, "destroy ~KalturaVideoPlayer");
     InternalKeepDeviceScreenOn(false);
     m_pPriv->Stop_();
 }
@@ -295,21 +297,36 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     }
     else if (name.Compare(loadMediaSuccessEvent) == 0)
     {
-        YI_LOGD(TAG, "loadMediaSuccessEvent");
+        const CYIString id = content["id"].asString();
+        YI_LOGD(TAG, "loadMediaSuccessEvent id = %s", id.GetData());
+        LoadMediaSuccess.Emit(content);
         m_pStateManager->TransitionToMediaReady();
     }
     else if (name.Compare(loadMediaFailedEvent) == 0)
     {
         YI_LOGD(TAG, "loadMediaFailedEvent");
-        if (!content.isNull()) {
-            const CYIString code = content["code"].asString();
-            const CYIString extra = content["extra"].asString();
-            const CYIString message = content["message"].asString();
-            const CYIString errorName = content["name"].asString();
-            YI_LOGD(TAG, "loadMediaFailedEvent message = <%s>", message.GetData());
-        }
 
+        CYIAbstractVideoPlayer::Error error;
+        error.errorCode = CYIAbstractVideoPlayer::ErrorCode::InitializationError;
+
+        CYIString code = "Unknown";
+        CYIString message = "Unknown";
+
+        if (!content.isNull()) {
+            if (content.find("code") != content.items().end() && !content["code"].isNull()) {
+                code = content["code"].asString();
+            }
+            if (content.find("message") != content.items().end() && !content["message"].isNull()) {
+                message = content["message"].asString();
+            }
+        }
+        YI_LOGD(TAG, "loadMediaFailedEvent code = %s message = %s", code.GetData(), message.GetData());
+        error.nativePlayerErrorCode = code;
+        error.message = message;
+
+        ErrorOccurred.Emit(error);
         m_pStateManager->TransitionToMediaUnloaded();
+
 //Example:
 //        //buffering / playing // paused
 //        if (m_pStateManager->GetPlayerState().playbackState == CYIAbstractVideoPlayer::PlaybackState::Buffering) {
@@ -559,7 +576,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         CYIString errorSeverity = content["errorSeverity"].asString();
         error.nativePlayerErrorCode = errorType;
         ErrorOccurred.Emit(error);
-        if (errorSeverity == "fatal") {
+        if (errorSeverity == FATAL) {
             YI_LOGD(TAG, "errorEvent fatal");
             m_pStateManager->TransitionToMediaUnloaded();
         }

@@ -98,6 +98,7 @@ public:
     CYISignal<> PlayerSeekedEvent;
 
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
+    CYISignal<folly::dynamic> LoadMediaSuccess;
     CYISignal<float> VolumeChanged;
     CYISignal<uint64_t> CurrentBufferTimeUpdated;
     CYISignal<bool> KeepDeviceScreenOnUpdated;
@@ -134,6 +135,9 @@ private:
     virtual void SetMaxBitrate_(uint64_t uMaxBitrate) override;
 
     void HandleEvent(const CYIString& name, folly::dynamic content);
+
+    const CYIString FATAL = "Fatal";
+    const CYIString RECOVERABLE = "Recoverable";
     void InternalKeepDeviceScreenOn(bool keepOn);
 
     std::unique_ptr<KalturaVideoPlayerPriv> m_pPriv;

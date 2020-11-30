@@ -52,6 +52,12 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_LOAD_MEDIA_SUCCESS', (event) => {
+      if (this.props.onLoadMediaSuccessEvent) {
+        this.props.onLoadMediaSuccessEvent(event);
+      }
+    })
+
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_VOLUME_CHANGED', (volume) => {
       if (this.props.onVolumeChanged) {
         this.props.onVolumeChanged(volume);

@@ -7,17 +7,16 @@ all_binary!
 
 target 'YouiKalturaPlayerBridge' do
   
-  pod 'KalturaPlayer/OTT', :git => 'https://github.com/kaltura/kaltura-player-ios', :branch => 'develop'
-
+  pod 'KalturaPlayer/OTT', '4.0.0.beta.2'
   pod 'PlayKit_IMA'
   pod 'PlayKitYoubora'
 
 
 ### Embedded in KalturaPlayer/OTT - not needed for the release, only when working on a branch ###
 
-  pod 'PlayKit', :git => 'https://github.com/kaltura/playkit-ios', :branch => 'develop'
+  #pod 'PlayKit', :git => 'https://github.com/kaltura/playkit-ios', :branch => 'develop'
   #pod 'PlayKitKava', :git => 'https://github.com/kaltura/playkit-ios-kava', :branch => 'develop'
-  pod 'PlayKitProviders', :git => 'https://github.com/kaltura/playkit-ios-providers', :branch => 'develop' 
+  #pod 'PlayKitProviders', :git => 'https://github.com/kaltura/playkit-ios-providers', :branch => 'develop' 
 
 
 ### Embedded in PlayKit - not needed for the release, only when working on a branch ###
