@@ -27,7 +27,9 @@ import com.kaltura.playkit.plugins.ads.AdCuePoints;
 import com.kaltura.playkit.plugins.ads.AdEvent;
 import com.kaltura.playkit.plugins.ima.IMAConfig;
 import com.kaltura.playkit.plugins.ima.IMAPlugin;
+import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsConfig;
 import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsEvent;
+import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsPlugin;
 import com.kaltura.playkit.plugins.youbora.YouboraPlugin;
 import com.kaltura.playkit.utils.Consts;
 import com.kaltura.tvplayer.KalturaOttPlayer;
@@ -44,6 +46,7 @@ import tv.youi.kalturaplayertest.model.InitOptions;
 import tv.youi.kalturaplayertest.model.MediaAsset;
 import tv.youi.kalturaplayertest.model.NetworkSettings;
 import tv.youi.kalturaplayertest.model.WrapperIMAConfig;
+import tv.youi.kalturaplayertest.model.WrapperPhoenixAnalyticsConfig;
 import tv.youi.kalturaplayertest.model.WrapperYouboraConfig;
 import tv.youi.kalturaplayertest.model.tracks.AudioTrack;
 import tv.youi.kalturaplayertest.model.tracks.TextTrack;
@@ -144,7 +147,7 @@ public class PKPlayerWrapper {
             PKPluginConfigs pluginConfigs = new PKPluginConfigs();
             if (initOptionsModel.plugins != null) {
                 if (initOptionsModel.plugins.ima != null) {
-                    createIMAPlugin(pluginConfigs, null); //DEFAULT
+                    createIMAPlugin(pluginConfigs, initOptionsModel.plugins.ima); //DEFAULT
                 }
 
                 if (initOptionsModel.plugins.youbora != null) {
@@ -152,6 +155,10 @@ public class PKPlayerWrapper {
                     if (accountCode.has(YOUBORA_ACCOUNT_CODE) && accountCode.get(YOUBORA_ACCOUNT_CODE) != null) {
                         createYouboraPlugin(pluginConfigs, new WrapperYouboraConfig().setAccountCode(accountCode.get(YOUBORA_ACCOUNT_CODE).getAsString()));
                     }
+                }
+
+                if (initOptionsModel.plugins.ottAnalytics != null) {
+                    createPhoenixAnalyticsPlugin(pluginConfigs, initOptionsModel.plugins.ottAnalytics); //DEFAULT
                 }
             }
 
@@ -257,7 +264,7 @@ public class PKPlayerWrapper {
                         " }");
                 if (reportedDuration != event.duration && event.duration > 0) {
                     reportedDuration = event.duration;
-                    if (player.getMediaEntry().getMediaType() != PKMediaEntry.MediaEntryType.Vod /*|| player.isLive()*/) {
+                    if (player.getMediaEntry() != null && player.getMediaEntry().getMediaType() != PKMediaEntry.MediaEntryType.Vod /*|| player.isLive()*/) {
                         sendPlayerEvent("loadedTimeRanges", "{\"timeRanges\": [ { \"start\": " + 0 +
                                 ", \"end\": " + (event.duration / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
                                 " } ] }");
@@ -267,7 +274,12 @@ public class PKPlayerWrapper {
         });
         player.addListener(self, PlayerEvent.stateChanged, event -> sendPlayerEvent("stateChanged", "{ \"newState\": \"" + event.newState.name() + "\" }"));
         player.addListener(self, PlayerEvent.volumeChanged, event -> sendPlayerEvent("volumeChanged", "{ \"volume\": \"" + event.volume + "\" }"));
-        player.addListener(self, PlayerEvent.tracksAvailable, event -> { sendPlayerEvent("tracksAvailable", new Gson().toJson(getTracksInfo(event.tracksInfo))); });
+        player.addListener(self, PlayerEvent.tracksAvailable, new PKEvent.Listener<PlayerEvent.TracksAvailable>() {
+            @Override
+            public void onEvent(PlayerEvent.TracksAvailable event) {
+                sendPlayerEvent("tracksAvailable", new Gson().toJson(getTracksInfo(event.tracksInfo)));
+            }
+        });
         player.addListener(self, PlayerEvent.playbackRateChanged, event -> { sendPlayerEvent("playbackRateChanged", "{ \"playbackRate\": \"" + event.rate + "\" }"); });
 
         player.addListener(self, PlayerEvent.videoTrackChanged, event -> {
@@ -450,6 +462,7 @@ public class PKPlayerWrapper {
             if (mediaAsset == null || player == null) {
                 return;
             }
+
             if (mediaAsset.getPlugins() != null) {
                 if (mediaAsset.getPlugins().ima != null) {
                     updatgeIMAPlugin(mediaAsset.getPlugins().ima);
@@ -458,7 +471,12 @@ public class PKPlayerWrapper {
                 if (mediaAsset.getPlugins().youbora != null) {
                     updateYouboraPlugin(mediaAsset.getPlugins().youbora);
                 }
+
+                if (mediaAsset.getPlugins().ottAnalytics != null) {
+                    updatePhoenixAnalyticsPlugin(mediaAsset.getPlugins().ottAnalytics);
+                }
             }
+
             final PKMediaEntry localPlaybackEntry = PKDownloadWrapper.getLocalPlaybackEntry(assetId);
             if (localPlaybackEntry != null) {
                 player.setMedia(localPlaybackEntry);
@@ -528,11 +546,20 @@ public class PKPlayerWrapper {
         }
     }
 
-    private static void createIMAPlugin(PKPluginConfigs pluginConfigs, WrapperIMAConfig wrapperIMAConfig) {
+    private static void updatePhoenixAnalyticsPlugin(WrapperPhoenixAnalyticsConfig wrapperPhoenixAnalyticsConfig) {
+        if (player != null && wrapperPhoenixAnalyticsConfig != null) {
+            runOnUiThread(() -> player.updatePluginConfig(PhoenixAnalyticsPlugin.factory.getName(), wrapperPhoenixAnalyticsConfig.toJson()));
+        }
+    }
 
+    private static void createIMAPlugin(PKPluginConfigs pluginConfigs, JsonObject imaConfigJson) {
         PlayKitManager.registerPlugins(activity, IMAPlugin.factory);
         if (pluginConfigs != null) {
-            pluginConfigs.setPluginConfig(IMAPlugin.factory.getName(), getIMAConfig(wrapperIMAConfig));
+            if (imaConfigJson == null) {
+                pluginConfigs.setPluginConfig(IMAPlugin.factory.getName(), new IMAConfig());
+            } else {
+                pluginConfigs.setPluginConfig(IMAPlugin.factory.getName(), imaConfigJson);
+            }
         }
     }
 
@@ -594,6 +621,17 @@ public class PKPlayerWrapper {
             optBundle.putBoolean(KEY_ENABLED, true);
         }
         return optBundle;
+    }
+
+    private static void createPhoenixAnalyticsPlugin(PKPluginConfigs pluginConfigs, JsonObject phoenixAnalyticsConfigJson) {
+        PlayKitManager.registerPlugins(activity, PhoenixAnalyticsPlugin.factory);
+        if (pluginConfigs != null) {
+            if (phoenixAnalyticsConfigJson == null) {
+                pluginConfigs.setPluginConfig(PhoenixAnalyticsPlugin.factory.getName(), new PhoenixAnalyticsConfig(-1, "", "", Consts.DEFAULT_ANALYTICS_TIMER_INTERVAL_HIGH_SEC));
+            } else {
+                pluginConfigs.setPluginConfig(PhoenixAnalyticsPlugin.factory.getName(), phoenixAnalyticsConfigJson);
+            }
+        }
     }
 
     @SuppressWarnings("unused") // Called from C++
