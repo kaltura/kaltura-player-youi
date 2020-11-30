@@ -272,9 +272,8 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         BOOL isLiveMedia = [ weakPlayer isLive ];
         if (isLiveMedia) {
             NSMutableArray *timeRangesArray = [[NSMutableArray alloc] init];
-
-            for (unsigned int i = 0; i < [event.timeRanges count]; i++) {
-                PKTimeRange *pkTimeRange = [event.timeRanges objectAtIndex:i];
+            
+            for (PKTimeRange *pkTimeRange in event.timeRanges) {
                 NSLog(@"pkTimeRangeElement start : %f",  pkTimeRange.start);
                 NSLog(@"pkTimeRangeElement end : %f",  pkTimeRange.end);
                 
@@ -291,7 +290,6 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
             
             [weakSender sendEvent:@"loadedTimeRanges" payload:@{@"timeRanges" : timeRangesArray}];
         }
-        
     }];
     
     [self.kalturaPlayer addObserver:self event:PlayerEvent.tracksAvailable block:^(PKEvent * _Nonnull event) {
