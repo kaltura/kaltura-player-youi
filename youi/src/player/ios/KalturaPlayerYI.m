@@ -62,11 +62,14 @@ static PluginConfig* createPluginConfig(NSDictionary *options) {
     NSDictionary *dyn_phoenixAnalyticsConfig = options[@"ottAnalytics"];
     
     IMAConfig *imaConfig = getImaConfig(dyn_imaConfig);
-    PhoenixAnalyticsPluginConfig *phoenixAnalyticsPluginConfig = getPhoenixAnalyticsConfig(dyn_phoenixAnalyticsConfig);
     
     pluginConfigDict[IMAPlugin.pluginName] = imaConfig;
     pluginConfigDict[YouboraPlugin.pluginName] = dyn_youboraConfig;
-    pluginConfigDict[PhoenixAnalyticsPlugin.pluginName] = phoenixAnalyticsPluginConfig;
+    
+    if (dyn_phoenixAnalyticsConfig) {
+        PhoenixAnalyticsPluginConfig *phoenixAnalyticsPluginConfig = getPhoenixAnalyticsConfig(dyn_phoenixAnalyticsConfig);
+        pluginConfigDict[PhoenixAnalyticsPlugin.pluginName] = phoenixAnalyticsPluginConfig;
+    }
     
     return [[PluginConfig alloc] initWithConfig:pluginConfigDict];
 }
