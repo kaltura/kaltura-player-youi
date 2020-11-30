@@ -26,7 +26,8 @@ export default class YiReactApp extends Component {
     videoSelected: false,
     changeMedia: false,
     playbackSpeed: 1.0,
-    logLevel: "VERBOSE"
+    logLevel: "VERBOSE",
+    keepDeviceScreenOn: false
   }
 
   videoRef = React.createRef()
@@ -46,13 +47,15 @@ export default class YiReactApp extends Component {
   }
 
   pauseBtnPressed = () => this.state.isPlaying ? this.videoRef.current.pause() : this.videoRef.current.play();
+  keepDeviceScreenOnBtnPressed = () => this.state.keepDeviceScreenOn ? this.videoRef.current.keepDeviceScreenOn(false) : this.videoRef.current.keepDeviceScreenOn(true) ;
+
   seekBtnPressed = () => this.videoRef.current.seek(this.state.currentTime + 10000);
   logLevelBtnPressed = () => this.setState({ logLevel:  this.state.logLevel === "VERBOSE" ? "ERROR" : "VERBOSE"}); 
   muteBtnPressed = () => this.setState({ 'isMuted': !this.state.isMuted });
   speedBtnPressed = () => this.setState({playbackSpeed: this.state.playbackSpeed == 1.0 ? 2.0 : 1.0 });
 
   render() {
-    const {isMuted, isPlaying, videoSelected, media, sources, partnerId, initOptions, changeMedia, logLevel, playbackSpeed} = this.state;
+    const {isMuted, isPlaying, keepDeviceScreenOn, videoSelected, media, sources, partnerId, initOptions, changeMedia, logLevel, playbackSpeed} = this.state;
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.header}>Kaltura Video Sample</Text>
@@ -74,6 +77,7 @@ export default class YiReactApp extends Component {
                   onReady={() => console.log("onReady called.")}
                   onPlaying={() => this.setState({ isPlaying: true })}
                   onPaused={() => this.setState({ isPlaying: false })}
+                  onFinalized={() => console.log("onFinalized called.")}
                   onVideoBitrateChanged={(videoBitrate) => console.log("onVideoBitrateChanged called. " + videoBitrate)}
                   onAudioBitrateChanged={(audioBitrate) => console.log("onAudioBitrateChanged called. " + audioBitrate)}
                   onTotalBitrateChanged={(totalBitrate) => console.log("onTotalBitrateChanged called. " + totalBitrate)}
@@ -83,6 +87,10 @@ export default class YiReactApp extends Component {
                   onCurrentTimeUpdated={(currentTime) => {
                     console.log("currentTime " + currentTime)
                     this.setState({ currentTime: currentTime })
+                  }}
+                  onKeepDeviceScreenOnUpdated={(keepOn) => {
+                    console.log("onKeepDeviceScreenOnUpdated " + keepOn)
+                    this.setState({ keepDeviceScreenOn: keepOn });
                   }}
                   onDurationChanged={(duration) => this.setState({ duration: duration })}
                   onSeekingEvent={(targetPosition) => {
@@ -101,14 +109,14 @@ export default class YiReactApp extends Component {
                     console.log(tracks.nativeEvent)
                   }}
                   onErrorOccurred={(error) => {
-                    console.log("onErrorOccurred")
-                    console.log(error.nativeEvent.message)
+                    console.log("onErrorOccurred: " + error.nativeEvent.errorCode + "-" + error.nativeEvent.nativePlayerErrorCode + "-" + error.nativeEvent.message)
                   }}/>
               </View>
               <View style={styles.buttonContainer}>
                 {/*<MyTouchableOpacity text={videoSelected ? 'Unload' : 'Load'} onPress={this.loadBtnPressed} />*/}
                 {/*<MyTouchableOpacity text={'Change Media'} onPress={this.changeMediaPressed} />*/}
                 <MyTouchableOpacity text={isPlaying ? 'Pause' : 'Play'} onPress={this.pauseBtnPressed} disabled={!videoSelected} />
+                <MyTouchableOpacity text={keepDeviceScreenOn ? 'UnLock' : 'Lock'} onPress={this.keepDeviceScreenOnBtnPressed} disabled={!videoSelected} />
                 <MyTouchableOpacity text={isMuted ? 'Unmute' : 'Mute'} onPress={this.muteBtnPressed} disabled={!videoSelected}/>
                 <MyTouchableOpacity text={playbackSpeed == 1.0 ? "X1" : 'X2'} onPress={this.speedBtnPressed} disabled={!videoSelected}/>
                 <MyTouchableOpacity text={'Seek +10s'} onPress={this.seekBtnPressed} disabled={!videoSelected}/>

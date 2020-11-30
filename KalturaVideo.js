@@ -52,6 +52,12 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_LOAD_MEDIA_SUCCESS', (event) => {
+      if (this.props.onLoadMediaSuccessEvent) {
+        this.props.onLoadMediaSuccessEvent(event);
+      }
+    })
+
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_VOLUME_CHANGED', (volume) => {
       if (this.props.onVolumeChanged) {
         this.props.onVolumeChanged(volume);
@@ -67,6 +73,12 @@ export default class KalturaVideo extends React.Component {
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_BUFFER_TIME_UPDATED', (bufferPosition) => {
       if (this.props.onBufferTimeUpdated) {
         this.props.onBufferTimeUpdated(bufferPosition);
+      }
+    })
+
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_KEEP_SCREEN_ON_CHANGED', (keepOn) => {
+      if (this.props.onKeepDeviceScreenOnUpdated) {
+        this.props.onKeepDeviceScreenOnUpdated(keepOn);
       }
     })
 
@@ -156,6 +168,10 @@ export default class KalturaVideo extends React.Component {
 
   seek = (time) => {
     this.videoRef.current.seek(time)
+  }
+
+  keepDeviceScreenOn = (keepOn) => {
+    NativeModules.KalturaVideo.KeepDeviceScreenOn(keepOn)
   }
 
   getStatistics = () => {

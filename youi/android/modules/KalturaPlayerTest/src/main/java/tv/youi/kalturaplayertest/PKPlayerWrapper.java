@@ -12,14 +12,17 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.kaltura.netkit.utils.NKLog;
 import com.kaltura.playkit.PKError;
+import com.kaltura.playkit.PKEvent;
 import com.kaltura.playkit.PKLog;
 import com.kaltura.playkit.PKMediaEntry;
 import com.kaltura.playkit.PKMediaSource;
 import com.kaltura.playkit.PKPluginConfigs;
 import com.kaltura.playkit.PlayKitManager;
 import com.kaltura.playkit.PlayerEvent;
+import com.kaltura.playkit.ads.PKAdErrorType;
 import com.kaltura.playkit.player.LoadControlBuffers;
 import com.kaltura.playkit.player.PKHttpClientManager;
+import com.kaltura.playkit.player.PKPlayerErrorType;
 import com.kaltura.playkit.player.PKTracks;
 import com.kaltura.playkit.plugins.ads.AdCuePoints;
 import com.kaltura.playkit.plugins.ads.AdEvent;
@@ -85,7 +88,7 @@ public class PKPlayerWrapper {
     }
 
     private static boolean initialized;
-
+    private static long reportedDuration = Consts.TIME_UNSET;
     static ByteBuffer bridgeInstance;
 
     static void sendEvent(String name, String payload) {
@@ -249,9 +252,22 @@ public class PKPlayerWrapper {
         player.addListener(self, PlayerEvent.replay, event -> sendPlayerEvent("replay"));
 
         player.addListener(self, PlayerEvent.durationChanged, event -> sendPlayerEvent("durationChanged", "{ \"duration\": " +  (event.duration / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
-        player.addListener(self, PlayerEvent.playheadUpdated, event -> sendPlayerEvent("timeUpdate", "{ \"position\": " + (event.position / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
-                ", \"bufferPosition\": " + (event.bufferPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
-                " }"));
+        player.addListener(self, PlayerEvent.playheadUpdated, new PKEvent.Listener<PlayerEvent.PlayheadUpdated>() {
+            @Override
+            public void onEvent(PlayerEvent.PlayheadUpdated event) {
+                sendPlayerEvent("timeUpdate", "{ \"position\": " + (event.position / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
+                        ", \"bufferPosition\": " + (event.bufferPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
+                        " }");
+                if (reportedDuration != event.duration && event.duration > 0) {
+                    reportedDuration = event.duration;
+                    if (player.getMediaEntry().getMediaType() != PKMediaEntry.MediaEntryType.Vod /*|| player.isLive()*/) {
+                        sendPlayerEvent("loadedTimeRanges", "{\"timeRanges\": [ { \"start\": " + 0 +
+                                ", \"end\": " + (event.duration / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
+                                " } ] }");
+                    }
+                }
+            }
+        });
         player.addListener(self, PlayerEvent.stateChanged, event -> sendPlayerEvent("stateChanged", "{ \"newState\": \"" + event.newState.name() + "\" }"));
         player.addListener(self, PlayerEvent.volumeChanged, event -> sendPlayerEvent("volumeChanged", "{ \"volume\": \"" + event.volume + "\" }"));
         player.addListener(self, PlayerEvent.tracksAvailable, event -> { sendPlayerEvent("tracksAvailable", new Gson().toJson(getTracksInfo(event.tracksInfo))); });
@@ -363,7 +379,13 @@ public class PKPlayerWrapper {
         String errorCause = (error.exception != null) ? error.exception.getCause() + "" : "";
         JsonObject errorJson = new JsonObject();
         errorJson.addProperty("errorType", error.errorType.name());
-        errorJson.addProperty("errorCode", error.errorType.ordinal());
+        if (error.errorType instanceof PKPlayerErrorType) {
+            errorJson.addProperty("errorCode", String.valueOf(((PKPlayerErrorType) error.errorType).errorCode));
+        } else if (error.errorType instanceof PKAdErrorType) {
+            errorJson.addProperty("errorCode", String.valueOf(((PKAdErrorType) error.errorType).errorCode));
+        } else {
+            errorJson.addProperty("errorCode", String.valueOf(((PKPlayerErrorType) PKPlayerErrorType.UNEXPECTED).errorCode));
+        }
         errorJson.addProperty("errorSeverity", error.severity.name());
         errorJson.addProperty("errorMessage", error.message);
         errorJson.addProperty("errorCause", errorCause);
@@ -403,6 +425,7 @@ public class PKPlayerWrapper {
     public static void loadMedia(final String assetId, final String jsonOptionsStr) {
 
         log.d("loadMedia assetId: " + assetId + ", jsonOptionsStr:" + jsonOptionsStr);
+        reportedDuration = Consts.TIME_UNSET;
 
         if (TextUtils.isEmpty(assetId) || TextUtils.isEmpty(jsonOptionsStr)) {
             return;
@@ -445,13 +468,13 @@ public class PKPlayerWrapper {
             } else {
                 player.loadMedia(mediaAsset.buildOttMediaOptions(assetId, player.getKS()), (entry, error) -> {
                     if (error != null) {
-                        log.d("ott media load error: " + error);
+                        log.d("ott media load error: " + error + " assetId = " + assetId);
                         //code, extra, message, name
                         sendPlayerEvent("loadMediaFailed", gson.toJson(error));
 
                     } else {
-                        log.d("ott media load success name = " + entry.getName());
-                        sendPlayerEvent("loadMediaSuccess", gson.toJson(entry));
+                        log.d("ott media load success name = " + entry.getName() + " id = " + assetId);
+                        sendPlayerEvent("loadMediaSuccess", "{ \"id\": \"" + entry.getId() + "\" }");
                     }
                 });
             }
@@ -465,8 +488,9 @@ public class PKPlayerWrapper {
         Gson gson = new Gson();
         Type mediaInfoType = new TypeToken<ArrayList<MediaInfo>>(){}.getType();
 
+
         ArrayList<MediaInfo> mediaInfoArrayList = gson.fromJson(jsonMediaInfoStr, mediaInfoType);
-       // MediaInfo[] mediaInfoModel = gson.fromJson(jsonMediaInfoStr, MediaInfo[].class);
+        // MediaInfo[] mediaInfoModel = gson.fromJson(jsonMediaInfoStr, MediaInfo[].class);
         if (mediaInfoArrayList == null || mediaInfoArrayList.size() == 0) {
             return;
         }
@@ -592,6 +616,7 @@ public class PKPlayerWrapper {
     public static void prepare() {
 
         log.d("prepare");
+        reportedDuration = Consts.TIME_UNSET;
         if (player != null) {
             runOnUiThread(() -> player.prepare());
         }
@@ -685,6 +710,7 @@ public class PKPlayerWrapper {
         mainHandler = null;
         bridgeInstance = null;
         initialized = false;
+        reportedDuration = Consts.TIME_UNSET;
         self = null;
     }
 
