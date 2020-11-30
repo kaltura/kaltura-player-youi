@@ -47,16 +47,26 @@ static IMAConfig* getImaConfig(NSDictionary *dyn_config) {
     return config;
 }
 
+static PhoenixAnalyticsPluginConfig* getPhoenixAnalyticsConfig(NSDictionary *dyn_config) {
+    return [[PhoenixAnalyticsPluginConfig alloc] initWithBaseUrl: dyn_config[@"baseUrl"]
+                                                 timerInterval:[dyn_config[@"timerInterval"] doubleValue]
+                                                 ks:dyn_config[@"ks"]
+                                                 partnerId:[dyn_config[@"partnerId"] integerValue]];
+}
+
 static PluginConfig* createPluginConfig(NSDictionary *options) {
     NSMutableDictionary *pluginConfigDict = [NSMutableDictionary new];
     
     NSDictionary *dyn_imaConfig = options[@"ima"];
     NSDictionary *dyn_youboraConfig = options[@"youbora"];
+    NSDictionary *dyn_phoenixAnalyticsConfig = options[@"ottAnalytics"];
     
     IMAConfig *imaConfig = getImaConfig(dyn_imaConfig);
+    PhoenixAnalyticsPluginConfig *phoenixAnalyticsPluginConfig = getPhoenixAnalyticsConfig(dyn_phoenixAnalyticsConfig);
     
     pluginConfigDict[IMAPlugin.pluginName] = imaConfig;
     pluginConfigDict[YouboraPlugin.pluginName] = dyn_youboraConfig;
+    pluginConfigDict[PhoenixAnalyticsPlugin.pluginName] = phoenixAnalyticsPluginConfig;
     
     return [[PluginConfig alloc] initWithConfig:pluginConfigDict];
 }
@@ -504,6 +514,11 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     id imaConfig = dyn_options[@"plugins"][@"ima"];
     if (imaConfig) {
         [self.kalturaPlayer updatePluginConfigWithPluginName:IMAPlugin.pluginName config:getImaConfig(imaConfig)];
+    }
+    
+    id phoenixAnalyticsConfig = dyn_options[@"plugins"][@"ottAnalytics"];
+    if (phoenixAnalyticsConfig) {
+        [self.kalturaPlayer updatePluginConfigWithPluginName:PhoenixAnalyticsPlugin.pluginName config:getPhoenixAnalyticsConfig(phoenixAnalyticsConfig)];
     }
     
     __weak EventSender *weakSender = self.eventSender;
