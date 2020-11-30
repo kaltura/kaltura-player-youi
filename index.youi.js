@@ -109,8 +109,7 @@ export default class YiReactApp extends Component {
                     console.log(tracks.nativeEvent)
                   }}
                   onErrorOccurred={(error) => {
-                    console.log("onErrorOccurred")
-                    console.log(error.nativeEvent.message)
+                    console.log("onErrorOccurred: " + error.nativeEvent.errorCode + "-" + error.nativeEvent.nativePlayerErrorCode + "-" + error.nativeEvent.message)
                   }}/>
               </View>
               <View style={styles.buttonContainer}>
