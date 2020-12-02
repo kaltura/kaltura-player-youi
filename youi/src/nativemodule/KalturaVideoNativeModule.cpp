@@ -27,8 +27,10 @@ static const std::string KALTURA_PLAYBACK_RATE_CHANGED_EVENT = "KALTURA_PLAYBACK
 static const std::string KALTURA_SEEKING_EVENT = "KALTURA_SEEKING_EVENT";
 static const std::string KALTURA_SEEKED_EVENT = "KALTURA_SEEKED_EVENT";
 static const std::string KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED = "KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED";
+static const std::string KALTURA_LOAD_MEDIA_SUCCESS = "KALTURA_LOAD_MEDIA_SUCCESS";
 static const std::string KALTURA_VOLUME_CHANGED = "KALTURA_VOLUME_CHANGED";
 static const std::string KALTURA_BUFFER_TIME_UPDATED = "KALTURA_BUFFER_TIME_UPDATED";
+static const std::string KALTURA_KEEP_SCREEN_ON_CHANGED = "KALTURA_KEEP_SCREEN_ON_CHANGED";
 
 static const std::string KALTURA_AD_BREAK_STARTED_EVENT = "KALTURA_AD_BREAK_STARTED_EVENT";
 static const std::string KALTURA_AD_BREAK_ENDED_EVENT = "KALTURA_AD_BREAK_ENDED_EVENT";
@@ -59,9 +61,12 @@ KalturaVideoNativeModule::KalturaVideoNativeModule()
         KALTURA_PLAYBACK_RATE_CHANGED_EVENT,
         KALTURA_SEEKING_EVENT,
         KALTURA_SEEKED_EVENT,
+        KALTURA_LOAD_MEDIA_SUCCESS,
         KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED,
         KALTURA_VOLUME_CHANGED,
         KALTURA_BUFFER_TIME_UPDATED,
+
+        KALTURA_KEEP_SCREEN_ON_CHANGED,
 
         KALTURA_AD_BREAK_STARTED_EVENT,
         KALTURA_AD_BREAK_ENDED_EVENT,
@@ -157,8 +162,20 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
                 this->EmitEventPriv(KALTURA_VOLUME_CHANGED, volume);
             });
 
+            m_pPlayer->LoadMediaSuccess.Connect(*this, [this](folly::dynamic data) {
+                this->EmitEventPriv(KALTURA_LOAD_MEDIA_SUCCESS, data);
+            });
+
+            m_pPlayer->VolumeChanged.Connect(*this, [this](folly::dynamic data) {
+                this->EmitEventPriv(KALTURA_VOLUME_CHANGED, data);
+            });
+            
             m_pPlayer->CurrentBufferTimeUpdated.Connect(*this, [this](uint64_t bufferTime) {
                 this->EmitEventPriv(KALTURA_BUFFER_TIME_UPDATED, bufferTime);
+            });
+            
+            m_pPlayer->KeepDeviceScreenOnUpdated.Connect(*this, [this](bool keepOn) {
+                this->EmitEventPriv(KALTURA_KEEP_SCREEN_ON_CHANGED, keepOn);
             });
 
             m_pPlayer->AdBreakStartedEvent.Connect(*this, [this]() {
@@ -220,7 +237,6 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
             m_pPlayer->AdRequestedEvent.Connect(*this, [this](folly::dynamic adTagUrl) {
                 this->EmitEventPriv(KALTURA_AD_REQUESTED_EVENT, adTagUrl);
             });
-
         }
     }
     else
@@ -274,6 +290,14 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SetLogLevel)(std::string lo
     if (m_pPlayer)
     {
         m_pPlayer->SetLogLevel(logLevel);
+    }
+}
+
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, KeepDeviceScreenOn)(bool keepOn)
+{
+    if (m_pPlayer)
+    {
+        m_pPlayer->KeepDeviceScreenOn(keepOn);
     }
 }
 

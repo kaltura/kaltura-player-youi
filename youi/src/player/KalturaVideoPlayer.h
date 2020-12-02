@@ -84,6 +84,7 @@ public:
     void Replay();
     void ChangePlaybackRate(float playbackRate);
     void SetLogLevel(const CYIString &logLevel);
+    void KeepDeviceScreenOn(bool keepOn);
 
     bool SelectVideoTrack(uint32_t uID);
     std::vector<VideoTrackInfo> GetVideoTracks();
@@ -101,8 +102,10 @@ public:
     CYISignal<> PlayerSeekedEvent;
 
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
+    CYISignal<folly::dynamic> LoadMediaSuccess;
     CYISignal<float> VolumeChanged;
     CYISignal<uint64_t> CurrentBufferTimeUpdated;
+    CYISignal<bool> KeepDeviceScreenOnUpdated;
 
     CYISignal<uint64_t> AdProgressEvent;
     CYISignal<folly::dynamic> AdCuepointsChangedEvent;
@@ -153,13 +156,18 @@ private:
     virtual void SetMaxBitrate_(uint64_t uMaxBitrate) override;
 
     void HandleEvent(const CYIString& name, folly::dynamic content);
-    
+
+    const CYIString FATAL = "Fatal";
+    const CYIString RECOVERABLE = "Recoverable";
+    void InternalKeepDeviceScreenOn(bool keepOn);
+
     std::unique_ptr<KalturaVideoPlayerPriv> m_pPriv;
     
     CYIString m_devicOSName;
     uint64_t m_durationMs = 0;
     uint64_t m_currentTimeMs = 0;
     bool m_isMuted = false;
+    bool m_manageKeepScreenOnInternally = true;
 
     std::vector<KalturaVideoPlayer::VideoTrackInfo> m_videoTracks;
     int32_t m_selectedVideoTrack = -1;
@@ -169,7 +177,8 @@ private:
 
     std::vector<KalturaClosedCaptionTrack> m_closedCaptionsTracks;
     int32_t m_selectedClosedCaptionTrack = -1;
-
+    std::vector<CYIAbstractVideoPlayer::SeekableRange> m_liveSeekableRanges;
+    
     YI_RECT_REL m_currentVideoRectangle;
 
     YI_TYPE_BASES(KalturaVideoPlayer, CYIAbstractVideoPlayer)
