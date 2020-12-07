@@ -189,9 +189,6 @@ void KalturaVideoPlayerPriv::SetMedia_(folly::dynamic mediaInfo)
         m_pPub->m_pStateManager->TransitionToMediaUnloaded();
     }
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
-   // NSLog(@"*** SetMedia_(%s)", JSONFromDynamic(mediaInfo).c_str());
-    //NSURL *url = [NSURL URLWithString:videoURI.ToString().ToNSString()];
-    // NSLog(@"*** SetMedia_(%s)", videoURI.ToString().ToStdString().c_str());
     [m_player setMedia: convertFollyDynamicToId(mediaInfo)];
 }
 
