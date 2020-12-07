@@ -20,7 +20,7 @@ set(TVOS_BUNDLE_URL_SCHEME "<string>${YI_BUNDLE_URL_SCHEME}</string>")
 set(UWP_BUNDLE_URL_SCHEME "<Extensions>\n\t\t\t\t<uap:Extension Category=\"windows.protocol\">\n\t\t\t\t\t<uap:Protocol Name=\"${YI_BUNDLE_URL_SCHEME}\" />\n\t\t\t\t</uap:Extension>\n\t\t\t</Extensions>")
 
 set(_STAGING_DIR "${CMAKE_CURRENT_BINARY_DIR}/Staging")
-set(_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 if(NOT (CMAKE_GENERATOR MATCHES "Visual Studio" OR CMAKE_GENERATOR MATCHES Xcode) AND NOT CMAKE_BUILD_TYPE)
     message(FATAL_ERROR "CMAKE_BUILD_TYPE needs to be set for single configuration generators. Default builds are not allowed.")
@@ -153,7 +153,7 @@ if(YI_BUILD_CLOUD_SERVER)
 endif()
 
 target_include_directories(${PROJECT_NAME}
-    PRIVATE ${_SRC_DIR}
+    PRIVATE ${_INCLUDE_DIR}
     PRIVATE ${APPCOMMON_INCLUDE_DIR}
     PRIVATE ${YI_PLATFORM_INCLUDE_DIRECTORIES_${YI_PLATFORM_UPPER}}
 )

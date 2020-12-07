@@ -173,6 +173,11 @@ void KalturaVideoPlayer::SetVideoRectangle(const YI_RECT_REL &rVideoRectangle)
     }
 }
 
+void KalturaVideoPlayer::BringToFront()
+{
+
+}
+
 bool KalturaVideoPlayer::SupportsFormat_(CYIAbstractVideoPlayer::StreamingFormat eFormat, CYIAbstractVideoPlayer::DRMScheme eDRMScheme) const
 {
     return m_pPriv->SupportsFormat_(eFormat, eDRMScheme);

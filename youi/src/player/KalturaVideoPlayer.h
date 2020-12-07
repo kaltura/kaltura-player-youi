@@ -104,6 +104,7 @@ public:
     CYISignal<bool> KeepDeviceScreenOnUpdated;
 
     virtual void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle) override;
+    virtual void BringToFront() override;
 
 private:
     virtual CYIString GetName_() const override;

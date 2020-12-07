@@ -1,8 +1,8 @@
 # =============================================================================
 # © You i Labs Inc. 2000-2020. All rights reserved.
 
-file(GLOB_RECURSE YI_PROJECT_SOURCE "${_SRC_DIR}/*.m" "${_SRC_DIR}/*.mm" "${_SRC_DIR}/*.cpp")
-file(GLOB_RECURSE YI_PROJECT_HEADERS "${_SRC_DIR}/*.h")
+file(GLOB_RECURSE YI_PROJECT_SOURCE "${_INCLUDE_DIR}/*.m" "${_INCLUDE_DIR}/*.mm" "${_INCLUDE_DIR}/*.cpp")
+file(GLOB_RECURSE YI_PROJECT_HEADERS "${_INCLUDE_DIR}/*.h")
 
 set(PLATFORMS android ios osx tvos)
 list(REMOVE_ITEM PLATFORMS ${YI_PLATFORM_LOWER})
