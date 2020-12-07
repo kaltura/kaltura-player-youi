@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
                        parentView:(UIView *)parentView
                       eventSender:(EventSender *)sender;
 
-- (void)setMedia:(NSURL *)contentUrl;
+- (void)setMedia:(NSDictionary *)mediaInfo;
 - (void)loadMedia:(NSString *)assetId options:(NSDictionary *)options;
 
 - (void)prepare;

@@ -48,7 +48,10 @@ const DATA = [
             type: SOURCE_TYPE.source,
             data: {
                 sources: {
-                    uri: "https://qa-apache-php7.dev.kaltura.com/p/1091/sp/109100/playManifest/entryId/0_wifqaipd/protocol/https/format/applehttp/flavorIds/0_h65mfj7f,0_3flmvnwc,0_m131krws,0_5407xm9j,0_xcrwyk2n/a.m3u8"
+                    mediaInfo: {
+                        uri: "http://qa-apache-testing-ubu-01.dev.kaltura.com/p/1091/sp/109100/playManifest/entryId/0_f8re4ujs/format/applehttp/protocol/http/uiConfId/15068781/a.m3u8",
+                        mediaId: "myMediaId"
+                    }    
                 }
             }
         }]

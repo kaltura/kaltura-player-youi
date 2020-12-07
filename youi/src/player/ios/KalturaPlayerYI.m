@@ -94,6 +94,44 @@ static NSDictionary* trackToDict(Track *track, NSString *selectedId) {
     };
 }
 
+static NSInteger getMediaFormatType(NSString *mediaFormat) {
+    if ([mediaFormat caseInsensitiveCompare:@"hls"] == NSOrderedSame) return MediaFormatHls;
+    if ([mediaFormat caseInsensitiveCompare:@"mp4"] == NSOrderedSame) return MediaFormatMp4;
+    if ([mediaFormat caseInsensitiveCompare:@"mp3"] == NSOrderedSame) return MediaFormatMp3;
+    if ([mediaFormat caseInsensitiveCompare:@"wvm"] == NSOrderedSame) return MediaFormatWvm;
+    
+    return MediaFormatUnknown;
+}
+
+static NSString* getMediaMimeType(NSString *mediaFormat) {
+    if ([mediaFormat caseInsensitiveCompare:@"hls"] == NSOrderedSame) return @"application/x-mpegURL";
+    if ([mediaFormat caseInsensitiveCompare:@"mp4"] == NSOrderedSame) return @"video/mp4";
+    if ([mediaFormat caseInsensitiveCompare:@"mp3"] == NSOrderedSame) return @"audio/mpeg";
+    if ([mediaFormat caseInsensitiveCompare:@"wvm"] == NSOrderedSame) return @"video/wvm";
+    
+    return @"application/x-mpegURL";
+}
+
+static NSInteger* getMediaType(NSString *mediaType) {
+    
+    if ([mediaType caseInsensitiveCompare:@"vod"] == NSOrderedSame) return MediaTypeVod;
+    if ([mediaType caseInsensitiveCompare:@"live"] == NSOrderedSame) return MediaTypeLive;
+    if ([mediaType caseInsensitiveCompare:@"dvrlive"] == NSOrderedSame) return MediaTypeDvrLive;
+    
+    return MediaTypeUnknown;
+}
+
+static Scheme* getSchemeType(NSString *schemeType) {
+    
+    if ([schemeType caseInsensitiveCompare:@"fairplay"] == NSOrderedSame) return SchemeFairplay;
+    if ([schemeType caseInsensitiveCompare:@"widevineClassic"] == NSOrderedSame) return SchemeWidevineClassic;
+    if ([schemeType caseInsensitiveCompare:@"widevineCenc"] == NSOrderedSame) return SchemeWidevineCenc;
+    if ([schemeType caseInsensitiveCompare:@"SchemePlayreadyCenc"] == NSOrderedSame) return SchemePlayreadyCenc;
+    
+    return SchemeUnknown;
+}
+
+
 static NSDictionary* entryToDict(PKMediaEntry *entry) {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     
@@ -448,19 +486,70 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     }];
 }
 
-- (void)setMedia:(NSURL *)contentUrl {
-    PKMediaSource *source = [[PKMediaSource alloc] init:@"1234"
-                                             contentUrl:contentUrl
-                                               mimeType:nil
-                                                drmData:nil
-                                            mediaFormat:MediaFormatHls];
-    NSArray<PKMediaSource*> *sources = [[NSArray alloc] initWithObjects:source, nil];
-    // setup media entry
-    PKMediaEntry *mediaEntry = [[PKMediaEntry alloc] init:@"1234" sources:sources duration:-1];
-
+- (void)setMedia:(NSDictionary *)dyn_mediaInfo {
     __weak EventSender *weakSender = self.eventSender;
-    [self.kalturaPlayer setMedia:mediaEntry options:nil];
-    [weakSender sendEvent:@"loadMediaSuccess" payload:@{@"id": mediaEntry.id}];
+
+    if (dyn_mediaInfo != nil) {
+        
+        NSArray<DRMParams*>* drmInfo;
+        DRMParams *drmParams;
+        NSDictionary *drmData =  [dyn_mediaInfo valueForKey: @"drmData"][0];
+        if (drmData != nil && ![drmData isEqual:[NSNull null]]) {
+            NSString *licenseUri = drmData[@"licenseUri"];
+            NSString *scheme = drmData[@"scheme"];
+            
+            if ([scheme caseInsensitiveCompare:@"fairplay"] == NSOrderedSame) {
+                NSString *fpsCertificate = drmData[@"fpsCertificate"];
+                Scheme *schemeType = getSchemeType(scheme);
+                if ([licenseUri length] != 0 && [fpsCertificate length] != 0) {
+                    drmParams = [[FairPlayDRMParams alloc] initWithLicenseUri:licenseUri scheme: schemeType base64EncodedCertificate:fpsCertificate];
+                }
+            } else {
+                if ([licenseUri length] != 0) {
+                    drmParams = [DRMParams fromJSON:drmData];
+                }
+            }
+            if (drmParams != nil) {
+                drmInfo = [[NSArray alloc] initWithObjects:drmParams, nil];
+            }
+        }
+        
+        NSString *mediaFormat = [dyn_mediaInfo valueForKey: @"mediaFormat"][0];
+        NSInteger mediaFormatType = MediaFormatUnknown;
+        NSString *mimeType = @"application/x-mpegURL";
+        if (mediaFormat != nil && ![mediaFormat isEqual:[NSNull null]]) {
+            mediaFormatType = getMediaFormatType(mediaFormat);
+            mimeType = getMediaMimeType(mediaFormat);
+        }
+        
+        NSURL *contentURL = [[NSURL alloc] initWithString:[dyn_mediaInfo valueForKey: @"uri"][0]];
+        NSString *mediaId = [dyn_mediaInfo valueForKey: @"mediaId"][0];
+        if (mediaId == nil || [mediaId isEqual:[NSNull null]]) {
+            mediaId = @"unknown";
+        }
+        
+        PKMediaSource *source = [[PKMediaSource alloc] init:mediaId
+                                                   contentUrl:contentURL
+                                                   mimeType:mimeType
+                                                   drmData:drmInfo
+                                                   mediaFormat:mediaFormatType];
+        NSArray<PKMediaSource*> *sources = [[NSArray alloc] initWithObjects:source, nil];
+        // setup media entry
+        PKMediaEntry *mediaEntry = [[PKMediaEntry alloc] init:mediaId sources:sources duration:-1];
+        
+        NSString *mediaType = [dyn_mediaInfo valueForKey: @"mediaType"][0];
+        NSInteger *mediaTypeType = MediaTypeUnknown;
+        if (mediaType != nil && ![mediaType isEqual:[NSNull null]]) {
+            mediaTypeType = getMediaType(mediaType);
+        }
+        
+        mediaEntry.mediaType = mediaTypeType;
+        
+        [self.kalturaPlayer setMedia:mediaEntry options:nil];
+        [weakSender sendEvent:@"loadMediaSuccess" payload:@{@"id": mediaEntry.id}];
+    } else {
+        [weakSender sendEvent:@"loadMediaFailed" payload:nil];
+    }
 }
 
 - (void)loadMedia:(NSString *)assetId options:(NSDictionary *)dyn_options {
