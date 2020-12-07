@@ -49,7 +49,8 @@ const DATA = [
             data: {
                 sources: {
                     mediaInfo: {
-                        uri: "http://qa-apache-testing-ubu-01.dev.kaltura.com/p/1091/sp/109100/playManifest/entryId/0_f8re4ujs/format/applehttp/protocol/http/uiConfId/15068781/a.m3u8"
+                        uri: "http://qa-apache-testing-ubu-01.dev.kaltura.com/p/1091/sp/109100/playManifest/entryId/0_f8re4ujs/format/applehttp/protocol/http/uiConfId/15068781/a.m3u8",
+                        mediaId: "myMediaId"
                     }    
                 }
             }

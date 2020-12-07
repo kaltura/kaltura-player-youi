@@ -6,10 +6,19 @@ import com.kaltura.playkit.PKMediaFormat;
 
 public class MediaInfo {
 
+    private String mediaId;
     private String uri;
     private PKMediaEntry.MediaEntryType mediaType;
     private PKMediaFormat mediaFormat;
     private PKDrmParams drmData;
+
+    public String getMediaId() {
+        return mediaId;
+    }
+
+    public void setMediaId(String mediaId) {
+        this.mediaId = mediaId;
+    }
 
     public String getUri() {
         return uri;

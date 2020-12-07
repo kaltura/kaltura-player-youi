@@ -488,7 +488,6 @@ public class PKPlayerWrapper {
         Gson gson = new Gson();
         Type mediaInfoType = new TypeToken<ArrayList<MediaInfo>>(){}.getType();
 
-
         ArrayList<MediaInfo> mediaInfoArrayList = gson.fromJson(jsonMediaInfoStr, mediaInfoType);
         // MediaInfo[] mediaInfoModel = gson.fromJson(jsonMediaInfoStr, MediaInfo[].class);
         if (mediaInfoArrayList == null || mediaInfoArrayList.size() == 0) {
@@ -517,10 +516,10 @@ public class PKPlayerWrapper {
         runOnUiThread(() -> {
             PKMediaEntry pkMediaEntry = new PKMediaEntry();
             pkMediaEntry.setMediaType(mediaInfo.getMediaType());
-
-            pkMediaEntry.setId("1234");
+            String mediaId = !TextUtils.isEmpty(mediaInfo.getMediaId()) ? mediaInfo.getMediaId() : "unknown";
+            pkMediaEntry.setId(mediaId);
             PKMediaSource pkMediaSource = new PKMediaSource();
-            pkMediaSource.setId("1234");
+            pkMediaSource.setId(mediaId);
             pkMediaSource.setMediaFormat(mediaInfo.getMediaFormat());
             pkMediaSource.setUrl(mediaInfo.getUri());
             if (mediaInfo.getDrmData() != null && !TextUtils.isEmpty(mediaInfo.getDrmData().getLicenseUri())) {

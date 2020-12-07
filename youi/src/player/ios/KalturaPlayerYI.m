@@ -523,14 +523,19 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         }
         
         NSURL *contentURL = [[NSURL alloc] initWithString:[dyn_mediaInfo valueForKey: @"uri"][0]];
-        PKMediaSource *source = [[PKMediaSource alloc] init:@"1234"
+        NSString *mediaId = [dyn_mediaInfo valueForKey: @"mediaId"][0];
+        if (mediaId == nil || [mediaId isEqual:[NSNull null]]) {
+            mediaId = @"unknown";
+        }
+        
+        PKMediaSource *source = [[PKMediaSource alloc] init:mediaId
                                                    contentUrl:contentURL
                                                    mimeType:mimeType
                                                    drmData:drmInfo
                                                    mediaFormat:mediaFormatType];
         NSArray<PKMediaSource*> *sources = [[NSArray alloc] initWithObjects:source, nil];
         // setup media entry
-        PKMediaEntry *mediaEntry = [[PKMediaEntry alloc] init:@"1234" sources:sources duration:-1];
+        PKMediaEntry *mediaEntry = [[PKMediaEntry alloc] init:mediaId sources:sources duration:-1];
         
         NSString *mediaType = [dyn_mediaInfo valueForKey: @"mediaType"][0];
         NSInteger *mediaTypeType = MediaTypeUnknown;
