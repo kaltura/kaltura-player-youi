@@ -27,6 +27,7 @@
 		"transformIgnorePatterns": [
 			"<rootDir>/node_modules/(?!(jest-)?react-native|@youi)"
 		],
+		
 		"testPathIgnorePatterns": [
 			"/node_modules/",
 			"/appium/"
