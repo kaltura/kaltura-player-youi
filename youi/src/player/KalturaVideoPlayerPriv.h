@@ -61,6 +61,7 @@ public:
     std::vector<CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo> GetClosedCaptionsTracks_() const;
     CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo GetActiveClosedCaptionsTrack_() const;
     void Mute_(bool bMute);
+    void BringToFront_();
     void DisableClosedCaptions_();
 
     void SetMaxBitrate_(uint64_t uMaxBitrate);

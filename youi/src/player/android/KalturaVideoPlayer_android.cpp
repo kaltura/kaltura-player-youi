@@ -285,7 +285,6 @@ void KalturaVideoPlayerPriv::Seek_(uint64_t uSeekPositionMs)
 
     double seekTime = static_cast<double>(uSeekPositionMs) / 1000.f;
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, seekToMethodID, (float)seekTime);
-
 }
 
 void KalturaVideoPlayerPriv::SetMaxBitrate_(uint64_t uMaxBitrate)
@@ -395,4 +394,15 @@ void KalturaVideoPlayerPriv::Mute_(bool bMute)
 
 void KalturaVideoPlayerPriv::DisableClosedCaptions_()
 {
+}
+
+void KalturaVideoPlayerPriv::BringToFront_()
+{
+    if (!playerWrapperBridgeClass)
+    {
+        return;
+    }
+
+    float index = 1.0;
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setZIndexMethodID, index);
 }

@@ -413,3 +413,14 @@ void KalturaVideoPlayerPriv::Mute_(bool bMute)
 void KalturaVideoPlayerPriv::DisableClosedCaptions_()
 {
 }
+
+void KalturaVideoPlayerPriv::BringToFront_()
+{
+    if (!m_player)
+    {
+        return false;
+    }
+
+    float index = 1.0;
+    [m_player setZIndex:index];
+}

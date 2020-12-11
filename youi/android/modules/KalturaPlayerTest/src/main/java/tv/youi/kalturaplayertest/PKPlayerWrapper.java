@@ -85,6 +85,7 @@ public class PKPlayerWrapper {
     }
 
     private static boolean initialized;
+    private static boolean bringToFront;
     private static long reportedDuration = Consts.TIME_UNSET;
     static ByteBuffer bridgeInstance;
 
@@ -444,6 +445,10 @@ public class PKPlayerWrapper {
     private static void loadMediaInUIThread(String assetId, String jsonOptionsStr) {
         runOnUiThread(() -> {
             log.d("load media in UI thread");
+            if (bringToFront) {
+                setZIndex(1);
+                bringToFront = false;
+            }
 
             Gson gson = new Gson();
             MediaAsset mediaAsset = gson.fromJson(jsonOptionsStr, MediaAsset.class);
@@ -504,6 +509,11 @@ public class PKPlayerWrapper {
         log.d("setMedia in UI thread");
 
         runOnUiThread(() -> {
+            if (bringToFront) {
+                setZIndex(1);
+                bringToFront = false;
+            }
+
             PKMediaEntry pkMediaEntry = new PKMediaEntry();
             pkMediaEntry.setMediaType(PKMediaEntry.MediaEntryType.Vod);
             pkMediaEntry.setId("1234");
@@ -694,6 +704,7 @@ public class PKPlayerWrapper {
         mainHandler = null;
         bridgeInstance = null;
         initialized = false;
+        bringToFront = false;
         reportedDuration = Consts.TIME_UNSET;
         self = null;
     }
@@ -720,6 +731,14 @@ public class PKPlayerWrapper {
     public static void setZIndex(float index) {
 
         log.d("setZIndex: " + index);
+
+        if (!initialized) {
+            log.d("delayed setZIndex index: " + index);
+            bringToFront = true;
+            return;
+        }
+
+        log.d("regular setZIndex index: " + index);
         if (player != null && player.getPlayerView() != null) {
             runOnUiThread(() -> player.getPlayerView().setZ(index));
         }
