@@ -175,6 +175,8 @@ void KalturaVideoPlayer::SetVideoRectangle(const YI_RECT_REL &rVideoRectangle)
 
 void KalturaVideoPlayer::BringToFront()
 {
+    YI_LOGD(TAG, "Player BringToFront");
+
     m_pPriv->BringToFront_();
 }
 
