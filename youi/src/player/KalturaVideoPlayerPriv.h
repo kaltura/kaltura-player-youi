@@ -69,6 +69,7 @@ public:
     void HandleEvent(const CYIString& name, folly::dynamic content);
 
     KalturaVideoPlayer *m_pPub;
+    bool m_bringToFront;
 
 private:
 #ifdef YI_ANDROID

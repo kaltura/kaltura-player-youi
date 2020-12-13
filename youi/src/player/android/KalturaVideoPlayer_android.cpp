@@ -147,6 +147,11 @@ void KalturaVideoPlayerPriv::LoadMedia_(const CYIString &assetId, folly::dynamic
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, loadMediaMethodID, jAssetId, optionsStr);
     GetEnv_KalturaPlayer()->DeleteLocalRef(jAssetId);
     GetEnv_KalturaPlayer()->DeleteLocalRef(optionsStr);
+
+    if (m_bringToFront) {
+        BringToFront_();
+        m_bringToFront = false;
+    }
 }
 
 void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
@@ -167,6 +172,11 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
 
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setMediaMethodID, url);
     GetEnv_KalturaPlayer()->DeleteLocalRef(url);
+
+    if (m_bringToFront) {
+        BringToFront_();
+        m_bringToFront = false;
+    }
 }
 
 void KalturaVideoPlayerPriv::SetLogLevel_(const CYIString &logLevel) {
@@ -400,6 +410,7 @@ void KalturaVideoPlayerPriv::BringToFront_()
 {
     if (!playerWrapperBridgeClass)
     {
+        m_bringToFront = true;
         return;
     }
 
