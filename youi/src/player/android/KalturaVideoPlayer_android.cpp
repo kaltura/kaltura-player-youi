@@ -214,7 +214,7 @@ void KalturaVideoPlayerPriv::SetVideoRectangle(const YI_RECT_REL &videoRectangle
     {
         return;
     }
-
+    //YI_LOGD(TAG, "SetVideoRectangle width = %d height = %d", videoRectangle.width, videoRectangle.height);
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setFrameMethodID, videoRectangle.width, videoRectangle.height, videoRectangle.x, videoRectangle.y);
 }
 
