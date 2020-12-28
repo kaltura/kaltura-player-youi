@@ -4,4 +4,5 @@ public class Plugins {
 
     public WrapperYouboraConfig youbora;
     public WrapperIMAConfig ima;
+    public WrapperBroadpeakConfig broadpeak;
 }

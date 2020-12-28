@@ -25,6 +25,8 @@ import com.kaltura.playkit.player.PKPlayerErrorType;
 import com.kaltura.playkit.player.PKTracks;
 import com.kaltura.playkit.plugins.ads.AdCuePoints;
 import com.kaltura.playkit.plugins.ads.AdEvent;
+import com.kaltura.playkit.plugins.broadpeak.BroadpeakConfig;
+import com.kaltura.playkit.plugins.broadpeak.BroadpeakPlugin;
 import com.kaltura.playkit.plugins.ima.IMAConfig;
 import com.kaltura.playkit.plugins.ima.IMAPlugin;
 import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsEvent;
@@ -43,6 +45,7 @@ import java.util.List;
 import tv.youi.kalturaplayertest.model.InitOptions;
 import tv.youi.kalturaplayertest.model.MediaAsset;
 import tv.youi.kalturaplayertest.model.NetworkSettings;
+import tv.youi.kalturaplayertest.model.WrapperBroadpeakConfig;
 import tv.youi.kalturaplayertest.model.WrapperIMAConfig;
 import tv.youi.kalturaplayertest.model.WrapperYouboraConfig;
 import tv.youi.kalturaplayertest.model.tracks.AudioTrack;
@@ -154,6 +157,14 @@ public class PKPlayerWrapper {
                         createYouboraPlugin(pluginConfigs, new WrapperYouboraConfig().setAccountCode(accountCode.get(YOUBORA_ACCOUNT_CODE).getAsString()));
                     }
                 }
+
+                if (initOptionsModel.plugins.broadpeak != null) {
+                    JsonObject broadpeakJsonObject = initOptionsModel.plugins.broadpeak;
+
+                    BroadpeakConfig broadpeakConfig = new Gson().fromJson(broadpeakJsonObject.toString(), BroadpeakConfig.class);
+                    createBroadpeakPlugin(pluginConfigs, broadpeakConfig);
+                }
+
             }
 
             final PlayerInitOptions initOptions = new PlayerInitOptions(partnerId);
@@ -605,6 +616,14 @@ public class PKPlayerWrapper {
         }
         return optBundle;
     }
+
+    private static void createBroadpeakPlugin(PKPluginConfigs pluginConfigs, BroadpeakConfig broadpeakConfig) {
+        PlayKitManager.registerPlugins(activity, BroadpeakPlugin.factory);
+        if (pluginConfigs != null) {
+            pluginConfigs.setPluginConfig(BroadpeakPlugin.factory.getName(), broadpeakConfig);
+        }
+    }
+
 
     @SuppressWarnings("unused") // Called from C++
     public static void prepare() {

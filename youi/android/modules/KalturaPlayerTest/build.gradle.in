@@ -129,11 +129,12 @@ dependencies {
     //implementation 'com.google.android.exoplayer:extension-mediasession:2.11.1'
     implementation 'com.google.android.gms:play-services-ads:15.0.1'
 
-    def kalturaPlaykitVersion = '4.9.2'
+    def kalturaPlaykitVersion = '4.11.0'
 
-    implementation "com.kaltura.player:tvplayer:$kalturaPlaykitVersion"
-    implementation "com.kaltura.playkit:imaplugin:4.9.0"
+    api "com.kaltura.playkit:broadpeakplugin:$kalturaPlaykitVersion"
+    implementation "com.kaltura.playkit:imaplugin:$kalturaPlaykitVersion"
     implementation "com.kaltura.playkit:youboraplugin:$kalturaPlaykitVersion"
+
 
     // Load unit test support libraries
     testImplementation "junit:junit:4.12"
