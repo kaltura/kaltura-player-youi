@@ -7,5 +7,6 @@ public class RegisteredPlugins {
     public JsonObject imadai;
     public JsonObject youbora;
     public JsonObject kava;
+    public JsonObject ottAnalytics;
     public JsonObject broadpeak;
 }

@@ -29,6 +29,8 @@ import com.kaltura.playkit.plugins.broadpeak.BroadpeakConfig;
 import com.kaltura.playkit.plugins.broadpeak.BroadpeakPlugin;
 import com.kaltura.playkit.plugins.ima.IMAConfig;
 import com.kaltura.playkit.plugins.ima.IMAPlugin;
+import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsConfig;
+import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsPlugin;
 import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsEvent;
 import com.kaltura.playkit.plugins.youbora.YouboraPlugin;
 import com.kaltura.playkit.utils.Consts;
@@ -45,8 +47,8 @@ import java.util.List;
 import tv.youi.kalturaplayertest.model.InitOptions;
 import tv.youi.kalturaplayertest.model.MediaAsset;
 import tv.youi.kalturaplayertest.model.NetworkSettings;
-import tv.youi.kalturaplayertest.model.WrapperBroadpeakConfig;
 import tv.youi.kalturaplayertest.model.WrapperIMAConfig;
+import tv.youi.kalturaplayertest.model.WrapperPhoenixAnalyticsConfig;
 import tv.youi.kalturaplayertest.model.WrapperYouboraConfig;
 import tv.youi.kalturaplayertest.model.tracks.AudioTrack;
 import tv.youi.kalturaplayertest.model.tracks.TextTrack;
@@ -148,7 +150,7 @@ public class PKPlayerWrapper {
             PKPluginConfigs pluginConfigs = new PKPluginConfigs();
             if (initOptionsModel.plugins != null) {
                 if (initOptionsModel.plugins.ima != null) {
-                    createIMAPlugin(pluginConfigs, null); //DEFAULT
+                    createIMAPlugin(pluginConfigs, initOptionsModel.plugins.ima); //DEFAULT
                 }
 
                 if (initOptionsModel.plugins.youbora != null) {
@@ -158,13 +160,16 @@ public class PKPlayerWrapper {
                     }
                 }
 
+                if (initOptionsModel.plugins.ottAnalytics != null) {
+                    createPhoenixAnalyticsPlugin(pluginConfigs, initOptionsModel.plugins.ottAnalytics); //DEFAULT
+                }
+
                 if (initOptionsModel.plugins.broadpeak != null) {
                     JsonObject broadpeakJsonObject = initOptionsModel.plugins.broadpeak;
 
                     BroadpeakConfig broadpeakConfig = new Gson().fromJson(broadpeakJsonObject.toString(), BroadpeakConfig.class);
                     createBroadpeakPlugin(pluginConfigs, broadpeakConfig);
                 }
-
             }
 
             final PlayerInitOptions initOptions = new PlayerInitOptions(partnerId);
@@ -474,6 +479,10 @@ public class PKPlayerWrapper {
                 if (mediaAsset.getPlugins().youbora != null) {
                     updateYouboraPlugin(mediaAsset.getPlugins().youbora);
                 }
+
+                if (mediaAsset.getPlugins().ottAnalytics != null) {
+                    updatePhoenixAnalyticsPlugin(mediaAsset.getPlugins().ottAnalytics);
+                }
             }
             final PKMediaEntry localPlaybackEntry = PKDownloadWrapper.getLocalPlaybackEntry(assetId);
             if (localPlaybackEntry != null) {
@@ -549,11 +558,21 @@ public class PKPlayerWrapper {
         }
     }
 
-    private static void createIMAPlugin(PKPluginConfigs pluginConfigs, WrapperIMAConfig wrapperIMAConfig) {
+    private static void updatePhoenixAnalyticsPlugin(WrapperPhoenixAnalyticsConfig wrapperPhoenixAnalyticsConfig) {
+        if (player != null && wrapperPhoenixAnalyticsConfig != null) {
+            runOnUiThread(() -> player.updatePluginConfig(PhoenixAnalyticsPlugin.factory.getName(), wrapperPhoenixAnalyticsConfig.toJson()));
+        }
+    }
+
+    private static void createIMAPlugin(PKPluginConfigs pluginConfigs, JsonObject imaConfigJson) {
 
         PlayKitManager.registerPlugins(activity, IMAPlugin.factory);
         if (pluginConfigs != null) {
-            pluginConfigs.setPluginConfig(IMAPlugin.factory.getName(), getIMAConfig(wrapperIMAConfig));
+            if (imaConfigJson == null) {
+                pluginConfigs.setPluginConfig(IMAPlugin.factory.getName(), new IMAConfig());
+            } else {
+                pluginConfigs.setPluginConfig(IMAPlugin.factory.getName(), imaConfigJson);
+            }
         }
     }
 
@@ -624,6 +643,16 @@ public class PKPlayerWrapper {
         }
     }
 
+    private static void createPhoenixAnalyticsPlugin(PKPluginConfigs pluginConfigs, JsonObject phoenixAnalyticsConfigJson) {
+        PlayKitManager.registerPlugins(activity, PhoenixAnalyticsPlugin.factory);
+        if (pluginConfigs != null) {
+            if (phoenixAnalyticsConfigJson == null) {
+                pluginConfigs.setPluginConfig(PhoenixAnalyticsPlugin.factory.getName(), new PhoenixAnalyticsConfig(-1, "", "", Consts.DEFAULT_ANALYTICS_TIMER_INTERVAL_HIGH_SEC));
+            } else {
+                pluginConfigs.setPluginConfig(PhoenixAnalyticsPlugin.factory.getName(), phoenixAnalyticsConfigJson);
+            }
+        }
+    }
 
     @SuppressWarnings("unused") // Called from C++
     public static void prepare() {
