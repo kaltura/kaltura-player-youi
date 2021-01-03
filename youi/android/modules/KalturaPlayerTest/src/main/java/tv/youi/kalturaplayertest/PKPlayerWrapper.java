@@ -26,6 +26,7 @@ import com.kaltura.playkit.player.PKTracks;
 import com.kaltura.playkit.plugins.ads.AdCuePoints;
 import com.kaltura.playkit.plugins.ads.AdEvent;
 import com.kaltura.playkit.plugins.broadpeak.BroadpeakConfig;
+import com.kaltura.playkit.plugins.broadpeak.BroadpeakEvent;
 import com.kaltura.playkit.plugins.broadpeak.BroadpeakPlugin;
 import com.kaltura.playkit.plugins.ima.IMAConfig;
 import com.kaltura.playkit.plugins.ima.IMAPlugin;
@@ -325,6 +326,11 @@ public class PKPlayerWrapper {
 
         player.addListener(self, PhoenixAnalyticsEvent.bookmarkError, event -> sendPlayerEvent("bookmarkError", "{ \"errorMessage\": \"" + event.errorMessage + "\" }"));
         player.addListener(self, PhoenixAnalyticsEvent.concurrencyError, event -> sendPlayerEvent("concurrencyError", "{ \"errorMessage\": \"" + event.errorMessage + "\" }"));
+
+        player.addListener(self, BroadpeakEvent.error, event -> {
+            PKError bpError = new PKError(PKPlayerErrorType.SOURCE_ERROR, PKError.Severity.Fatal, "BroadpeakError:" + event.errorCode + "-" + event.errorMessage, null);
+            sendPlayerEvent("error", getErrorJson(bpError));
+        });
 
         player.addListener(self, AdEvent.adProgress, event -> sendPlayerEvent("adProgress", "{ \"currentAdPosition\": " + (event.currentAdPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
         player.addListener(self, AdEvent.cuepointsChanged, event -> sendPlayerEvent("adCuepointsChanged", getCuePointsJson(event.cuePoints)));
