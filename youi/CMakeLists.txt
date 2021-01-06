@@ -1,24 +1,26 @@
 # =============================================================================
 # © You i Labs Inc. 2000-2020. All rights reserved.
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 
 include(Project.cmake)
 
 set(YI_EXCLUDED_ASSET_FILE_EXTENSIONS ".log,.aep" CACHE STRING "Comma-delimited list of file extensions whose files should be omitted during asset copying.")
-set(YI_YOUI_ENGINE_VERSION 5.18.0 CACHE STRING "Version required for the You.i Engine.")
+set(YI_YOUI_ENGINE_VERSION 6.2.0 CACHE STRING "Version required for the You.i Engine.")
 set(YI_VERSION_NUMBER 1.0.0.0 CACHE STRING "Build version of the application. This is the version that will be displayed to the end user in the store.")
 set(YI_BUILD_NUMBER "ENG-unversioned" CACHE STRING "Release version number that needs to be incremented for each store submission. For Apple platforms, this is the CFBundleVersion. For Android, this is the Version Code.")
 
 # Set this to OFF if you want C++ compiler warnings, but will no longer error out the build. This is not recommended as some warnings could be bugs on some platforms.
 option(YI_TREAT_WARNINGS_AS_ERRORS "Warnings will result in failure to compile when set to ON." ON)
 
-set(YI_BUNDLE_URL_SCHEME "yirnapp")
+if(NOT YI_BUNDLE_URL_SCHEME)
+    set(YI_BUNDLE_URL_SCHEME "yirnapp")
+endif()
 set(IOS_BUNDLE_URL_SCHEME "<string>${YI_BUNDLE_URL_SCHEME}</string>")
 set(TVOS_BUNDLE_URL_SCHEME "<string>${YI_BUNDLE_URL_SCHEME}</string>")
 set(UWP_BUNDLE_URL_SCHEME "<Extensions>\n\t\t\t\t<uap:Extension Category=\"windows.protocol\">\n\t\t\t\t\t<uap:Protocol Name=\"${YI_BUNDLE_URL_SCHEME}\" />\n\t\t\t\t</uap:Extension>\n\t\t\t</Extensions>")
 
 set(_STAGING_DIR "${CMAKE_CURRENT_BINARY_DIR}/Staging")
-set(_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 if(NOT (CMAKE_GENERATOR MATCHES "Visual Studio" OR CMAKE_GENERATOR MATCHES Xcode) AND NOT CMAKE_BUILD_TYPE)
     message(FATAL_ERROR "CMAKE_BUILD_TYPE needs to be set for single configuration generators. Default builds are not allowed.")
@@ -48,6 +50,7 @@ if(YI_BUILD_CLOUD_SERVER)
     )
     mark_as_advanced(YI_CLOUD_CMAKE_DIR)
     list(INSERT CMAKE_MODULE_PATH 0 ${YI_CLOUD_CMAKE_DIR})
+    include(Modules/YiCloud)
 endif()
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -117,17 +120,6 @@ set(YI_PROJECT_CODE_FILES
     ${YI_NATIVEMODULES_HEADERS}
 )
 
-# Not all platforms will need to perform some kind of initialization. Because this is optional,
-# we first check to see if the command actually exists. If not, we can safely ignore it.
-#
-# Initialization is performed before the target for the project() is created. At this time,
-# PROJECT_NAME is not available and thus no use of it should be done. If further
-# configuration is required, that can be done within the optional yi_configure_platform method.
-include(Modules/${YI_PLATFORM_LOWER}/YiInitializePlatform OPTIONAL)
-if(COMMAND yi_initialize_platform)
-    yi_initialize_platform()
-endif()
-
 # Some platforms, such as IOS and TVOS have resources that are used for setting up the application
 # icons. By making this include OPTIONAL, if no YiPlatformResources.cmake file exists, the build
 # will continue without failing.
@@ -161,7 +153,7 @@ if(YI_BUILD_CLOUD_SERVER)
 endif()
 
 target_include_directories(${PROJECT_NAME}
-    PRIVATE ${_SRC_DIR}
+    PRIVATE ${_INCLUDE_DIR}
     PRIVATE ${APPCOMMON_INCLUDE_DIR}
     PRIVATE ${YI_PLATFORM_INCLUDE_DIRECTORIES_${YI_PLATFORM_UPPER}}
 )
@@ -195,12 +187,16 @@ source_group("Source Files\\App" FILES
 )
 source_group("Resources" FILES ${YI_PLATFORM_RESOURCES_${YI_PLATFORM_UPPER}})
 
-# Load each ModuleList.cmake file into scope, where the files make use of 
+# Load each ModuleList.cmake file into scope, where the files make use of
 # target_sources, target_link_libraries and other target based cmake functionality
 # on the PROJECT_NAME target.
 foreach(_NATIVE_INCLUDE IN LISTS YI_NATIVEMODULES_INCLUDES)
     include("${_NATIVE_INCLUDE}")
 endforeach()
+
+# Load TargetList.cmake
+# Add project specific target changes to TargetList.cmake to avoid changing CMakeLists.txt if not necessary.
+include("${CMAKE_CURRENT_SOURCE_DIR}/TargetList.cmake" OPTIONAL)
 
 # === START OF OPTION HANDLING ================================================
 
@@ -271,3 +267,9 @@ if (COMMAND yi_configure_packaging_for_platform)
 endif()
 
 # === END OF PROJECT PACKAGING ================================================
+
+include(Modules/YiPutTargetsInFolder)
+yi_put_targets_in_folder(TARGETS ArchiveAssets CopyAssets CleanAssets Package ProcessLocalizationData CopyJSBundles
+    FOLDER "Targets"
+    PREFIX "${PROJECT_NAME}_"
+)

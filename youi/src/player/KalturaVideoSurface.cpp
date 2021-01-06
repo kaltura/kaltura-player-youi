@@ -18,3 +18,11 @@ void KalturaVideoSurface::SetVideoRectangle(const YI_RECT_REL &rVideoRectangle)
         m_pListener->SetVideoRectangle(rVideoRectangle);
     }
 }
+
+void KalturaVideoSurface::BringToFront()
+{
+    if (m_pListener)
+    {
+        m_pListener->BringToFront();
+    }
+}
