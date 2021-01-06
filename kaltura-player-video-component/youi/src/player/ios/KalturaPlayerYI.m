@@ -109,6 +109,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
 @property KalturaOTTPlayer *kalturaPlayer;
 @property PlayerOptions *playerOptions;
 @property (assign) NSTimeInterval bufferedTime;
+@property UIView *parentView;
 
 @end
 
@@ -123,6 +124,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     if (!self) return nil;
     
     self.partnerId = pid;
+    self.parentView = parentView;
     self.eventSender = sender;
     self.bufferedTime = 0;
     
@@ -582,6 +584,9 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
 }
 
 - (void)setZIndex:(float)index {
+    NSLog(@"setZIndex: %f", index);
+
+    //[self.parentView bringSubviewToFront: self.kalturaPlayer.view];
     self.kalturaPlayer.view.layer.zPosition = index;
 }
 

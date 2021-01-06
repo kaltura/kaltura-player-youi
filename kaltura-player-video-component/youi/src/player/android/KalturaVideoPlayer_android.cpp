@@ -147,6 +147,11 @@ void KalturaVideoPlayerPriv::LoadMedia_(const CYIString &assetId, folly::dynamic
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, loadMediaMethodID, jAssetId, optionsStr);
     GetEnv_KalturaPlayer()->DeleteLocalRef(jAssetId);
     GetEnv_KalturaPlayer()->DeleteLocalRef(optionsStr);
+
+    if (m_bringToFront) {
+        BringToFront_();
+        m_bringToFront = false;
+    }
 }
 
 void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
@@ -167,6 +172,11 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &contentUrl)
 
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setMediaMethodID, url);
     GetEnv_KalturaPlayer()->DeleteLocalRef(url);
+
+    if (m_bringToFront) {
+        BringToFront_();
+        m_bringToFront = false;
+    }
 }
 
 void KalturaVideoPlayerPriv::SetLogLevel_(const CYIString &logLevel) {
@@ -204,7 +214,7 @@ void KalturaVideoPlayerPriv::SetVideoRectangle(const YI_RECT_REL &videoRectangle
     {
         return;
     }
-
+    //YI_LOGD(TAG, "SetVideoRectangle width = %d height = %d", videoRectangle.width, videoRectangle.height);
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setFrameMethodID, videoRectangle.width, videoRectangle.height, videoRectangle.x, videoRectangle.y);
 }
 
@@ -285,7 +295,6 @@ void KalturaVideoPlayerPriv::Seek_(uint64_t uSeekPositionMs)
 
     double seekTime = static_cast<double>(uSeekPositionMs) / 1000.f;
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, seekToMethodID, (float)seekTime);
-
 }
 
 void KalturaVideoPlayerPriv::SetMaxBitrate_(uint64_t uMaxBitrate)
@@ -395,4 +404,16 @@ void KalturaVideoPlayerPriv::Mute_(bool bMute)
 
 void KalturaVideoPlayerPriv::DisableClosedCaptions_()
 {
+}
+
+void KalturaVideoPlayerPriv::BringToFront_()
+{
+    if (!playerWrapperBridgeClass)
+    {
+        m_bringToFront = true;
+        return;
+    }
+
+    float index = 1.0;
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setZIndexMethodID, index);
 }
