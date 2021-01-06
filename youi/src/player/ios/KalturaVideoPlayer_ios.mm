@@ -180,6 +180,10 @@ void KalturaVideoPlayerPriv::LoadMedia_(const CYIString &assetId, folly::dynamic
 
     m_pPub->m_pStateManager->TransitionToMediaPreparing();
     [m_player loadMedia:assetId.ToNSString() options:convertFollyDynamicToId(options)];
+    if (m_bringToFront) {
+        BringToFront_();
+        m_bringToFront = false;
+    }
 }
 
 void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &videoURI)
@@ -192,6 +196,10 @@ void KalturaVideoPlayerPriv::SetMedia_(const CYIUrl &videoURI)
     NSURL *url = [NSURL URLWithString:videoURI.ToString().ToNSString()];
     NSLog(@"*** SetMedia_(%s)", videoURI.ToString().ToStdString().c_str());
     [m_player setMedia:url];
+    if (m_bringToFront) {
+        BringToFront_();
+        m_bringToFront = false;
+    }
 }
 
 void KalturaVideoPlayerPriv::SetLogLevel_(const CYIString &logLevel)
@@ -412,4 +420,17 @@ void KalturaVideoPlayerPriv::Mute_(bool bMute)
 
 void KalturaVideoPlayerPriv::DisableClosedCaptions_()
 {
+}
+
+void KalturaVideoPlayerPriv::BringToFront_()
+{
+    YI_LOGW(TAG, "KalturaVideoPlayerPriv::BringToFront_");
+    if (!m_player)
+    {
+        m_bringToFront = true;
+        return;
+    }
+
+    float index = 1.0;
+    [m_player setZIndex:index];
 }

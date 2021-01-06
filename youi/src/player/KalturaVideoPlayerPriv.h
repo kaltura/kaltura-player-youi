@@ -61,6 +61,7 @@ public:
     std::vector<CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo> GetClosedCaptionsTracks_() const;
     CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo GetActiveClosedCaptionsTrack_() const;
     void Mute_(bool bMute);
+    void BringToFront_();
     void DisableClosedCaptions_();
 
     void SetMaxBitrate_(uint64_t uMaxBitrate);
@@ -68,6 +69,7 @@ public:
     void HandleEvent(const CYIString& name, folly::dynamic content);
 
     KalturaVideoPlayer *m_pPub;
+    bool m_bringToFront;
 
 private:
 #ifdef YI_ANDROID
