@@ -1,8 +1,0 @@
-# Appium
-#
-allure-report/
-node_modules/
-results/
-appium.txt
-*.log
-*.xml
