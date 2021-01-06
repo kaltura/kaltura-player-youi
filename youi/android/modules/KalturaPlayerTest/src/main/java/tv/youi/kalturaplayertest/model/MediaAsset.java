@@ -6,6 +6,7 @@ import com.kaltura.playkit.providers.ott.PhoenixMediaProvider;
 import com.kaltura.tvplayer.OTTMediaOptions;
 
 import java.util.Collections;
+import java.util.Map;
 
 public class MediaAsset {
     private String ks;        // ovp or ott
@@ -18,8 +19,9 @@ public class MediaAsset {
     private String protocol;            // ott
 
     private Boolean useApiCaptions = false; // ovp
-    private String urlType;
-    private String streamerType;
+    private String urlType;             // ott
+    private String streamerType;       // ott
+    private Map<String,String> adapterData; // ott
     private String referrer;
     private Long startPosition;
     private Plugins plugins;
@@ -42,6 +44,10 @@ public class MediaAsset {
 
     public String getReferrer() {
         return referrer;
+    }
+
+    public Map<String,String> getAdapterData() {
+        return adapterData;
     }
 
     public Long getStartPosition() {
@@ -169,6 +175,7 @@ public class MediaAsset {
         ottMediaAsset.setReferrer(referrer);
         ottMediaAsset.setUrlType(getUrlType());
         ottMediaAsset.setStreamerType(getStreamerType());
+        ottMediaAsset.setAdapterData(getAdapterData());
         if (format != null) {
             ottMediaAsset.setFormats(Collections.singletonList(format));
         }
