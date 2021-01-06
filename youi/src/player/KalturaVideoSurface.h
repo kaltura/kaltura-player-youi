@@ -12,7 +12,7 @@ public:
     virtual ~KalturaVideoSurface();
 
     virtual void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle);
-    
+    virtual void BringToFront();
     IVideoSurfaceListener *m_pListener;
 };
 
