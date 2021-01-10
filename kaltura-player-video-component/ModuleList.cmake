@@ -25,7 +25,7 @@ if(TVOS)
     include(${CMAKE_CURRENT_LIST_DIR}/youi/cmake/Platform/YiTvos.cmake)
 endif()
 if (ANDROID)
-    include(${CMAKE_CURRENT_LIST_DIR}/android)
+#    include(${CMAKE_CURRENT_LIST_DIR}/android)
 endif()
 
 target_sources(${PROJECT_NAME} PRIVATE
