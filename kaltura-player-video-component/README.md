@@ -1,1 +1,1 @@
-# kaltura-frameworks
+# kaltura-player-frameworks
