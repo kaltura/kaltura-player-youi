@@ -5,5 +5,5 @@
 	"dependencies": {
 		"@kaltura-player/frameworks": "file:../kaltura-frameworks"	
   },
-  "author": "Gordon Colquhoun"
+  "author": "Kaltura Inc."
 }
