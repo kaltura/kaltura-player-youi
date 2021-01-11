@@ -1,0 +1,9 @@
+{
+  "name": "@kaltura-player/frameworks",
+  "version": "1.0.0",
+  "description": "Kaltura Player Framworks",
+  "author": "Kattura Inc.",
+  "scripts": {
+    "postinstall": "./scripts/ios-libs/build.sh $PWD > gordos.txt"
+  }
+}
