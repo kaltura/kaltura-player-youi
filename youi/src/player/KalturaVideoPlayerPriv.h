@@ -76,7 +76,7 @@ private:
     void LoadIDs();
 #endif
 
-#ifdef YI_IOS
+#if defined(YI_IOS) || defined(YI_TVOS)
     KalturaPlayerYI *m_player;
 #endif
 

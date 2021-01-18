@@ -1,7 +1,10 @@
 #include "player/KalturaVideoPlayerPriv.h"
 
 #include "player/KalturaVideoSurface.h"
+
+#if defined(YI_IOS) || defined(YI_TVOS)
 #import "player/ios/KalturaPlayerYI.h"
+#endif
 
 #import <apple/YiRootViewController.h>
 #include <player/YiVideoPlayerStateManager.h>

@@ -1,32 +1,61 @@
 # =============================================================================
 # © You i Labs Inc. 2000-2020. All rights reserved.
 
-file(GLOB_RECURSE YI_PROJECT_SOURCE "${_INCLUDE_DIR}/*.m" "${_INCLUDE_DIR}/*.mm" "${_INCLUDE_DIR}/*.cpp")
-file(GLOB_RECURSE YI_PROJECT_HEADERS "${_INCLUDE_DIR}/*.h")
+if(IOS OR TVOS)
+  # Declare the source and header files for iOS and tvOS
 
-set(PLATFORMS android ios osx tvos)
-list(REMOVE_ITEM PLATFORMS ${YI_PLATFORM_LOWER})
+  set(YI_PROJECT_PLATFORM_SOURCE
+    src/player/ios/KalturaPlayerYI.m
+    src/player/ios/KalturaVideoPlayer.mm
+    src/pk/ios/PKDownload.mm
+  )
+  set (YI_PROJECT_PLATFORM_HEADERS
+    src/player/ios/KalturaPlayerYI.h
+  )
 
-foreach(PLATFORM ${PLATFORMS})
-    foreach(YI_SRC_FILE ${YI_PROJECT_SOURCE})
-        if("${YI_SRC_FILE}" MATCHES "(.*)/${PLATFORM}/(.*)")
-            if(${CMAKE_VERBOSE_MAKEFILE})
-                message(STATUS "removing ${YI_SRC_FILE}...")
-            endif()
-            list(REMOVE_ITEM YI_PROJECT_SOURCE ${YI_SRC_FILE})
-        endif()
-    endforeach(YI_SRC_FILE)
-endforeach(PLATFORM)
+elseif(ANDROID)
+  # Declare the source and header files for Android.
 
-foreach(YI_HDR_FILE ${YI_PROJECT_HEADERS})
-    if("${YI_HDR_FILE}" MATCHES "(.*)/${PLATFORM}/(.*)")
-        if(${CMAKE_VERBOSE_MAKEFILE})
-            message(STATUS "removing ${YI_HDR_FILE}...")
-        endif()
-        list(REMOVE_ITEM YI_PROJECT_HEADERS ${YI_HDR_FILE})
-    endif()
-endforeach(YI_HDR_FILE)
+  set(YI_PROJECT_PLATFORM_SOURCE
+    src/player/android/KalturaVideoPlayer_android.cpp
+    src/pk/android/PKDownload.cpp
+  )
+  set (YI_PROJECT_PLATFORM_HEADERS
+    
+  )
 
-source_group(App                    REGULAR_EXPRESSION "app/.*")
-source_group(Player                 REGULAR_EXPRESSION "player/.*")
-source_group(NativeModule           REGULAR_EXPRESSION "nativemodule/.*")
+else()
+  # Declare the source and header files for default module implementations
+
+  set(YI_PROJECT_PLATFORM_SOURCE
+    
+  )
+  set (YI_PROJECT_PLATFORM_HEADERS
+    
+  )
+
+endif()
+
+
+
+# Set all project source files, including platform specific ones above
+set (YI_PROJECT_SOURCE
+    src/app/App.cpp
+    src/app/AppFactory.cpp
+    src/nativemodule/KalturaVideoNativeModule.cpp
+    src/player/KalturaVideoPlayer.cpp
+    src/player/KalturaVideoSurface.cpp
+    ${YI_PROJECT_PLATFORM_SOURCE}
+)
+
+# Set all project header files, including platform specific ones above
+set (YI_PROJECT_HEADERS
+    src/app/App.h
+    src/nativemodule/KalturaVideoNativeModule.h
+    src/player/IVideoSurfaceListener.h
+    src/player/KalturaVideoPlayer.h
+    src/player/KalturaVideoPlayerPriv.h
+    src/player/KalturaVideoSurface.h
+    src/pk/PKDownload.h
+    ${YI_PROJECT_PLATFORM_HEADERS}
+)
