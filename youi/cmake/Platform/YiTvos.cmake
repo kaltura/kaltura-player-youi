@@ -1,17 +1,5 @@
 include(${YouiEngine_DIR}/cmake/Platform/YiTvos.cmake)
 
-if(DEFINED ENV{DEVELOPMENT_TEAM_ID})
-    if(NOT DEFINED YI_DEVELOPMENT_TEAM)
-        set(YI_DEVELOPMENT_TEAM $ENV{DEVELOPMENT_TEAM_ID})
-    endif()
-elseif(NOT DEFINED YI_DEVELOPMENT_TEAM)
-    include(${YouiEngine_DIR}/cmake/YiAppleCodeSigning.cmake OPTIONAL RESULT_VARIABLE _DEFAULT_SIGNING_PATHNAME)
-    if(_DEFAULT_SIGNING_PATHNAME MATCHES NOTFOUND)
-        message(FATAL_ERROR "A development team ID is missing. Please set the YI_DEVELOPMENT_TEAM variable when generating the project or set a DEVELOPMENT_TEAM_ID environment variable.")
-    endif()
-endif()
-
-set(YI_DEVELOPMENT_TEAM "${YI_DEVELOPMENT_TEAM}" CACHE STRING "The 10-character alphanumeric string representing the development team. Required for Xcode 8+ builds.")
 
 
 macro(add_pk_tvos_framework FW_NAME)
@@ -21,6 +9,8 @@ macro(add_pk_tvos_framework FW_NAME)
         EMBEDDED
     )
 endmacro()
+
+
 
 macro(yi_configure_platform)
     cmake_parse_arguments(_ARGS "" "PROJECT_TARGET" "" ${ARGN})
@@ -34,9 +24,11 @@ macro(yi_configure_platform)
 	XCODE_ATTRIBUTE_TVOS_DEPLOYMENT_TARGET "10.0"
     )
 
+
     _yi_configure_platform(PROJECT_TARGET ${_ARGS_PROJECT_TARGET})
 
     include(Modules/apple/YiConfigureFramework)
+
 
     foreach(FW_NAME KalturaPlayer PlayKit KalturaNetKit PlayKitUtils PlayKitKava PlayKitProviders)
     add_pk_tvos_framework(${FW_NAME})
@@ -57,5 +49,11 @@ macro(yi_configure_platform)
     foreach(FW_NAME YouboraLib PlayKitYoubora)
     add_pk_tvos_framework(${FW_NAME})
     endforeach()
+
+   # Strip unwanted architectures from dynamic libraries
+    add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD COMMAND
+        "${CMAKE_CURRENT_SOURCE_DIR}/Scripts/strippingUnwantedArchitecturesFromDynamicLibraries.sh"
+    )
 
 endmacro(yi_configure_platform)

@@ -3,10 +3,11 @@ use_frameworks!
 
 plugin 'cocoapods-binary'
 all_binary!
+enable_bitcode_for_prebuilt_frameworks!
 
 target 'YouiKalturaPlayerBridgetvOS' do
   
-  pod 'KalturaPlayer/OTT', '4.0.0.beta.2'
+  pod 'KalturaPlayer/OTT', '~> 4.1'
   pod 'PlayKit_IMA'
   pod 'PlayKitYoubora'
 

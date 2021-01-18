@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3A8BC048F61C3DFAE988E0D8 /* Pods_YouiKalturaPlayerBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2F2DA14211295551AC1F587 /* Pods_YouiKalturaPlayerBridge.framework */; };
+		948173788A04E0B33DB1509B /* Pods_YouiKalturaPlayerBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CFE0BDCD09BB425BB758F08 /* Pods_YouiKalturaPlayerBridge.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		9FB71FEBFBF31DB49245B14E /* Pods-YouiKalturaPlayerBridge.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouiKalturaPlayerBridge.release.xcconfig"; path = "Target Support Files/Pods-YouiKalturaPlayerBridge/Pods-YouiKalturaPlayerBridge.release.xcconfig"; sourceTree = "<group>"; };
-		C4963BD9788B9476AD1B4EB7 /* Pods-YouiKalturaPlayerBridge.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouiKalturaPlayerBridge.debug.xcconfig"; path = "Target Support Files/Pods-YouiKalturaPlayerBridge/Pods-YouiKalturaPlayerBridge.debug.xcconfig"; sourceTree = "<group>"; };
+		093C7C402C4B40B6CD09DBFB /* Pods-YouiKalturaPlayerBridge.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouiKalturaPlayerBridge.release.xcconfig"; path = "Target Support Files/Pods-YouiKalturaPlayerBridge/Pods-YouiKalturaPlayerBridge.release.xcconfig"; sourceTree = "<group>"; };
+		7CFE0BDCD09BB425BB758F08 /* Pods_YouiKalturaPlayerBridge.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouiKalturaPlayerBridge.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD67AAE24924B120060922A /* YouiKalturaPlayerBridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YouiKalturaPlayerBridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		E2F2DA14211295551AC1F587 /* Pods_YouiKalturaPlayerBridge.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouiKalturaPlayerBridge.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB56E362DCBB82D5F11804BF /* Pods-YouiKalturaPlayerBridge.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouiKalturaPlayerBridge.debug.xcconfig"; path = "Target Support Files/Pods-YouiKalturaPlayerBridge/Pods-YouiKalturaPlayerBridge.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -22,7 +22,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3A8BC048F61C3DFAE988E0D8 /* Pods_YouiKalturaPlayerBridge.framework in Frameworks */,
+				948173788A04E0B33DB1509B /* Pods_YouiKalturaPlayerBridge.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -32,8 +32,8 @@
 		36D5D8ADAB36F06EABB5DFF2 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				C4963BD9788B9476AD1B4EB7 /* Pods-YouiKalturaPlayerBridge.debug.xcconfig */,
-				9FB71FEBFBF31DB49245B14E /* Pods-YouiKalturaPlayerBridge.release.xcconfig */,
+				EB56E362DCBB82D5F11804BF /* Pods-YouiKalturaPlayerBridge.debug.xcconfig */,
+				093C7C402C4B40B6CD09DBFB /* Pods-YouiKalturaPlayerBridge.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -44,7 +44,7 @@
 				CAD67AB024924B120060922A /* YouiKalturaPlayerBridge */,
 				CAD67AAF24924B120060922A /* Products */,
 				36D5D8ADAB36F06EABB5DFF2 /* Pods */,
-				F631D6458E7BF677D0F429B5 /* Frameworks */,
+				DC428BE37D9AA1689579A56D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -63,10 +63,10 @@
 			path = YouiKalturaPlayerBridge;
 			sourceTree = "<group>";
 		};
-		F631D6458E7BF677D0F429B5 /* Frameworks */ = {
+		DC428BE37D9AA1689579A56D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E2F2DA14211295551AC1F587 /* Pods_YouiKalturaPlayerBridge.framework */,
+				7CFE0BDCD09BB425BB758F08 /* Pods_YouiKalturaPlayerBridge.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -78,11 +78,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CAD67AC224924B140060922A /* Build configuration list for PBXNativeTarget "YouiKalturaPlayerBridge" */;
 			buildPhases = (
-				03D5F80B8D47BC1F71D33E4D /* [CP] Check Pods Manifest.lock */,
+				81019D4A47698986F37FD8BE /* [CP] Check Pods Manifest.lock */,
 				CAD67AAA24924B120060922A /* Sources */,
 				CAD67AAB24924B120060922A /* Frameworks */,
 				CAD67AAC24924B120060922A /* Resources */,
-				0C4700209434E804BC1075B6 /* [CP] Embed Pods Frameworks */,
+				2255A63E81426C6531FAED6F /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -137,7 +137,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		03D5F80B8D47BC1F71D33E4D /* [CP] Check Pods Manifest.lock */ = {
+		2255A63E81426C6531FAED6F /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-YouiKalturaPlayerBridge/Pods-YouiKalturaPlayerBridge-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-YouiKalturaPlayerBridge/Pods-YouiKalturaPlayerBridge-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-YouiKalturaPlayerBridge/Pods-YouiKalturaPlayerBridge-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		81019D4A47698986F37FD8BE /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -157,23 +174,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		0C4700209434E804BC1075B6 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-YouiKalturaPlayerBridge/Pods-YouiKalturaPlayerBridge-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-YouiKalturaPlayerBridge/Pods-YouiKalturaPlayerBridge-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-YouiKalturaPlayerBridge/Pods-YouiKalturaPlayerBridge-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -305,7 +305,7 @@
 		};
 		CAD67AC324924B140060922A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C4963BD9788B9476AD1B4EB7 /* Pods-YouiKalturaPlayerBridge.debug.xcconfig */;
+			baseConfigurationReference = EB56E362DCBB82D5F11804BF /* Pods-YouiKalturaPlayerBridge.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -327,7 +327,7 @@
 		};
 		CAD67AC424924B140060922A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9FB71FEBFBF31DB49245B14E /* Pods-YouiKalturaPlayerBridge.release.xcconfig */;
+			baseConfigurationReference = 093C7C402C4B40B6CD09DBFB /* Pods-YouiKalturaPlayerBridge.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
