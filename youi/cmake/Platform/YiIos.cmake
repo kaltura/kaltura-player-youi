@@ -51,6 +51,11 @@ macro(yi_configure_platform)
     add_pk_ios_framework(${FW_NAME})
     endforeach()
 
+    foreach(FW_NAME AFNetworking SmartLib PlayKitBroadpeak)
+    add_pk_ios_framework(${FW_NAME})
+    endforeach()
+
+
    # Strip unwanted architectures from dynamic libraries
     add_custom_command(TARGET ${PROJECT_NAME}
         POST_BUILD COMMAND
