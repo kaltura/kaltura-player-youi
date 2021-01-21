@@ -40,6 +40,15 @@ static PlaybackContextType getAssetType(NSString *str) {
     return AssetTypeUnset;
 }
 
+static AssetReferenceType getAssetReferenceType(NSString *str) {
+    if ([str caseInsensitiveCompare:@"media"] == NSOrderedSame) return AssetReferenceTypeMedia;
+    if ([str caseInsensitiveCompare:@"epgInternal"] == NSOrderedSame) return AssetReferenceTypeEpgInternal;
+    if ([str caseInsensitiveCompare:@"epgExternal"] == NSOrderedSame) return AssetReferenceTypeEpgExternal;
+    if ([str caseInsensitiveCompare:@"npvr"] == NSOrderedSame) return AssetReferenceTypeNpvr;
+    
+    return AssetReferenceTypeUnset;
+}
+
 static IMAConfig* getImaConfig(NSDictionary *dyn_config) {
     IMAConfig *config = [IMAConfig new];
     config.adTagUrl = dyn_config[@"adTagUrl"];
@@ -498,8 +507,9 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     options.assetId = assetId;
     options.ks = dyn_options[@"ks"];
     options.assetType = getAssetType(dyn_options[@"assetType"]);
+    options.assetReferenceType = getAssetReferenceType(dyn_options[@"assetReferenceType"]);
     options.playbackContextType = getPlaybackContextType(dyn_options[@"playbackContextType"]);
-    options.startTime = [dyn_options[@"startPosition"] doubleValue];
+    options.adapterData = dyn_options[@"adapterData"];
     
     NSString *networkProtocol = dyn_options[@"protocol"];
     if (networkProtocol) {
@@ -526,6 +536,11 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         options.streamerType = streamerType;
     }
     
+    id startPosition = dyn_options[@"startPosition"];
+    if (startPosition) {
+        options.startTime = [startPosition doubleValue];
+    }
+
     id youboraConfig = dyn_options[@"plugins"][@"youbora"];
     if (youboraConfig) {
         [self.kalturaPlayer updatePluginConfigWithPluginName:YouboraPlugin.pluginName config:getYouboraConfig(youboraConfig)];
