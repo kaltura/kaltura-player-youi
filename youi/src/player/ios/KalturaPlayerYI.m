@@ -49,6 +49,12 @@ static IMAConfig* getImaConfig(NSDictionary *dyn_config) {
     return config;
 }
 
+static AnalyticsConfig* getYouboraConfig(NSDictionary *dyn_config) {
+    AnalyticsConfig *config = [[AnalyticsConfig alloc] initWithParams:dyn_config];
+    
+    return config;
+}
+
 static BroadpeakConfig* getBroadpeakConfig(NSDictionary *dyn_config) {
     BroadpeakConfig *config = [BroadpeakConfig new];
     config.analyticsAddress = dyn_config[@"analyticsAddress"];
@@ -69,7 +75,8 @@ static PluginConfig* createPluginConfig(NSDictionary *options) {
     
     NSDictionary *dyn_youboraConfig = options[@"youbora"];
     if (dyn_youboraConfig) {
-        pluginConfigDict[YouboraPlugin.pluginName] = dyn_youboraConfig;
+        AnalyticsConfig *youboraConfig = getYouboraConfig(dyn_youboraConfig);
+        pluginConfigDict[YouboraPlugin.pluginName] = youboraConfig;
     }
     
     NSDictionary *dyn_broadpeakConfig = options[@"broadpeak"];
@@ -521,7 +528,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     
     id youboraConfig = dyn_options[@"plugins"][@"youbora"];
     if (youboraConfig) {
-        [self.kalturaPlayer updatePluginConfigWithPluginName:YouboraPlugin.pluginName config:youboraConfig];
+        [self.kalturaPlayer updatePluginConfigWithPluginName:YouboraPlugin.pluginName config:getYouboraConfig(youboraConfig)];
     }
     
     id imaConfig = dyn_options[@"plugins"][@"ima"];
