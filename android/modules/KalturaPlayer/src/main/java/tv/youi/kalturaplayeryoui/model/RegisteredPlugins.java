@@ -1,4 +1,4 @@
-package tv.youi.kalturaplayertest.model;
+package tv.youi.kalturaplayeryoui.model;
 
 import com.google.gson.JsonObject;
 

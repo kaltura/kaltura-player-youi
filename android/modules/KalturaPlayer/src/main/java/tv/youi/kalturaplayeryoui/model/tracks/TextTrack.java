@@ -1,4 +1,4 @@
-package tv.youi.kalturaplayertest.model.tracks;
+package tv.youi.kalturaplayeryoui.model.tracks;
 
 public class TextTrack {
     public String id;

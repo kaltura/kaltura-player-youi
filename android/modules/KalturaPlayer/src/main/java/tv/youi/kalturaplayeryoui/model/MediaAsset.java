@@ -1,4 +1,4 @@
-package tv.youi.kalturaplayertest.model;
+package tv.youi.kalturaplayeryoui.model;
 
 import com.kaltura.playkit.providers.api.phoenix.APIDefines;
 import com.kaltura.playkit.providers.ott.OTTMediaAsset;

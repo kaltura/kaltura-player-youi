@@ -1,4 +1,4 @@
-package tv.youi.kalturaplayertest;
+package tv.youi.kalturaplayeryoui;
 
 public interface OnEventListener {
      void onKalturaPlayerInitialized();

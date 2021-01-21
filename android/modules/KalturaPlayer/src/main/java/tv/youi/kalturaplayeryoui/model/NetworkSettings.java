@@ -1,4 +1,4 @@
-package tv.youi.kalturaplayertest.model;
+package tv.youi.kalturaplayeryoui.model;
 
 public class NetworkSettings {
     public boolean autoBuffer= true;

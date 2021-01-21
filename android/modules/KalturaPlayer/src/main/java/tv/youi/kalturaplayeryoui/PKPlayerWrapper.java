@@ -1,4 +1,4 @@
-package tv.youi.kalturaplayertest;
+package tv.youi.kalturaplayeryoui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -45,16 +45,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import tv.youi.kalturaplayertest.model.InitOptions;
-import tv.youi.kalturaplayertest.model.MediaAsset;
-import tv.youi.kalturaplayertest.model.NetworkSettings;
-import tv.youi.kalturaplayertest.model.WrapperIMAConfig;
-import tv.youi.kalturaplayertest.model.WrapperPhoenixAnalyticsConfig;
-import tv.youi.kalturaplayertest.model.WrapperYouboraConfig;
-import tv.youi.kalturaplayertest.model.tracks.AudioTrack;
-import tv.youi.kalturaplayertest.model.tracks.TextTrack;
-import tv.youi.kalturaplayertest.model.tracks.TracksInfo;
-import tv.youi.kalturaplayertest.model.tracks.VideoTrack;
+import tv.youi.kalturaplayeryoui.model.InitOptions;
+import tv.youi.kalturaplayeryoui.model.MediaAsset;
+import tv.youi.kalturaplayeryoui.model.NetworkSettings;
+import tv.youi.kalturaplayeryoui.model.WrapperIMAConfig;
+import tv.youi.kalturaplayeryoui.model.WrapperPhoenixAnalyticsConfig;
+import tv.youi.kalturaplayeryoui.model.WrapperYouboraConfig;
+import tv.youi.kalturaplayeryoui.model.tracks.AudioTrack;
+import tv.youi.kalturaplayeryoui.model.tracks.TextTrack;
+import tv.youi.kalturaplayeryoui.model.tracks.TracksInfo;
+import tv.youi.kalturaplayeryoui.model.tracks.VideoTrack;
 import tv.youi.youiengine.CYIActivity;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -275,7 +275,7 @@ public class PKPlayerWrapper {
                         " }");
                 if (reportedDuration != event.duration && event.duration > 0) {
                     reportedDuration = event.duration;
-                    if (player.getMediaEntry() != null && player.getMediaEntry().getMediaType() != PKMediaEntry.MediaEntryType.Vod /*|| player.isLive()*/) {
+                    if (player != null && player.getMediaEntry() != null && player.getMediaEntry().getMediaType() != PKMediaEntry.MediaEntryType.Vod /*|| player.isLive()*/) {
                         sendPlayerEvent("loadedTimeRanges", "{\"timeRanges\": [ { \"start\": " + 0 +
                                 ", \"end\": " + (event.duration / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
                                 " } ] }");

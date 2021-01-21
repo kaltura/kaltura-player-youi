@@ -1,4 +1,4 @@
-package tv.youi.kalturaplayertest.model;
+package tv.youi.kalturaplayeryoui.model;
 
 import java.util.ArrayList;
 import java.util.List;
