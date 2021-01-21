@@ -62,15 +62,18 @@ static PluginConfig* createPluginConfig(NSDictionary *options) {
     NSMutableDictionary *pluginConfigDict = [NSMutableDictionary new];
     
     NSDictionary *dyn_imaConfig = options[@"ima"];
+    if (dyn_imaConfig) {
+        IMAConfig *imaConfig = getImaConfig(dyn_imaConfig);
+        pluginConfigDict[IMAPlugin.pluginName] = imaConfig;
+    }
+    
     NSDictionary *dyn_youboraConfig = options[@"youbora"];
-    
-    IMAConfig *imaConfig = getImaConfig(dyn_imaConfig);
-    
-    pluginConfigDict[IMAPlugin.pluginName] = imaConfig;
-    pluginConfigDict[YouboraPlugin.pluginName] = dyn_youboraConfig;
+    if (dyn_youboraConfig) {
+        pluginConfigDict[YouboraPlugin.pluginName] = dyn_youboraConfig;
+    }
     
     NSDictionary *dyn_broadpeakConfig = options[@"broadpeak"];
-    if (dyn_broadpeakConfig != nil) {
+    if (dyn_broadpeakConfig) {
         [PlayKitManager.sharedInstance registerPlugin:BroadpeakMediaEntryInterceptor.self];
         BroadpeakConfig *broadpeakConfig = getBroadpeakConfig(dyn_broadpeakConfig);
         pluginConfigDict[BroadpeakMediaEntryInterceptor.pluginName] = broadpeakConfig;
