@@ -16,7 +16,7 @@ set(YI_DEVELOPMENT_TEAM "${YI_DEVELOPMENT_TEAM}" CACHE STRING "The 10-character 
 
 macro(add_pk_tvos_framework FW_NAME)
     yi_configure_framework(TARGET ${_ARGS_PROJECT_TARGET}
-        FRAMEWORK_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tvos-libs/${FW_NAME}/${FW_NAME}.framework"
+        FRAMEWORK_PATH "${KALTURA_PLAYER_FRAMEWORKS_PATH}/tvos-libs/${FW_NAME}/${FW_NAME}.framework"
         CODE_SIGN_IDENTITY ${YI_CODE_SIGN_IDENTITY}
         EMBEDDED
     )
