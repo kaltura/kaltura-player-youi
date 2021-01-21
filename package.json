@@ -1,0 +1,9 @@
+{
+  "name": "@ykaltura-player/video-component",
+  "version": "1.0.0",
+  "description": "Kaltura Player Video component for You.i",
+  "author": "Kaltura Inc.",
+  "scripts": {
+    "postinstall": "echo $PWD && ./scripts/tvos-libs/build.sh $PWD >> /tmp/error.txt && ./scripts/ios-libs/build.sh $PWD >> /tmp/error.txt"
+  }
+}

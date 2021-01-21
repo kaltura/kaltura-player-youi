@@ -7,4 +7,4 @@
 # Do not commit 'plugin-credentials.rb' with credentials to Git repo!!!
 #
 @@broadpeak_platform_login = ''
-@@broadpeak_platform_password = ''
+@@broadpeak_platform_password  = ''

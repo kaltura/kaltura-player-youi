@@ -1,9 +1,0 @@
-{
-  "name": "@kaltura-player/frameworks",
-  "version": "1.0.0",
-  "description": "Kaltura Player Framworks",
-  "author": "Kaltura Inc.",
-  "scripts": {
-    "postinstall": "echo $PWD && ./scripts/tvos-libs/build.sh $PWD && ./scripts/ios-libs/build.sh $PWD"
-  }
-}
