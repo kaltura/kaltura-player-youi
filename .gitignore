@@ -1,5 +1,9 @@
-ios-libs
-tvos-libs
+# In order not to add the pods folder.
+Pods
+
+# In order not to add the frameworks.
+youi/ios-libs
+youi/tvos-libs
 
 # You.i specific ignores
 youi/build/
@@ -285,5 +289,3 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
-
-# End of https://www.gitignore.io/api/reactnative

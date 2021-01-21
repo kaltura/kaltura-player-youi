@@ -57,4 +57,8 @@ macro(yi_configure_platform)
     add_pk_ios_framework(${FW_NAME})
     endforeach()
 
+    foreach(FW_NAME AFNetworking SmartLib PlayKitBroadpeak)
+    add_pk_ios_framework(${FW_NAME})
+    endforeach()
+
 endmacro(yi_configure_platform)

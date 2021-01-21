@@ -1,0 +1,39 @@
+load 'plugin-credentials.rb'
+
+# Broadpeak private Cocoapods sources
+source "https://#{@@broadpeak_platform_login}:#{@@broadpeak_platform_password}@delivery-platform.broadpeak.tv/ios/broadpeak/specs.git"
+
+# Cocoapods default sources
+source 'https://github.com/CocoaPods/Specs.git'
+
+platform :ios, '10.0'
+use_frameworks!
+
+plugin 'cocoapods-binary'
+all_binary!
+enable_bitcode_for_prebuilt_frameworks!
+
+target 'YouiKalturaPlayerBridge' do
+  
+  pod 'KalturaPlayer/OTT', '~> 4.1'
+  pod 'PlayKit_IMA'
+  pod 'PlayKitYoubora'
+
+  # BP Plugin
+  pod 'PlayKitBroadpeak', :git => 'https://github.com/kaltura/playkit-ios-broadpeak-smartlib', :branch => 'bp_upgrade'
+  pod 'AFNetworking', '4.0.1' 
+
+### Embedded in KalturaPlayer/OTT - not needed for the release, only when working on a branch ###
+
+  #pod 'PlayKit', :git => 'https://github.com/kaltura/playkit-ios', :branch => 'develop'
+  #pod 'PlayKitKava', :git => 'https://github.com/kaltura/playkit-ios-kava', :branch => 'develop'
+  #pod 'PlayKitProviders', :git => 'https://github.com/kaltura/playkit-ios-providers', :branch => 'develop' 
+
+
+### Embedded in PlayKit - not needed for the release, only when working on a branch ###
+
+  #pod 'PlayKitUtils', :git => 'https://github.com/kaltura/playkit-ios-utils', :branch => 'develop'
+
+end
+
+

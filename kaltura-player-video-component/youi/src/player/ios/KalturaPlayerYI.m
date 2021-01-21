@@ -21,6 +21,8 @@
 
 #import <PlayKitYoubora/PlayKitYoubora-Swift.h>
 
+#import <PlayKitBroadpeak/PlayKitBroadpeak-Swift.h>
+
 static PlaybackContextType getPlaybackContextType(NSString *str) {
     if ([str caseInsensitiveCompare:@"playback"] == NSOrderedSame) return PlaybackContextTypePlayback;
     if ([str caseInsensitiveCompare:@"catchup"] == NSOrderedSame) return PlaybackContextTypeCatchup;
@@ -47,6 +49,15 @@ static IMAConfig* getImaConfig(NSDictionary *dyn_config) {
     return config;
 }
 
+static BroadpeakConfig* getBroadpeakConfig(NSDictionary *dyn_config) {
+    BroadpeakConfig *config = [BroadpeakConfig new];
+    config.analyticsAddress = dyn_config[@"analyticsAddress"];
+    config.nanoCDNHost = dyn_config[@"nanoCDNHost"];
+    config.broadpeakDomainNames = dyn_config[@"broadpeakDomainNames"];
+    
+    return config;
+}
+
 static PluginConfig* createPluginConfig(NSDictionary *options) {
     NSMutableDictionary *pluginConfigDict = [NSMutableDictionary new];
     
@@ -57,6 +68,13 @@ static PluginConfig* createPluginConfig(NSDictionary *options) {
     
     pluginConfigDict[IMAPlugin.pluginName] = imaConfig;
     pluginConfigDict[YouboraPlugin.pluginName] = dyn_youboraConfig;
+    
+    NSDictionary *dyn_broadpeakConfig = options[@"broadpeak"];
+    if (dyn_broadpeakConfig != nil) {
+        [PlayKitManager.sharedInstance registerPlugin:BroadpeakMediaEntryInterceptor.self];
+        BroadpeakConfig *broadpeakConfig = getBroadpeakConfig(dyn_broadpeakConfig);
+        pluginConfigDict[BroadpeakMediaEntryInterceptor.pluginName] = broadpeakConfig;
+    }
     
     return [[PluginConfig alloc] initWithConfig:pluginConfigDict];
 }

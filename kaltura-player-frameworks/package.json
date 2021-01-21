@@ -4,6 +4,6 @@
   "description": "Kaltura Player Framworks",
   "author": "Kaltura Inc.",
   "scripts": {
-    "postinstall": "./scripts/ios-libs/build.sh $PWD > gordos.txt"
+    "postinstall": "echo $PWD && ./scripts/tvos-libs/build.sh $PWD && ./scripts/ios-libs/build.sh $PWD"
   }
 }
