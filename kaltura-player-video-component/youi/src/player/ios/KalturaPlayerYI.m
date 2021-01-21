@@ -40,11 +40,26 @@ static PlaybackContextType getAssetType(NSString *str) {
     return AssetTypeUnset;
 }
 
+static AssetReferenceType getAssetReferenceType(NSString *str) {
+    if ([str caseInsensitiveCompare:@"media"] == NSOrderedSame) return AssetReferenceTypeMedia;
+    if ([str caseInsensitiveCompare:@"epgInternal"] == NSOrderedSame) return AssetReferenceTypeEpgInternal;
+    if ([str caseInsensitiveCompare:@"epgExternal"] == NSOrderedSame) return AssetReferenceTypeEpgExternal;
+    if ([str caseInsensitiveCompare:@"npvr"] == NSOrderedSame) return AssetReferenceTypeNpvr;
+    
+    return AssetReferenceTypeUnset;
+}
+
 static IMAConfig* getImaConfig(NSDictionary *dyn_config) {
     IMAConfig *config = [IMAConfig new];
     config.adTagUrl = dyn_config[@"adTagUrl"];
     config.alwaysStartWithPreroll = [dyn_config[@"alwaysStartWithPreroll"] boolValue];
     config.enableDebugMode = [dyn_config[@"enableDebugMode"] boolValue];
+    
+    return config;
+}
+
+static AnalyticsConfig* getYouboraConfig(NSDictionary *dyn_config) {
+    AnalyticsConfig *config = [[AnalyticsConfig alloc] initWithParams:dyn_config];
     
     return config;
 }
@@ -62,15 +77,19 @@ static PluginConfig* createPluginConfig(NSDictionary *options) {
     NSMutableDictionary *pluginConfigDict = [NSMutableDictionary new];
     
     NSDictionary *dyn_imaConfig = options[@"ima"];
+    if (dyn_imaConfig) {
+        IMAConfig *imaConfig = getImaConfig(dyn_imaConfig);
+        pluginConfigDict[IMAPlugin.pluginName] = imaConfig;
+    }
+    
     NSDictionary *dyn_youboraConfig = options[@"youbora"];
-    
-    IMAConfig *imaConfig = getImaConfig(dyn_imaConfig);
-    
-    pluginConfigDict[IMAPlugin.pluginName] = imaConfig;
-    pluginConfigDict[YouboraPlugin.pluginName] = dyn_youboraConfig;
+    if (dyn_youboraConfig) {
+        AnalyticsConfig *youboraConfig = getYouboraConfig(dyn_youboraConfig);
+        pluginConfigDict[YouboraPlugin.pluginName] = youboraConfig;
+    }
     
     NSDictionary *dyn_broadpeakConfig = options[@"broadpeak"];
-    if (dyn_broadpeakConfig != nil) {
+    if (dyn_broadpeakConfig) {
         [PlayKitManager.sharedInstance registerPlugin:BroadpeakMediaEntryInterceptor.self];
         BroadpeakConfig *broadpeakConfig = getBroadpeakConfig(dyn_broadpeakConfig);
         pluginConfigDict[BroadpeakMediaEntryInterceptor.pluginName] = broadpeakConfig;
@@ -488,8 +507,9 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     options.assetId = assetId;
     options.ks = dyn_options[@"ks"];
     options.assetType = getAssetType(dyn_options[@"assetType"]);
+    options.assetReferenceType = getAssetReferenceType(dyn_options[@"assetReferenceType"]);
     options.playbackContextType = getPlaybackContextType(dyn_options[@"playbackContextType"]);
-    options.startTime = [dyn_options[@"startPosition"] doubleValue];
+    options.adapterData = dyn_options[@"adapterData"];
     
     NSString *networkProtocol = dyn_options[@"protocol"];
     if (networkProtocol) {
@@ -516,9 +536,14 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         options.streamerType = streamerType;
     }
     
+    id startPosition = dyn_options[@"startPosition"];
+    if (startPosition) {
+        options.startTime = [startPosition doubleValue];
+    }
+
     id youboraConfig = dyn_options[@"plugins"][@"youbora"];
     if (youboraConfig) {
-        [self.kalturaPlayer updatePluginConfigWithPluginName:YouboraPlugin.pluginName config:youboraConfig];
+        [self.kalturaPlayer updatePluginConfigWithPluginName:YouboraPlugin.pluginName config:getYouboraConfig(youboraConfig)];
     }
     
     id imaConfig = dyn_options[@"plugins"][@"ima"];
