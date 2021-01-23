@@ -5,7 +5,7 @@ set -ex
 TARGET_DIR="$1"/tvos-libs
 
 cd "$1"/scripts/tvos-libs/YouiKalturaPlayerBridgetvOS
-
+cp -f "$1"/scripts/tvos-libs/build_framework.rb /Library/Ruby/Gems/2.6.0/gems/cocoapods-binary-0.4.4/lib/cocoapods-binary/rome/
 if [ -d "$TARGET_DIR" ]
 then
     echo "Directory $TARGET_DIR already exists."
