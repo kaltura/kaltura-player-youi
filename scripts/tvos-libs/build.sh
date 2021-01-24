@@ -2,18 +2,18 @@
 
 set -ex
 
-TARGET_DIR="$1"/tvos-libs
+cd "$(dirname $0)"/YouiKalturaPlayerBridgetvOS
 
-cd "$1"/scripts/tvos-libs/YouiKalturaPlayerBridgetvOS
+TARGET_DIR="$(cd ../../../youi; pwd)"/tvos-libs
 
-if [ -d "$TARGET_DIR" ]
-then
-    echo "Directory $TARGET_DIR already exists."
-    exit 0
-else
-    echo "Directory $TARGET_DIR does not exist, building frameworks."
+read -p "Remove '$TARGET_DIR'?" Y
+
+if [ "$Y" != "y" ] && [ "$Y" != "Y" ]; then
+    exit
 fi
 
+
+rm -rf "$TARGET_DIR" || true
 mkdir "$TARGET_DIR"
 
 pod deintegrate
