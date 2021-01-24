@@ -21,7 +21,6 @@ target 'YouiKalturaPlayerBridgetvOS' do
 
   # BP Plugin
   pod 'PlayKitBroadpeak', :git => 'https://github.com/kaltura/playkit-ios-broadpeak-smartlib', :branch => 'develop'
-  pod 'AFNetworking', '4.0.1'
 
 ### Embedded in KalturaPlayer/OTT - not needed for the release, only when working on a branch ###
 
