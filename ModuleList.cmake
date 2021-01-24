@@ -1,10 +1,10 @@
 message(STATUS "")
-message(STATUS "@kaltura-player/video-component")
+message(STATUS "@kaltura-player-youi/video-component")
 message(STATUS "Running: ${CMAKE_CURRENT_LIST_DIR}/ModuleList.cmake")
 
 set(_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/youi/src")
 set(KALTURA_PLAYER_JAVA_SRC_PATH ${CMAKE_CURRENT_LIST_DIR})
-set(KALTURA_PLAYER_FRAMEWORKS_PATH ${CMAKE_CURRENT_LIST_DIR}) 
+set(KALTURA_PLAYER_FRAMEWORKS_PATH ${CMAKE_CURRENT_LIST_DIR})
 
 
 
