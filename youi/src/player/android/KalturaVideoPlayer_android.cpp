@@ -14,7 +14,7 @@ extern JavaVM *cachedJVM;
 extern jobject cachedActivity;
 
 extern "C" {
-    JNIEXPORT void JNICALL Java_tv_youi_kalturaplayertest_PKPlayerWrapper_nativeSendEvent(JNIEnv *, jclass, jobject, jstring, jstring);
+    JNIEXPORT void JNICALL Java_tv_youi_kalturaplayeryoui_PKPlayerWrapper_nativeSendEvent(JNIEnv *, jclass, jobject, jstring, jstring);
 }
 
 static JNIEnv *GetEnv_KalturaPlayer()
@@ -24,7 +24,7 @@ static JNIEnv *GetEnv_KalturaPlayer()
     return pEnv;
 }
 
-void JNICALL Java_tv_youi_kalturaplayertest_PKPlayerWrapper_nativeSendEvent(JNIEnv *pEnv, jclass cls, jobject instance, jstring name, jstring payload)
+void JNICALL Java_tv_youi_kalturaplayeryoui_PKPlayerWrapper_nativeSendEvent(JNIEnv *pEnv, jclass cls, jobject instance, jstring name, jstring payload)
 {
     auto *pBridge = reinterpret_cast<KalturaVideoPlayerPriv *>(pEnv->GetDirectBufferAddress(instance));
     const auto event = std::string(pEnv->GetStringUTFChars(name, NULL));
@@ -83,7 +83,7 @@ KalturaVideoPlayerPriv::~KalturaVideoPlayerPriv()
 
 void KalturaVideoPlayerPriv::LoadIDs()
 {
-    jclass tmpBridgeClass = GetEnv_KalturaPlayer()->FindClass("tv/youi/kalturaplayertest/PKPlayerWrapper");
+    jclass tmpBridgeClass = GetEnv_KalturaPlayer()->FindClass("tv/youi/kalturaplayeryoui/PKPlayerWrapper");
     playerWrapperBridgeClass = reinterpret_cast<jclass>(GetEnv_KalturaPlayer()->NewGlobalRef(tmpBridgeClass));
 
     if (!playerWrapperBridgeClass)

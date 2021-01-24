@@ -1,6 +1,5 @@
 //
 //  KalturaPlayerYI.m
-//  KalturaPlayerTest
 //
 //  Created by Noam Tamim on 08/07/2020.
 //

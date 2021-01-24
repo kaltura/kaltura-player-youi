@@ -190,3 +190,4 @@ export default class KalturaVideo extends React.Component {
     return this.videoRef.current.getLiveSeekableRanges()
   };
 }
+
