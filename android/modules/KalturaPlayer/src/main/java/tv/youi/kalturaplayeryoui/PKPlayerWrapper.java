@@ -68,6 +68,8 @@ import static com.npaw.youbora.lib6.plugin.Options.KEY_ENABLED;
 import static com.npaw.youbora.lib6.plugin.Options.KEY_USERNAME;
 import static com.npaw.youbora.lib6.plugin.Options.KEY_USER_EMAIL;
 import static com.npaw.youbora.lib6.plugin.Options.KEY_USER_TYPE;
+import static com.npaw.youbora.lib6.plugin.Options.KEY_PARSE_MANIFEST;
+import static com.npaw.youbora.lib6.plugin.Options.KEY_PARSE_CDN_NODE;
 
 @SuppressWarnings("unused")
 public class PKPlayerWrapper {
@@ -628,6 +630,11 @@ public class PKPlayerWrapper {
             if (wrapperYouboraConfig.getAppReleaseVersion() != null) {
                 optBundle.putString(KEY_APP_RELEASE_VERSION, wrapperYouboraConfig.getAppReleaseVersion());
             }
+
+            optBundle.putBoolean(KEY_PARSE_MANIFEST, wrapperYouboraConfig.isPasrseManifest());
+
+            optBundle.putBoolean(KEY_PARSE_CDN_NODE, wrapperYouboraConfig.isPasrseCdnNode());
+
             if (wrapperYouboraConfig.getHouseHoldId() != null) {
                 optBundle.putString(KEY_HOUSEHOLD_ID, wrapperYouboraConfig.getHouseHoldId());
             }

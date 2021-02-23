@@ -10,6 +10,10 @@ public class WrapperYouboraConfig {
 
     private String userType;        // any string - free / paid etc.
 
+    private boolean pasrseManifest = false;
+
+    private boolean pasrseCdnNode = false;
+
     private String houseHoldId;    // which device is used to play
 
     private boolean httpSecure = true; // youbora events will be sent via https
@@ -43,6 +47,14 @@ public class WrapperYouboraConfig {
         return userType;
     }
 
+    public boolean isPasrseManifest() {
+        return pasrseManifest;
+    }
+
+    public boolean isPasrseCdnNode() {
+        return pasrseCdnNode;
+    }
+
     public String getHouseHoldId() {
         return houseHoldId;
     }
@@ -67,3 +79,4 @@ public class WrapperYouboraConfig {
         return extraParam2;
     }
 }
+
