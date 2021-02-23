@@ -631,9 +631,9 @@ public class PKPlayerWrapper {
                 optBundle.putString(KEY_APP_RELEASE_VERSION, wrapperYouboraConfig.getAppReleaseVersion());
             }
 
-            optBundle.putBoolean(KEY_PARSE_MANIFEST, wrapperYouboraConfig.isPasrseManifest());
+            optBundle.putBoolean(KEY_PARSE_MANIFEST, wrapperYouboraConfig.isParseManifest());
 
-            optBundle.putBoolean(KEY_PARSE_CDN_NODE, wrapperYouboraConfig.isPasrseCdnNode());
+            optBundle.putBoolean(KEY_PARSE_CDN_NODE, wrapperYouboraConfig.isParseCdnNode());
 
             if (wrapperYouboraConfig.getHouseHoldId() != null) {
                 optBundle.putString(KEY_HOUSEHOLD_ID, wrapperYouboraConfig.getHouseHoldId());

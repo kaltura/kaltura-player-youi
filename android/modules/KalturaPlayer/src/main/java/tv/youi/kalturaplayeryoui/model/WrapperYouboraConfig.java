@@ -10,9 +10,9 @@ public class WrapperYouboraConfig {
 
     private String userType;        // any string - free / paid etc.
 
-    private boolean pasrseManifest = false;
+    private boolean parseManifest;
 
-    private boolean pasrseCdnNode = false;
+    private boolean parseCdnNode;
 
     private String houseHoldId;    // which device is used to play
 
@@ -47,12 +47,12 @@ public class WrapperYouboraConfig {
         return userType;
     }
 
-    public boolean isPasrseManifest() {
-        return pasrseManifest;
+    public boolean isParseManifest() {
+        return parseManifest;
     }
 
-    public boolean isPasrseCdnNode() {
-        return pasrseCdnNode;
+    public boolean isParseCdnNode() {
+        return parseCdnNode;
     }
 
     public String getHouseHoldId() {
