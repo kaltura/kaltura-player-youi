@@ -157,9 +157,12 @@ public class PKPlayerWrapper {
                 }
 
                 if (initOptionsModel.plugins.youbora != null) {
-                    JsonObject accountCode = initOptionsModel.plugins.youbora;
-                    if (accountCode.has(YOUBORA_ACCOUNT_CODE) && accountCode.get(YOUBORA_ACCOUNT_CODE) != null) {
-                        createYouboraPlugin(pluginConfigs, new WrapperYouboraConfig().setAccountCode(accountCode.get(YOUBORA_ACCOUNT_CODE).getAsString()));
+                    JsonObject youboraConfigJson = initOptionsModel.plugins.youbora;
+                    if (youboraConfigJson.has(YOUBORA_ACCOUNT_CODE) && youboraConfigJson.get(YOUBORA_ACCOUNT_CODE) != null) {
+                        WrapperYouboraConfig wrapperYouboraConfig = gson.fromJson(youboraConfigJson, WrapperYouboraConfig.class);
+                        if (wrapperYouboraConfig != null) {
+                            createYouboraPlugin(pluginConfigs, wrapperYouboraConfig);
+                        }
                     }
                 }
 
@@ -170,7 +173,7 @@ public class PKPlayerWrapper {
                 if (initOptionsModel.plugins.broadpeak != null) {
                     JsonObject broadpeakJsonObject = initOptionsModel.plugins.broadpeak;
 
-                    BroadpeakConfig broadpeakConfig = new Gson().fromJson(broadpeakJsonObject.toString(), BroadpeakConfig.class);
+                    BroadpeakConfig broadpeakConfig = gson.fromJson(broadpeakJsonObject.toString(), BroadpeakConfig.class);
                     createBroadpeakPlugin(pluginConfigs, broadpeakConfig);
                 }
             }
@@ -627,13 +630,14 @@ public class PKPlayerWrapper {
             if (wrapperYouboraConfig.getAppName() != null) {
                 optBundle.putString(KEY_APP_NAME, wrapperYouboraConfig.getAppName());
             }
+
             if (wrapperYouboraConfig.getAppReleaseVersion() != null) {
                 optBundle.putString(KEY_APP_RELEASE_VERSION, wrapperYouboraConfig.getAppReleaseVersion());
             }
 
-            optBundle.putBoolean(KEY_PARSE_MANIFEST, wrapperYouboraConfig.isParseManifest());
+            optBundle.putBoolean(KEY_PARSE_MANIFEST, wrapperYouboraConfig.getParseManifest());
 
-            optBundle.putBoolean(KEY_PARSE_CDN_NODE, wrapperYouboraConfig.isParseCdnNode());
+            optBundle.putBoolean(KEY_PARSE_CDN_NODE, wrapperYouboraConfig.getParseCdnNode());
 
             if (wrapperYouboraConfig.getHouseHoldId() != null) {
                 optBundle.putString(KEY_HOUSEHOLD_ID, wrapperYouboraConfig.getHouseHoldId());
@@ -908,3 +912,4 @@ public class PKPlayerWrapper {
         sendPlayerEvent(type, null);
     }
 }
+

@@ -47,11 +47,11 @@ public class WrapperYouboraConfig {
         return userType;
     }
 
-    public boolean isParseManifest() {
+    public boolean getParseManifest() {
         return parseManifest;
     }
 
-    public boolean isParseCdnNode() {
+    public boolean getParseCdnNode() {
         return parseCdnNode;
     }
 
