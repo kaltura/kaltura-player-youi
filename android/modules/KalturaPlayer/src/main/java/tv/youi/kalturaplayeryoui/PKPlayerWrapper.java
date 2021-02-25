@@ -634,35 +634,27 @@ public class PKPlayerWrapper {
             if (wrapperYouboraConfig.getAppName() != null) {
                 optBundle.putString(KEY_APP_NAME, wrapperYouboraConfig.getAppName());
             }
-
             if (wrapperYouboraConfig.getAppReleaseVersion() != null) {
                 optBundle.putString(KEY_APP_RELEASE_VERSION, wrapperYouboraConfig.getAppReleaseVersion());
             }
-
             if (wrapperYouboraConfig.getParseManifest() != null) {
                 optBundle.putBoolean(KEY_PARSE_MANIFEST, wrapperYouboraConfig.getParseManifest());
             }
-
             if (wrapperYouboraConfig.getParseCdnNode() != null) {
                 optBundle.putBoolean(KEY_PARSE_CDN_NODE, wrapperYouboraConfig.getParseCdnNode());
             }
-
             if (wrapperYouboraConfig.getCdnNodeList() != null) {
                 optBundle.putStringArrayList(KEY_PARSE_CDN_NODE_LIST, wrapperYouboraConfig.getCdnNodeList());
             }
-
             if (wrapperYouboraConfig.getCdnNameHeaders() != null) {
                 optBundle.putString(KEY_PARSE_CDN_NAME_HEADER, wrapperYouboraConfig.getCdnNameHeaders());
             }
-
             if (wrapperYouboraConfig.getParseCdnSwitchHeader() != null) {
                 optBundle.putBoolean(KEY_PARSE_CDN_SWITCH_HEADER, wrapperYouboraConfig.getParseCdnSwitchHeader());
             }
-
             if (wrapperYouboraConfig.getParseCdnTTL() != null) {
                 optBundle.putInt(KEY_PARSE_CDN_TTL, wrapperYouboraConfig.getParseCdnTTL());
             }
-
             if (wrapperYouboraConfig.getHouseHoldId() != null) {
                 optBundle.putString(KEY_HOUSEHOLD_ID, wrapperYouboraConfig.getHouseHoldId());
             }
