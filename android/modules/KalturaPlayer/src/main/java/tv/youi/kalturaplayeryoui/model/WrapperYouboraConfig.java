@@ -1,5 +1,7 @@
 package tv.youi.kalturaplayeryoui.model;
 
+import java.util.ArrayList;
+
 public class WrapperYouboraConfig {
 
     private String accountCode;
@@ -10,9 +12,17 @@ public class WrapperYouboraConfig {
 
     private String userType;        // any string - free / paid etc.
 
-    private boolean parseManifest;
+    private Boolean parseManifest;
 
-    private boolean parseCdnNode;
+    private Boolean parseCdnNode;
+
+    private Boolean parseCdnSwitchHeader;
+
+    private ArrayList<String> cdnNodeList;
+
+    private String cdnNameHeaders;
+
+    private Integer parseCdnTTL;
 
     private String houseHoldId;    // which device is used to play
 
@@ -47,12 +57,28 @@ public class WrapperYouboraConfig {
         return userType;
     }
 
-    public boolean getParseManifest() {
+    public Boolean getParseManifest() {
         return parseManifest;
     }
 
-    public boolean getParseCdnNode() {
+    public Boolean getParseCdnNode() {
         return parseCdnNode;
+    }
+
+    public Boolean getParseCdnSwitchHeader() {
+        return parseCdnSwitchHeader;
+    }
+
+    public ArrayList<String> getCdnNodeList() {
+        return cdnNodeList;
+    }
+
+    public String getCdnNameHeaders() {
+        return cdnNameHeaders;
+    }
+
+    public Integer getParseCdnTTL() {
+        return parseCdnTTL;
     }
 
     public String getHouseHoldId() {

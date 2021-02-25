@@ -31,8 +31,8 @@ import com.kaltura.playkit.plugins.broadpeak.BroadpeakPlugin;
 import com.kaltura.playkit.plugins.ima.IMAConfig;
 import com.kaltura.playkit.plugins.ima.IMAPlugin;
 import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsConfig;
-import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsPlugin;
 import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsEvent;
+import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsPlugin;
 import com.kaltura.playkit.plugins.youbora.YouboraPlugin;
 import com.kaltura.playkit.utils.Consts;
 import com.kaltura.tvplayer.KalturaOttPlayer;
@@ -65,11 +65,15 @@ import static com.npaw.youbora.lib6.plugin.Options.KEY_APP_RELEASE_VERSION;
 import static com.npaw.youbora.lib6.plugin.Options.KEY_CUSTOM_DIMENSION_1;
 import static com.npaw.youbora.lib6.plugin.Options.KEY_CUSTOM_DIMENSION_2;
 import static com.npaw.youbora.lib6.plugin.Options.KEY_ENABLED;
+import static com.npaw.youbora.lib6.plugin.Options.KEY_PARSE_CDN_NAME_HEADER;
+import static com.npaw.youbora.lib6.plugin.Options.KEY_PARSE_CDN_NODE;
+import static com.npaw.youbora.lib6.plugin.Options.KEY_PARSE_CDN_NODE_LIST;
+import static com.npaw.youbora.lib6.plugin.Options.KEY_PARSE_CDN_SWITCH_HEADER;
+import static com.npaw.youbora.lib6.plugin.Options.KEY_PARSE_CDN_TTL;
+import static com.npaw.youbora.lib6.plugin.Options.KEY_PARSE_MANIFEST;
 import static com.npaw.youbora.lib6.plugin.Options.KEY_USERNAME;
 import static com.npaw.youbora.lib6.plugin.Options.KEY_USER_EMAIL;
 import static com.npaw.youbora.lib6.plugin.Options.KEY_USER_TYPE;
-import static com.npaw.youbora.lib6.plugin.Options.KEY_PARSE_MANIFEST;
-import static com.npaw.youbora.lib6.plugin.Options.KEY_PARSE_CDN_NODE;
 
 @SuppressWarnings("unused")
 public class PKPlayerWrapper {
@@ -635,9 +639,29 @@ public class PKPlayerWrapper {
                 optBundle.putString(KEY_APP_RELEASE_VERSION, wrapperYouboraConfig.getAppReleaseVersion());
             }
 
-            optBundle.putBoolean(KEY_PARSE_MANIFEST, wrapperYouboraConfig.getParseManifest());
+            if (wrapperYouboraConfig.getParseManifest() != null) {
+                optBundle.putBoolean(KEY_PARSE_MANIFEST, wrapperYouboraConfig.getParseManifest());
+            }
 
-            optBundle.putBoolean(KEY_PARSE_CDN_NODE, wrapperYouboraConfig.getParseCdnNode());
+            if (wrapperYouboraConfig.getParseCdnNode() != null) {
+                optBundle.putBoolean(KEY_PARSE_CDN_NODE, wrapperYouboraConfig.getParseCdnNode());
+            }
+
+            if (wrapperYouboraConfig.getCdnNodeList() != null) {
+                optBundle.putStringArrayList(KEY_PARSE_CDN_NODE_LIST, wrapperYouboraConfig.getCdnNodeList());
+            }
+
+            if (wrapperYouboraConfig.getCdnNameHeaders() != null) {
+                optBundle.putString(KEY_PARSE_CDN_NAME_HEADER, wrapperYouboraConfig.getCdnNameHeaders());
+            }
+
+            if (wrapperYouboraConfig.getParseCdnSwitchHeader() != null) {
+                optBundle.putBoolean(KEY_PARSE_CDN_SWITCH_HEADER, wrapperYouboraConfig.getParseCdnSwitchHeader());
+            }
+
+            if (wrapperYouboraConfig.getParseCdnTTL() != null) {
+                optBundle.putInt(KEY_PARSE_CDN_TTL, wrapperYouboraConfig.getParseCdnTTL());
+            }
 
             if (wrapperYouboraConfig.getHouseHoldId() != null) {
                 optBundle.putString(KEY_HOUSEHOLD_ID, wrapperYouboraConfig.getHouseHoldId());
