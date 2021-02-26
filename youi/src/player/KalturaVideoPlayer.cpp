@@ -79,6 +79,19 @@ KalturaVideoPlayer::~KalturaVideoPlayer()
 
 void KalturaVideoPlayer::Setup(int32_t partnerId, folly::dynamic options)
 {
+    int videoSurfaceWidth = 1920;
+    int videoSurfaceHeight = 1080;
+
+    if (options.find("videoSurfaceWidth") != options.items().end() && !options["videoSurfaceWidth"].isNull()) {
+        videoSurfaceWidth = options["videoSurfaceWidth"].asInt();
+    }
+    if (options.find("videoSurfaceHeight") != options.items().end() && !options["videoSurfaceHeight"].isNull()) {
+        videoSurfaceHeight = options["videoSurfaceHeight"].asInt();
+    }
+
+    YI_LOGD(TAG, "SetVideoSurfaceSize %i,%i", videoSurfaceWidth, videoSurfaceHeight);
+    SetVideoSurfaceSize(glm::ivec2(videoSurfaceWidth,videoSurfaceHeight));
+
     if (options.find("manageKeepScreenOnInternally") != options.items().end() && !options["manageKeepScreenOnInternally"].isNull()) {
         m_manageKeepScreenOnInternally = options["manageKeepScreenOnInternally"].asBool();
     }
