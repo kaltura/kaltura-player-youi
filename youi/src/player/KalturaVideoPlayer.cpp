@@ -181,10 +181,7 @@ std::unique_ptr<CYIVideoSurface> KalturaVideoPlayer::CreateSurface_()
 void KalturaVideoPlayer::SetVideoRectangle(const YI_RECT_REL &rVideoRectangle)
 {
     //YI_LOGD(TAG, "SetVideoRectangle %i,%i,%i,%i", rVideoRectangle.x, rVideoRectangle.y, rVideoRectangle.width, rVideoRectangle.height);
-    if (m_currentVideoRectangle != rVideoRectangle) {
-        m_pPriv->SetVideoRectangle(rVideoRectangle);
-        m_currentVideoRectangle = rVideoRectangle;
-    }
+    m_pPriv->SetVideoRectangle(rVideoRectangle);
 }
 
 void KalturaVideoPlayer::BringToFront()
