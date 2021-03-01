@@ -83,6 +83,7 @@ public:
     void SetMedia(const CYIUrl &videoURI);
     void Replay();
     void ChangePlaybackRate(float playbackRate);
+    void SetPlayerZIndex(float zIndex);
     void SetLogLevel(const CYIString &logLevel);
     void KeepDeviceScreenOn(bool keepOn);
 
@@ -93,6 +94,7 @@ public:
     CYISignal<> PlayerReplayEvent;
     CYISignal<> PlayerStoppedEvent;
     CYISignal<float> PlaybackRateChangedEvent;
+    CYISignal<float> PlayerZIndexChangedEvent;
 
     CYISignal<uint64_t> PlayerSeekingEvent;
     CYISignal<> PlayerSeekedEvent;
@@ -158,7 +160,7 @@ private:
     std::vector<KalturaClosedCaptionTrack> m_closedCaptionsTracks;
     int32_t m_selectedClosedCaptionTrack = -1;
     std::vector<CYIAbstractVideoPlayer::SeekableRange> m_liveSeekableRanges;
-    
+
     YI_TYPE_BASES(KalturaVideoPlayer, CYIAbstractVideoPlayer)
 };
 

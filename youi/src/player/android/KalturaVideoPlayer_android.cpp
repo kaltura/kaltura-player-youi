@@ -276,6 +276,15 @@ void KalturaVideoPlayerPriv::ChangePlaybackRate_(float playbackRate)
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, changePlaybackRateMethodID, playbackRate);
 }
 
+void KalturaVideoPlayerPriv::SetPlayerZIndex_(float zIndex)
+{
+    if (!playerWrapperBridgeClass)
+    {
+        return;
+    }
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setZIndexMethodID, zIndex);
+}
+
 uint64_t KalturaVideoPlayerPriv::GetDurationMs_() const
 {
     return m_pPub->m_durationMs;

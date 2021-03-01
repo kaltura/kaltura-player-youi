@@ -40,6 +40,12 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_ZINDEX_CHANGED_EVENT', (zIndex) => {
+      if (this.props.onPlayerZIndexChangedEvent) {
+        this.props.onPlayerZIndexChangedEvent(zIdex);
+      }
+    })
+
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_SEEKED_EVENT', () => {
       if (this.props.onSeekedEvent) {
         this.props.onSeekedEvent();
@@ -104,6 +110,11 @@ export default class KalturaVideo extends React.Component {
     if (this.props.playbackSpeed) {
       NativeModules.KalturaVideo.ChangePlaybackRate(this.props.playbackSpeed)
     }
+
+    if (this.props.playerZIndex) {
+      NativeModules.KalturaVideo.SetPlayerZIndex(this.props.playerZIndex)
+    }
+
   }
 
   componentDidUpdate(prevProps) {
@@ -130,6 +141,10 @@ export default class KalturaVideo extends React.Component {
         NativeModules.KalturaVideo.ChangePlaybackRate(this.props.playbackSpeed)
     }
     
+    if (this.props.playerZIndex != prevProps.playerZIndex && this.props.playerZIndex) {
+      NativeModules.KalturaVideo.SetPlayerZIndex(this.props.playerZIndex)
+    }
+
     if (this.props.logLevel !== prevProps.logLevel && this.props.logLevel) {
       NativeModules.KalturaVideo.SetLogLevel(this.props.logLevel)
     }

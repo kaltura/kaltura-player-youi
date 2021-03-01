@@ -145,6 +145,13 @@ void KalturaVideoPlayer::ChangePlaybackRate(float playbackRate)
     PlaybackRateChangedEvent.Emit(playbackRate);
 }
 
+void KalturaVideoPlayer::SetPlayerZIndex(float zIndex)
+{
+    YI_LOGD(TAG, "SetPlayerZIndex %f", zIndex);
+    m_pPriv->SetPlayerZIndex_(zIndex);
+    PlayerZIndexChangedEvent.Emit(zIndex);
+}
+
 bool KalturaVideoPlayer::SelectVideoTrack(uint32_t uID) {
     return m_pPriv->SelectVideoTrack_(uID);
 }
@@ -187,7 +194,7 @@ void KalturaVideoPlayer::SetVideoRectangle(const YI_RECT_REL &rVideoRectangle)
 void KalturaVideoPlayer::BringToFront()
 {
     YI_LOGD(TAG, "Player BringToFront");
-
+    
     m_pPriv->BringToFront_();
 }
 
