@@ -40,7 +40,6 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
-
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_SEEKED_EVENT', () => {
       if (this.props.onSeekedEvent) {
         this.props.onSeekedEvent();
