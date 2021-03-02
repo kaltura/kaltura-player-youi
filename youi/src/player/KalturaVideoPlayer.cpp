@@ -150,7 +150,6 @@ void KalturaVideoPlayer::SetPlayerZIndex(float zIndex)
 {
     YI_LOGD(TAG, "SetPlayerZIndex %f", zIndex);
     m_pPriv->SetPlayerZIndex_(zIndex);
-    PlayerZIndexChangedEvent.Emit(zIndex);
 }
 
 bool KalturaVideoPlayer::SelectVideoTrack(uint32_t uID) {
@@ -194,7 +193,7 @@ void KalturaVideoPlayer::SetVideoRectangle(const YI_RECT_REL &rVideoRectangle)
 
 void KalturaVideoPlayer::BringToFront()
 {
-
+   YI_LOGD(TAG, "BringToFront");
     m_pPriv->BringToFront_();
 }
 
@@ -735,4 +734,5 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         YI_LOGW(TAG, "Unhandled event received - <%s>", name.GetData());
     }
 }
+
 

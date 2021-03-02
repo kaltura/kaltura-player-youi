@@ -40,11 +40,6 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_ZINDEX_CHANGED_EVENT', (zIndex) => {
-      if (this.props.onPlayerZIndexChangedEvent) {
-        this.props.onPlayerZIndexChangedEvent(zIdex);
-      }
-    })
 
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_SEEKED_EVENT', () => {
       if (this.props.onSeekedEvent) {

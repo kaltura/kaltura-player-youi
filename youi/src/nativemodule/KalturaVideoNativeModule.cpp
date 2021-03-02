@@ -23,7 +23,6 @@ static const std::string KALTURA_REPLAY_EVENT = "KALTURA_REPLAY_EVENT";
 static const std::string KALTURA_STOPPED_EVENT = "KALTURA_STOPPED_EVENT";
 
 static const std::string KALTURA_PLAYBACK_RATE_CHANGED_EVENT = "KALTURA_PLAYBACK_RATE_CHANGED_EVENT";
-static const std::string KALTURA_ZINDEX_CHANGED_EVENT = "KALTURA_ZINDEX_CHANGED_EVENT";
 static const std::string KALTURA_SEEKING_EVENT = "KALTURA_SEEKING_EVENT";
 static const std::string KALTURA_SEEKED_EVENT = "KALTURA_SEEKED_EVENT";
 static const std::string KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED = "KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED";
@@ -39,7 +38,6 @@ KalturaVideoNativeModule::KalturaVideoNativeModule()
         KALTURA_REPLAY_EVENT,
         KALTURA_STOPPED_EVENT,
         KALTURA_PLAYBACK_RATE_CHANGED_EVENT,
-        KALTURA_ZINDEX_CHANGED_EVENT,
         KALTURA_SEEKING_EVENT,
         KALTURA_SEEKED_EVENT,
         KALTURA_LOAD_MEDIA_SUCCESS,
@@ -91,10 +89,6 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
 
             m_pPlayer->PlaybackRateChangedEvent.Connect(*this, [this](float playbackRate) {
                 this->EmitEventPriv(KALTURA_PLAYBACK_RATE_CHANGED_EVENT, playbackRate);
-            });
-
-            m_pPlayer->PlayerZIndexChangedEvent.Connect(*this, [this](float zIndex) {
-                this->EmitEventPriv(KALTURA_ZINDEX_CHANGED_EVENT, zIndex);
             });
 
             m_pPlayer->PlayerSeekingEvent.Connect(*this, [this](uint64_t targetPosition) {
