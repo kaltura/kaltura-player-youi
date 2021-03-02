@@ -11,4 +11,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: node
-          package-name: "@ykaltura-player-youi/video-component"
+          package-name: "@kaltura-player-youi/video-component"
