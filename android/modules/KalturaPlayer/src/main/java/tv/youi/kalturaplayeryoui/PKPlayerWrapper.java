@@ -91,7 +91,6 @@ public class PKPlayerWrapper {
     }
 
     private static boolean initialized;
-    private static boolean bringToFront;
     private static long reportedDuration = Consts.TIME_UNSET;
     static ByteBuffer bridgeInstance;
 
@@ -405,7 +404,7 @@ public class PKPlayerWrapper {
             errorJson.addProperty("errorCode", String.valueOf(((PKAdErrorType) error.errorType).errorCode));
         } else {
             errorJson.addProperty("errorCode", String.valueOf(((PKPlayerErrorType) PKPlayerErrorType.UNEXPECTED).errorCode));
-        }        
+        }
         errorJson.addProperty("errorSeverity", error.severity.name());
         errorJson.addProperty("errorMessage", error.message);
         errorJson.addProperty("errorCause", errorCause);
@@ -467,10 +466,6 @@ public class PKPlayerWrapper {
     private static void loadMediaInUIThread(String assetId, String jsonOptionsStr) {
         runOnUiThread(() -> {
             log.d("load media in UI thread");
-            if (bringToFront) {
-                setZIndex(1);
-                bringToFront = false;
-            }
 
             Gson gson = new Gson();
             MediaAsset mediaAsset = gson.fromJson(jsonOptionsStr, MediaAsset.class);
@@ -535,10 +530,6 @@ public class PKPlayerWrapper {
         log.d("setMedia in UI thread");
 
         runOnUiThread(() -> {
-            if (bringToFront) {
-                setZIndex(1);
-                bringToFront = false;
-            }
 
             PKMediaEntry pkMediaEntry = new PKMediaEntry();
             pkMediaEntry.setMediaType(PKMediaEntry.MediaEntryType.Vod);
@@ -758,7 +749,6 @@ public class PKPlayerWrapper {
         mainHandler = null;
         bridgeInstance = null;
         initialized = false;
-        bringToFront = false;
         reportedDuration = Consts.TIME_UNSET;
         self = null;
     }
@@ -788,7 +778,6 @@ public class PKPlayerWrapper {
 
         if (!initialized) {
             log.d("delayed setZIndex index: " + index);
-            bringToFront = true;
             return;
         }
 
