@@ -79,6 +79,20 @@ KalturaVideoPlayer::~KalturaVideoPlayer()
 
 void KalturaVideoPlayer::Setup(int32_t partnerId, folly::dynamic options)
 {
+    uint64_t videoSurfaceWidth = 1920;
+    uint64_t videoSurfaceHeight = 1080;
+
+    if (options.find("videoSurfaceWidth") != options.items().end() && !options["videoSurfaceWidth"].isNull()) {
+        videoSurfaceWidth = static_cast<uint64_t>(options["videoSurfaceWidth"].asInt());
+    }
+    if (options.find("videoSurfaceHeight") != options.items().end() && !options["videoSurfaceHeight"].isNull()) {
+        videoSurfaceHeight = static_cast<uint64_t>(options["videoSurfaceHeight"].asInt());
+    }
+    YI_LOGD(TAG, "videoSurfaceWidth - %" PRIu64, videoSurfaceWidth);
+    YI_LOGD(TAG, "videoSurfaceHeight - %" PRIu64, videoSurfaceHeight);
+
+    SetVideoSurfaceSize(glm::ivec2(videoSurfaceWidth,videoSurfaceHeight));
+
     if (options.find("manageKeepScreenOnInternally") != options.items().end() && !options["manageKeepScreenOnInternally"].isNull()) {
         m_manageKeepScreenOnInternally = options["manageKeepScreenOnInternally"].asBool();
     }
@@ -132,6 +146,12 @@ void KalturaVideoPlayer::ChangePlaybackRate(float playbackRate)
     PlaybackRateChangedEvent.Emit(playbackRate);
 }
 
+void KalturaVideoPlayer::SetPlayerZIndex(float zIndex)
+{
+    YI_LOGD(TAG, "SetPlayerZIndex %f", zIndex);
+    m_pPriv->SetPlayerZIndex_(zIndex);
+}
+
 bool KalturaVideoPlayer::SelectVideoTrack(uint32_t uID) {
     return m_pPriv->SelectVideoTrack_(uID);
 }
@@ -168,16 +188,12 @@ std::unique_ptr<CYIVideoSurface> KalturaVideoPlayer::CreateSurface_()
 void KalturaVideoPlayer::SetVideoRectangle(const YI_RECT_REL &rVideoRectangle)
 {
     //YI_LOGD(TAG, "SetVideoRectangle %i,%i,%i,%i", rVideoRectangle.x, rVideoRectangle.y, rVideoRectangle.width, rVideoRectangle.height);
-    if (m_currentVideoRectangle != rVideoRectangle) {
-        m_pPriv->SetVideoRectangle(rVideoRectangle);
-        m_currentVideoRectangle = rVideoRectangle;
-    }
+    m_pPriv->SetVideoRectangle(rVideoRectangle);
 }
 
 void KalturaVideoPlayer::BringToFront()
 {
-    YI_LOGD(TAG, "Player BringToFront");
-
+   YI_LOGD(TAG, "BringToFront");
     m_pPriv->BringToFront_();
 }
 

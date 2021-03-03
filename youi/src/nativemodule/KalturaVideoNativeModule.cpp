@@ -177,6 +177,14 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ChangePlaybackRate)(float p
     }
 }
 
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SetPlayerZIndex)(float zIndex)
+{
+    if (m_pPlayer)
+    {
+        m_pPlayer->SetPlayerZIndex(zIndex);
+    }
+}
+
 YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SetLogLevel)(std::string logLevel)
 {
     if (m_pPlayer)

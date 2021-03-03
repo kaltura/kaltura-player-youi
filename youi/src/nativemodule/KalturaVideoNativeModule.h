@@ -22,6 +22,7 @@ public:
     YI_RN_EXPORT_METHOD(SetMedia)(const CYIUrl &videoURI);
     YI_RN_EXPORT_METHOD(Replay)();
     YI_RN_EXPORT_METHOD(ChangePlaybackRate)(float playbackRate);
+    YI_RN_EXPORT_METHOD(SetPlayerZIndex)(float zIndex);
     YI_RN_EXPORT_METHOD(SetLogLevel)(std::string logLevel);
     YI_RN_EXPORT_METHOD(KeepDeviceScreenOn)(bool keepOn);
     YI_RN_EXPORT_METHOD(SelectVideoTrack)(uint32_t trackId);

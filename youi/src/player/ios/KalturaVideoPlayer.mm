@@ -307,6 +307,14 @@ void KalturaVideoPlayerPriv::ChangePlaybackRate_(float playbackRate)
     }
 }
 
+void KalturaVideoPlayerPriv::SetPlayerZIndex_(float zIndex)
+{
+    if (m_player)
+    {
+        [m_player setZIndex:zIndex];
+    }
+}
+
 uint64_t KalturaVideoPlayerPriv::GetDurationMs_() const
 {
     return m_pPub->m_durationMs;
