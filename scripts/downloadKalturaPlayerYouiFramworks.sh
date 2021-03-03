@@ -2,7 +2,7 @@
 
 
 set -ex
-VERSION=$(grep version package.json  | awk -F" " '{ print $2 }' | sed 's/\"//g' |  sed 's/\,//g')
+VERSION=$(grep frameworksversion package.json  | awk -F" " '{ print $2 }' | sed 's/\"//g' |  sed 's/\,//g')
 VER="v${VERSION}"
 cd $1
 
