@@ -94,7 +94,6 @@ public:
     CYISignal<> PlayerReplayEvent;
     CYISignal<> PlayerStoppedEvent;
     CYISignal<float> PlaybackRateChangedEvent;
-    CYISignal<float> PlayerZIndexChangedEvent;
 
     CYISignal<uint64_t> PlayerSeekingEvent;
     CYISignal<> PlayerSeekedEvent;
