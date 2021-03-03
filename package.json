@@ -1,6 +1,7 @@
 {
   "name": "@ykaltura-player-youi/video-component",
   "version": "1.0.0",
+  "frameworksversion": "1.0.0"
   "description": "Kaltura Player Video component for You.i",
   "author": "Kaltura Inc.",
   "scripts": {
