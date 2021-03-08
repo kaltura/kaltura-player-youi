@@ -23,6 +23,7 @@ import com.kaltura.playkit.player.LoadControlBuffers;
 import com.kaltura.playkit.player.PKHttpClientManager;
 import com.kaltura.playkit.player.PKPlayerErrorType;
 import com.kaltura.playkit.player.PKTracks;
+import com.kaltura.playkit.player.thumbnail.ThumbnailInfo;
 import com.kaltura.playkit.plugins.ads.AdCuePoints;
 import com.kaltura.playkit.plugins.ads.AdEvent;
 import com.kaltura.playkit.plugins.broadpeak.BroadpeakConfig;
@@ -52,6 +53,7 @@ import tv.youi.kalturaplayeryoui.model.WrapperIMAConfig;
 import tv.youi.kalturaplayeryoui.model.WrapperPhoenixAnalyticsConfig;
 import tv.youi.kalturaplayeryoui.model.WrapperYouboraConfig;
 import tv.youi.kalturaplayeryoui.model.tracks.AudioTrack;
+import tv.youi.kalturaplayeryoui.model.tracks.ImageTrack;
 import tv.youi.kalturaplayeryoui.model.tracks.TextTrack;
 import tv.youi.kalturaplayeryoui.model.tracks.TracksInfo;
 import tv.youi.kalturaplayeryoui.model.tracks.VideoTrack;
@@ -305,6 +307,25 @@ public class PKPlayerWrapper {
             sendPlayerEvent("textTrackChanged", new Gson().toJson(textTrack));
         });
 
+        player.addListener(self, PlayerEvent.imageTrackChanged, event -> {
+            final com.kaltura.playkit.player.ImageTrack newTrack = event.newTrack;
+            ImageTrack textTrack = new ImageTrack(newTrack.getUniqueId(), newTrack.getLabel(),
+                    newTrack.getImageTemplateUrl(),
+                    newTrack.getTilesHorizontal(),
+                    newTrack.getTilesVertical(),
+                    newTrack.getSegmentDuration(),
+                    newTrack.getPresentationTimeOffset(),
+                    newTrack.getTimeScale(),
+                    newTrack.getStartNumber(),
+                    newTrack.getEndNumber(),
+                    newTrack.getBitrate(),
+                    newTrack.getWidth(),
+                    newTrack.getHeight(),
+                    true);
+
+            sendPlayerEvent("imageTrackChanged", new Gson().toJson(textTrack));
+        });
+
         player.addListener(self, PlayerEvent.playbackInfoUpdated, event -> {
             long videoBitrate = (event.playbackInfo.getVideoBitrate() > 0) ? event.playbackInfo.getVideoBitrate() : 0;
             long audioBitrate = (event.playbackInfo.getAudioBitrate() > 0) ? event.playbackInfo.getAudioBitrate() : 0;
@@ -316,7 +337,9 @@ public class PKPlayerWrapper {
         });
 
         player.addListener(self, PlayerEvent.seeking, event -> sendPlayerEvent("seeking", "{ \"targetPosition\": " + (event.targetPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
-        player.addListener(self, PlayerEvent.seeked, event -> sendPlayerEvent("seeked"));
+        player.addListener(self, PlayerEvent.seeked, event -> {
+            sendPlayerEvent("seeked");
+        });
         player.addListener(self, PlayerEvent.error, event -> {
             if (event.error.isFatal()) {
                 sendPlayerEvent("error", getErrorJson(event.error));
@@ -355,6 +378,7 @@ public class PKPlayerWrapper {
         List<VideoTrack> videoTracksInfo = new ArrayList<>();
         List<AudioTrack> audioTracksInfo = new ArrayList<>();
         List<TextTrack>  textTracksInfo  = new ArrayList<>();
+        List<ImageTrack> imageTracksInfo  = new ArrayList<>();
 
         int videoTrackIndex = 0;
         for (com.kaltura.playkit.player.VideoTrack videoTrack : pkTracksInfo.getVideoTracks()) {
@@ -387,10 +411,32 @@ public class PKPlayerWrapper {
             textTrackIndex++;
         }
 
+        int imageTrackIndex = 0;
+        for (com.kaltura.playkit.player.ImageTrack imageTrack : pkTracksInfo.getImageTracks()) {
+
+            imageTracksInfo.add(new ImageTrack(imageTrack.getUniqueId(),
+                    imageTrack.getLabel(),
+                    imageTrack.getImageTemplateUrl(),
+                    imageTrack.getTilesHorizontal(),
+                    imageTrack.getTilesVertical(),
+                    imageTrack.getSegmentDuration(),
+                    imageTrack.getPresentationTimeOffset(),
+                    imageTrack.getTimeScale(),
+                    imageTrack.getStartNumber(),
+                    imageTrack.getEndNumber(),
+                    imageTrack.getBitrate(),
+                    imageTrack.getWidth(),
+                    imageTrack.getHeight(),
+                    pkTracksInfo.getDefaultImageTrackIndex() == imageTrackIndex));
+            imageTrackIndex++;
+        }
+
+
         TracksInfo tracksInfo = new TracksInfo();
         tracksInfo.setVideoTracks(videoTracksInfo);
         tracksInfo.setAudioTracks(audioTracksInfo);
         tracksInfo.setTextTracks(textTracksInfo);
+        tracksInfo.setImageTracks(imageTracksInfo);
         return tracksInfo;
     }
 
@@ -784,6 +830,18 @@ public class PKPlayerWrapper {
         log.d("regular setZIndex index: " + index);
         if (player != null && player.getPlayerView() != null) {
             runOnUiThread(() -> player.getPlayerView().setZ(index));
+        }
+    }
+
+    public static void requestThumbnailInfo(long position) {
+        log.d("requestThumbnailInfo position:" + position);
+
+        if (player != null) {
+            runOnUiThread(() -> {
+                 ThumbnailInfo thumbnailInfo = player.getThumbnailInfo(position);
+                 String thumbnailInfoJson = "{ \"position\": " + position + ", \"thumbnailInfo\": " + new Gson().toJson(thumbnailInfo) + " }";
+                 sendPlayerEvent("thumbnailInfoResponse", thumbnailInfoJson);
+            });
         }
     }
 

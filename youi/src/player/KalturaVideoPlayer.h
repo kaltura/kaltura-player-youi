@@ -52,7 +52,7 @@ public:
             return object;
         }
     };    
-    
+
     struct KalturaAudioTrack : public CYIAbstractVideoPlayer::AudioTrackInfo
     {
         CYIString uniqueId;
@@ -74,7 +74,137 @@ public:
         {
         }
     };
-    
+
+//    {
+//                "id": "Image:3,3,0",
+//                "tilesHorizontal": 1,
+//                "tilesVertical": 1,
+//                "bitrate": 10000,
+//                "startNumber": 0,
+//                "endNumber": -1,
+//                "width": 160,
+//                "height": 120,
+//                "imageTemplateUrl": "https://pf5.broadpeak-vcdn.com/bpk-tv/tvr/default/dash/thumbnails/tvr-thumbnail-$Number$.jpeg?deviceType=32&subscriptionType=34111&ip=87.71.182.209&primaryToken=9503692259590c20_5153b317cbc2fbbe7532f2a9f66076b6",
+//                "label": "thumbnail",
+//                "presentationTimeOffset": 0,
+//                "segmentDuration": 5000,
+//                "timeScale": 1,
+//                "isSelected": true
+//    }
+
+    struct ImageTrackInfo
+    {
+        uint32_t id = 0;
+        CYIString uniqueId;
+        CYIString label;
+        CYIString imageTemplateUrl;
+
+        uint32_t tilesHorizontal;
+        uint32_t tilesVertical;
+
+        uint64_t segmentDuration;
+        uint64_t presentationTimeOffset;
+        uint64_t timeScale;
+        uint64_t startNumber;
+        uint64_t endNumber;
+        uint64_t bitrate;
+
+        float width;
+        float height;
+
+        ImageTrackInfo()
+        {
+        }
+
+        ImageTrackInfo(uint32_t id, const CYIString &uID, const CYIString &label, const CYIString &imageTemplateUrl,
+                       uint32_t tilesHorizontal, uint32_t tilesVertical,
+                       uint64_t segmentDuration, uint64_t presentationTimeOffset,
+                       uint64_t timeScale,uint64_t startNumber, uint64_t endNumber,
+                       uint64_t bitrate, float width, float height)
+                : id(id)
+                , uniqueId(uID)
+                , label(label)
+                , imageTemplateUrl(imageTemplateUrl)
+                , tilesHorizontal(tilesHorizontal)
+                , tilesVertical(tilesVertical)
+                , segmentDuration(segmentDuration)
+                , presentationTimeOffset(presentationTimeOffset)
+                , timeScale(timeScale)
+                , startNumber(startNumber)
+                , endNumber(endNumber)
+                , bitrate(bitrate)
+                , width(width)
+                , height(height)
+
+        {
+        }
+
+        folly::dynamic ToDynamic() const
+        {
+            auto object = folly::dynamic::object
+                    ("id", id)
+                    ("uniqueId", uniqueId.GetData())
+                    ("label", label.GetData())
+                    ("imageTemplateUrl", imageTemplateUrl.GetData())
+
+                    ("tilesHorizontal", tilesHorizontal)
+                    ("tilesVertical", tilesVertical)
+
+                    ("segmentDuration", segmentDuration)
+                    ("presentationTimeOffset", presentationTimeOffset)
+                    ("timeScale", timeScale)
+                    ("startNumber", startNumber)
+                    ("endNumber", endNumber)
+                    ("bitrate", bitrate)
+                    ("width", width)
+                    ("height", height);
+
+            return object;
+        }
+    };
+
+    struct ThumbnailInfoResponse
+    {
+        uint64_t positon;
+        CYIString url;
+        float x;
+        float y;
+        float width;
+        float height;
+
+        ThumbnailInfoResponse()
+        {
+        }
+
+        ThumbnailInfoResponse(uint64_t positon, const CYIString &url,
+                              float x,
+                              float y,
+                              float width,
+                              float height)
+                : positon(positon)
+                , url(url)
+                , x(x)
+                , y(y)
+                , width(width)
+                , height(height)
+
+        {
+        }
+
+        folly::dynamic ToDynamic() const
+        {
+            auto object = folly::dynamic::object
+                    ("positon", positon)
+                    ("url", url.GetData())
+                    ("x", x)
+                    ("y", y)
+                    ("width", width)
+                    ("height", height);
+
+            return object;
+        }
+    };
+
     KalturaVideoPlayer();
     virtual ~KalturaVideoPlayer();
 
@@ -91,6 +221,11 @@ public:
     std::vector<VideoTrackInfo> GetVideoTracks();
     VideoTrackInfo GetActiveVideoTrack();
 
+    bool SelectImageTrack(uint32_t uID);
+    std::vector<ImageTrackInfo> GetImageTracks();
+    ImageTrackInfo GetActiveImageTrack();
+    void RequestThumbnailInfo(uint64_t position);
+
     CYISignal<> PlayerReplayEvent;
     CYISignal<> PlayerStoppedEvent;
     CYISignal<float> PlaybackRateChangedEvent;
@@ -99,6 +234,9 @@ public:
     CYISignal<> PlayerSeekedEvent;
 
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
+    CYISignal<std::vector<ImageTrackInfo>> AvailableImageTracksChanged;
+    CYISignal<folly::dynamic> ThumbnailInfoResponse;
+
     CYISignal<folly::dynamic> LoadMediaSuccess;
     CYISignal<float> VolumeChanged;
     CYISignal<uint64_t> CurrentBufferTimeUpdated;
@@ -158,6 +296,10 @@ private:
 
     std::vector<KalturaClosedCaptionTrack> m_closedCaptionsTracks;
     int32_t m_selectedClosedCaptionTrack = -1;
+
+    std::vector<KalturaVideoPlayer::ImageTrackInfo> m_imageTracks;
+    int32_t m_selectedImageTrack = -1;
+
     std::vector<CYIAbstractVideoPlayer::SeekableRange> m_liveSeekableRanges;
 
     YI_TYPE_BASES(KalturaVideoPlayer, CYIAbstractVideoPlayer)
