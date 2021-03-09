@@ -419,9 +419,18 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         CurrentTimeUpdated.Emit(m_currentTimeMs);
 
         const auto currentBufferTime = content["bufferPosition"].asDouble();
-        //YI_LOGE(TAG, "bufferPosition - %" PRIu64, currentBufferTime);
         uint64_t currentBufferTimeMs = static_cast<uint64_t>(currentBufferTime * 1000);
+        //YI_LOGE(TAG, "bufferPosition - %" PRIu64, currentBufferTimeMs);
         CurrentBufferTimeUpdated.Emit(currentBufferTimeMs);
+
+        if (!content["currentProgramTime"].isNull()) {
+            const auto currentProgramTime = content["currentProgramTime"].asDouble();
+            uint64_t currentProgramTimeLong = static_cast<uint64_t>(currentProgramTime);
+            //YI_LOGE(TAG, "currentProgramTime - %" PRIu64, currentProgramTimeLong);
+            if (currentProgramTimeLong >= 0) {
+                CurrentProgramTimeUpdated.Emit(currentProgramTimeLong);
+            }
+        }
     }
     else if (name.Compare(canPlayEvent) == 0)
     {
