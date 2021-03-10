@@ -558,47 +558,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
                 }
             }
         }
-
-        if (!content["image"].isNull())
-        {
-            auto imageTracks = content["image"];
-
-            for (const auto& track : imageTracks)
-            {
-                const CYIString uniqueId = track["id"].asString();
-                const CYIString label = track["label"].asString();
-                const CYIString imageTemplateUrl = track["imageTemplateUrl"].asString();
-
-                auto tilesHorizontal = static_cast<float>(track["tilesHorizontal"].asDouble());
-                auto tilesVertical = static_cast<float>(track["tilesVertical"].asDouble());
-
-                auto segmentDuration = static_cast<uint64_t>(track["segmentDuration"].asInt());
-                auto presentationTimeOffset = static_cast<uint64_t>(track["presentationTimeOffset"].asInt());
-                auto timeScale = static_cast<uint64_t>(track["timeScale"].asInt());
-                auto startNumber = static_cast<uint64_t>(track["startNumber"].asInt());
-                auto endNumber = static_cast<uint64_t>(track["endNumber"].asInt());
-
-                auto bitrate = static_cast<uint64_t>(track["bitrate"].asInt());
-                auto width = static_cast<uint32_t>(track["width"].asInt());
-                auto height = static_cast<uint32_t>(track["height"].asInt());
-
-                bool isSelected = track["isSelected"].asBool();
-                if (isSelected)
-                {
-                    m_selectedImageTrack = static_cast<int32_t>(m_imageTracks.size());
-                }
-
-                m_imageTracks.emplace_back(m_imageTracks.size(), uniqueId, label, imageTemplateUrl,
-                                           tilesHorizontal, tilesVertical,
-                                           segmentDuration, presentationTimeOffset, timeScale, startNumber, endNumber,
-                                           bitrate, width, height);
-            }
-
-            if (m_imageTracks.size() > 0)
-            {
-                AvailableImageTracksChanged.Emit(m_imageTracks);
-            }
-        }
     }
     else if (name.Compare(videoTrackChangedEvent) == 0)
     {
@@ -611,34 +570,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(textTrackChangedEvent) == 0)
     {
         YI_LOGD(TAG, "textTrackChangedEvent");
-    }
-    else if (name.Compare(imageTrackChangedEvent) == 0)
-    {
-        YI_LOGD(TAG, "imageTrackChangedEvent");
-    }
-    else if (name.Compare(thumbnailInfoResponseEvent) == 0)
-    {
-        YI_LOGD(TAG, "thumbnailInfoResponseEvent - %s", JSONFromDynamic(content).c_str());
-        if (!content["position"].isNull() && !content["thumbnailInfo"].isNull()) {
-            auto position = static_cast<uint64_t>(content["position"].asInt());
-
-            auto thumbnailInfo = content["thumbnailInfo"];
-
-            const CYIString url = thumbnailInfo["url"].asString();
-            auto x = static_cast<float>(thumbnailInfo["x"].asDouble());
-            auto y = static_cast<float>(thumbnailInfo["y"].asDouble());
-            auto width = static_cast<float>(thumbnailInfo["width"].asDouble());
-            auto height = static_cast<float>(thumbnailInfo["height"].asDouble());
-
-            struct ThumbnailInfoResponse response;
-            response.positon = position;
-            response.url = url;
-            response.x = x;
-            response.y = y;
-            response.width = width;
-            response.height = height;
-            ThumbnailInfoResponse.Emit(response.ToDynamic());
-        }
     }
     else if (name.Compare(playbackInfoUpdatedEvent) == 0)
     {
