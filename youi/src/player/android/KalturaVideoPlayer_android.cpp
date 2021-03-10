@@ -79,7 +79,6 @@ KalturaVideoPlayerPriv::~KalturaVideoPlayerPriv()
     setFrameMethodID = 0;
     setVolumeMethodID = 0;
     setLogLevelMethodID = 0;
-    requestThumbnailInfoMethodID = 0;
 }
 
 void KalturaVideoPlayerPriv::LoadIDs()
@@ -110,7 +109,6 @@ void KalturaVideoPlayerPriv::LoadIDs()
     setFrameMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "setFrame", "(IIII)V");
     setVolumeMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "setVolume", "(F)V");
     setLogLevelMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "setLogLevel", "(Ljava/lang/String;)V");
-    requestThumbnailInfoMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "requestThumbnailInfo", "(J)V");
 }
 
 void KalturaVideoPlayerPriv::Setup_(int32_t partnerId, folly::dynamic options)
@@ -430,14 +428,6 @@ KalturaVideoPlayer::ImageTrackInfo KalturaVideoPlayerPriv::GetActiveImageTrack_(
     }
 
     return KalturaVideoPlayer::ImageTrackInfo();
-}
-
-void KalturaVideoPlayerPriv::RequestThumbnailInfo_(uint64_t position)
-{
-    if (position >= 0)
-    {
-        GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, requestThumbnailInfoMethodID, position);
-    }
 }
 
 void KalturaVideoPlayerPriv::Mute_(bool bMute)
