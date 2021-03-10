@@ -70,18 +70,6 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AVAILABLE_IMAGE_TRACKS_CHANGED', (event) => {
-       if (this.props.onAvailableImageTracksChanged) {
-            this.props.onAvailableImageTracksChanged(event);
-       }
-    })
-
-    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_THUMBNAIL_INFO_RESPONSE', (event) => {
-      if (this.props.onThumbnailInfoResponse) {
-        this.props.onThumbnailInfoResponse(event);
-      }
-    })
-
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_CURRENT_PROGRAM_TIME_UPDATED', (currentProgramTimeUpdated) => {
       if (this.props.onCurrentProgramTimeUpdated) {
         this.props.onCurrentProgramTimeUpdated(currentProgramTimeUpdated);
