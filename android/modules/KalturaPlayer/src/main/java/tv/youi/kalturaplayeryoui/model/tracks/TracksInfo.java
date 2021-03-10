@@ -22,5 +22,4 @@ public class TracksInfo {
         this.audio = audio;
         return this;
     }
-
 }
