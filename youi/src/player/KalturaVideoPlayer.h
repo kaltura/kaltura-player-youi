@@ -237,6 +237,8 @@ public:
     CYISignal<std::vector<ImageTrackInfo>> AvailableImageTracksChanged;
     CYISignal<folly::dynamic> ThumbnailInfoResponse;
 
+    CYISignal<uint64_t>  CurrentProgramTimeUpdated;
+
     CYISignal<folly::dynamic> LoadMediaSuccess;
     CYISignal<float> VolumeChanged;
     CYISignal<uint64_t> CurrentBufferTimeUpdated;

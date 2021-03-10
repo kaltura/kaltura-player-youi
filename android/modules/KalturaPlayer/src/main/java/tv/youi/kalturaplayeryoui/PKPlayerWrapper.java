@@ -271,9 +271,20 @@ public class PKPlayerWrapper {
         player.addListener(self, PlayerEvent.playheadUpdated, new PKEvent.Listener<PlayerEvent.PlayheadUpdated>() {
             @Override
             public void onEvent(PlayerEvent.PlayheadUpdated event) {
-                sendPlayerEvent("timeUpdate", "{ \"position\": " + (event.position / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
-                        ", \"bufferPosition\": " + (event.bufferPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
-                        " }");
+
+                String timeUpdatePayload = "\"position\": " + (event.position / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
+                        ", \"bufferPosition\": " + (event.bufferPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT);
+
+                if (player.isLive() &&  player.getCurrentProgramTime() > 0) {
+                    timeUpdatePayload = "{ " + timeUpdatePayload +
+                            ", \"currentProgramTime\": " + player.getCurrentProgramTime() +
+                            " }";
+                } else {
+                    timeUpdatePayload = "{ " + timeUpdatePayload  +
+                            " }";
+                }
+
+                sendPlayerEvent("timeUpdate", timeUpdatePayload);
                 if (reportedDuration != event.duration && event.duration > 0) {
                     reportedDuration = event.duration;
                     if (player != null && player.getMediaEntry() != null && player.getMediaEntry().getMediaType() != PKMediaEntry.MediaEntryType.Vod /*|| player.isLive()*/) {

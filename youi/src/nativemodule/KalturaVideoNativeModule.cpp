@@ -29,6 +29,7 @@ static const std::string KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED = "KALTURA_AVAIL
 static const std::string KALTURA_AVAILABLE_IMAGE_TRACKS_CHANGED = "KALTURA_AVAILABLE_IMAGE_TRACKS_CHANGED";
 static const std::string KALTURA_THUMBNAIL_INFO_RESPONSE = "KALTURA_THUMBNAIL_INFO_RESPONSE";
 
+static const std::string KALTURA_CURRENT_PROGRAM_TIME_UPDATED = "KALTURA_CURRENT_PROGRAM_TIME_UPDATED";
 static const std::string KALTURA_LOAD_MEDIA_SUCCESS = "KALTURA_LOAD_MEDIA_SUCCESS";
 static const std::string KALTURA_VOLUME_CHANGED = "KALTURA_VOLUME_CHANGED";
 static const std::string KALTURA_BUFFER_TIME_UPDATED = "KALTURA_BUFFER_TIME_UPDATED";
@@ -47,6 +48,7 @@ KalturaVideoNativeModule::KalturaVideoNativeModule()
         KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED,
         KALTURA_AVAILABLE_IMAGE_TRACKS_CHANGED,
         KALTURA_THUMBNAIL_INFO_RESPONSE,
+        KALTURA_CURRENT_PROGRAM_TIME_UPDATED,
         KALTURA_VOLUME_CHANGED,
         KALTURA_BUFFER_TIME_UPDATED,
         KALTURA_KEEP_SCREEN_ON_CHANGED
@@ -128,6 +130,10 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
 
             m_pPlayer->ThumbnailInfoResponse.Connect(*this, [this](folly::dynamic data) {
                 this->EmitEventPriv(KALTURA_THUMBNAIL_INFO_RESPONSE, data);
+            });
+            
+            m_pPlayer->CurrentProgramTimeUpdated.Connect(*this, [this](uint64_t currentProgramTime) {
+                this->EmitEventPriv(KALTURA_CURRENT_PROGRAM_TIME_UPDATED, currentProgramTime);
             });
 
             m_pPlayer->VolumeChanged.Connect(*this, [this](float volume) {
@@ -244,3 +250,4 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, RequestThumbnailInfo)(uint6
         m_pPlayer->RequestThumbnailInfo(position);
     }
 }
+

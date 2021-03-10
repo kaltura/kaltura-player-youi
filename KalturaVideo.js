@@ -82,6 +82,12 @@ export default class KalturaVideo extends React.Component {
       }
     })
 
+    this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_CURRENT_PROGRAM_TIME_UPDATED', (currentProgramTimeUpdated) => {
+      if (this.props.onCurrentProgramTimeUpdated) {
+        this.props.onCurrentProgramTimeUpdated(currentProgramTimeUpdated);
+      }
+    })
+      
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_BUFFER_TIME_UPDATED', (bufferPosition) => {
       if (this.props.onBufferTimeUpdated) {
         this.props.onBufferTimeUpdated(bufferPosition);
