@@ -316,25 +316,6 @@ public class PKPlayerWrapper {
             sendPlayerEvent("textTrackChanged", new Gson().toJson(textTrack));
         });
 
-        player.addListener(self, PlayerEvent.imageTrackChanged, event -> {
-            final com.kaltura.playkit.player.ImageTrack newTrack = event.newTrack;
-            ImageTrack textTrack = new ImageTrack(newTrack.getUniqueId(), newTrack.getLabel(),
-                    newTrack.getImageTemplateUrl(),
-                    newTrack.getTilesHorizontal(),
-                    newTrack.getTilesVertical(),
-                    newTrack.getSegmentDuration(),
-                    newTrack.getPresentationTimeOffset(),
-                    newTrack.getTimeScale(),
-                    newTrack.getStartNumber(),
-                    newTrack.getEndNumber(),
-                    newTrack.getBitrate(),
-                    newTrack.getWidth(),
-                    newTrack.getHeight(),
-                    true);
-
-            sendPlayerEvent("imageTrackChanged", new Gson().toJson(textTrack));
-        });
-
         player.addListener(self, PlayerEvent.playbackInfoUpdated, event -> {
             long videoBitrate = (event.playbackInfo.getVideoBitrate() > 0) ? event.playbackInfo.getVideoBitrate() : 0;
             long audioBitrate = (event.playbackInfo.getAudioBitrate() > 0) ? event.playbackInfo.getAudioBitrate() : 0;
@@ -387,7 +368,6 @@ public class PKPlayerWrapper {
         List<VideoTrack> videoTracksInfo = new ArrayList<>();
         List<AudioTrack> audioTracksInfo = new ArrayList<>();
         List<TextTrack>  textTracksInfo  = new ArrayList<>();
-        List<ImageTrack> imageTracksInfo  = new ArrayList<>();
 
         int videoTrackIndex = 0;
         for (com.kaltura.playkit.player.VideoTrack videoTrack : pkTracksInfo.getVideoTracks()) {
