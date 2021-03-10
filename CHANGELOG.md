@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://www.github.com/kaltura/kaltura-player-youi/compare/v1.0.1...v1.1.0) (2021-03-10)
+
+
+### Features
+
+* **FEC-11070:** expose onCurrentProgramTimeUpdated event for live media ([#50](https://www.github.com/kaltura/kaltura-player-youi/issues/50)) ([0f7e170](https://www.github.com/kaltura/kaltura-player-youi/commit/0f7e170ca8f887d674049665f32606d19e250ab3))
+
 ### [1.0.1](https://www.github.com/kaltura/kaltura-player-youi/compare/v1.0.0...v1.0.1) (2021-03-03)
 
 
