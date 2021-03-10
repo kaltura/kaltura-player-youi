@@ -23,7 +23,6 @@ import com.kaltura.playkit.player.LoadControlBuffers;
 import com.kaltura.playkit.player.PKHttpClientManager;
 import com.kaltura.playkit.player.PKPlayerErrorType;
 import com.kaltura.playkit.player.PKTracks;
-import com.kaltura.playkit.player.thumbnail.ThumbnailInfo;
 import com.kaltura.playkit.plugins.ads.AdCuePoints;
 import com.kaltura.playkit.plugins.ads.AdEvent;
 import com.kaltura.playkit.plugins.broadpeak.BroadpeakConfig;
@@ -841,18 +840,6 @@ public class PKPlayerWrapper {
         log.d("regular setZIndex index: " + index);
         if (player != null && player.getPlayerView() != null) {
             runOnUiThread(() -> player.getPlayerView().setZ(index));
-        }
-    }
-
-    public static void requestThumbnailInfo(long position) {
-        log.d("requestThumbnailInfo position:" + position);
-
-        if (player != null) {
-            runOnUiThread(() -> {
-                 ThumbnailInfo thumbnailInfo = player.getThumbnailInfo(position);
-                 String thumbnailInfoJson = "{ \"position\": " + position + ", \"thumbnailInfo\": " + new Gson().toJson(thumbnailInfo) + " }";
-                 sendPlayerEvent("thumbnailInfoResponse", thumbnailInfoJson);
-            });
         }
     }
 
