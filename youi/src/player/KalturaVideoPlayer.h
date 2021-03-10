@@ -52,7 +52,7 @@ public:
             return object;
         }
     };    
-    
+
     struct KalturaAudioTrack : public CYIAbstractVideoPlayer::AudioTrackInfo
     {
         CYIString uniqueId;
@@ -74,7 +74,7 @@ public:
         {
         }
     };
-    
+
     KalturaVideoPlayer();
     virtual ~KalturaVideoPlayer();
 
@@ -99,6 +99,9 @@ public:
     CYISignal<> PlayerSeekedEvent;
 
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
+  
+    CYISignal<uint64_t>  CurrentProgramTimeUpdated;
+
     CYISignal<folly::dynamic> LoadMediaSuccess;
     CYISignal<float> VolumeChanged;
     CYISignal<uint64_t> CurrentBufferTimeUpdated;

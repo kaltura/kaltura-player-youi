@@ -297,12 +297,26 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer addObserver:self event:PlayerEvent.playheadUpdate block:^(PKEvent * _Nonnull event) {
         NSNumber *currentTime = event.currentTime;
         NSNumber *bufferedTime = [NSNumber numberWithDouble: weakSelf.bufferedTime];
+        
         if (bufferedTime.doubleValue < currentTime.doubleValue) {
             bufferedTime = currentTime;
         }
-        [weakSender sendEvent:@"timeUpdate" payload:@{@"position": currentTime,
-                                                      @"bufferPosition": bufferedTime
-        }];
+        
+        if(weakPlayer.isLive) {
+            NSDate *currentProgramTime = weakPlayer.currentProgramTime;
+            NSTimeInterval currentProgramTimeEpochSeconds = [currentProgramTime timeIntervalSince1970];
+            NSNumber *currentProgramTimeDouble = [NSNumber numberWithDouble:currentProgramTimeEpochSeconds];
+
+            [weakSender sendEvent:@"timeUpdate" payload:@{@"position": currentTime,
+                                                          @"bufferPosition": bufferedTime,
+                                                          @"currentProgramTime": currentProgramTimeDouble
+            }];
+        } else {
+            [weakSender sendEvent:@"timeUpdate" payload:@{@"position": currentTime,
+                                                          @"bufferPosition": bufferedTime
+        
+            }];
+        }
     }];
     
     [self.kalturaPlayer addObserver:self event:PlayerEvent.loadedTimeRanges block:^(PKEvent * _Nonnull event) {

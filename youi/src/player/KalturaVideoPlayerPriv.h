@@ -34,7 +34,7 @@ public:
     bool SelectVideoTrack_(uint32_t uID);
     std::vector<KalturaVideoPlayer::VideoTrackInfo> GetVideoTracks_() const;
     KalturaVideoPlayer::VideoTrackInfo GetActiveVideoTrack_() const;
-    
+  
     void Emit_(const std::string &event, const folly::dynamic &content);
 
     void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle);
