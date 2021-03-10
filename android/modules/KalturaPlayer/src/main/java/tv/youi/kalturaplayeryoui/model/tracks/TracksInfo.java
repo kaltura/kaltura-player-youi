@@ -7,7 +7,6 @@ public class TracksInfo {
     List<VideoTrack> video = new ArrayList<>();
     List<TextTrack> text = new ArrayList<>();
     List<AudioTrack> audio = new ArrayList<>();
-    List<ImageTrack> image = new ArrayList<>();
 
     public TracksInfo setVideoTracks(List<VideoTrack> video) {
         this.video = video;
@@ -23,11 +22,5 @@ public class TracksInfo {
         this.audio = audio;
         return this;
     }
-
-    public TracksInfo setImageTracks(List<ImageTrack> image) {
-        this.image = image;
-        return this;
-    }
-
 
 }
