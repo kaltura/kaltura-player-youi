@@ -29,8 +29,6 @@ static const char *tracksAvailableEvent = "tracksAvailable";
 static const char *videoTrackChangedEvent = "videoTrackChanged";
 static const char *audioTrackChangedEvent = "audioTrackChanged";
 static const char *textTrackChangedEvent = "textTrackChanged";
-static const char *imageTrackChangedEvent = "imageTrackChanged";
-static const char *thumbnailInfoResponseEvent = "thumbnailInfoResponse";
 static const char *playbackInfoUpdatedEvent = "playbackInfoUpdated";
 static const char *seekingEvent = "seeking";
 static const char *seekedEvent = "seeked";
@@ -165,25 +163,6 @@ std::vector<KalturaVideoPlayer::VideoTrackInfo> KalturaVideoPlayer::GetVideoTrac
 KalturaVideoPlayer::VideoTrackInfo KalturaVideoPlayer::GetActiveVideoTrack() {
     return m_pPriv->GetActiveVideoTrack_();
 }
-
-bool KalturaVideoPlayer::SelectImageTrack(uint32_t uID) {
-    return m_pPriv->SelectImageTrack_(uID);
-}
-
-std::vector<KalturaVideoPlayer::ImageTrackInfo> KalturaVideoPlayer::GetImageTracks() {
-    return m_pPriv->GetImageTracks_();
-}
-
-KalturaVideoPlayer::ImageTrackInfo KalturaVideoPlayer::GetActiveImageTrack() {
-    return m_pPriv->GetActiveImageTrack_();
-}
-
-void KalturaVideoPlayer::RequestThumbnailInfo(uint64_t position)
-{
-    YI_LOGD(TAG, "timeUpdateEvent - %" PRIu64, position);
-    m_pPriv->RequestThumbnailInfo_(position);
-}
-
 
 CYIString KalturaVideoPlayer::GetName_() const
 {
