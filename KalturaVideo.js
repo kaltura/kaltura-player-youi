@@ -152,10 +152,6 @@ export default class KalturaVideo extends React.Component {
     if (this.props.logLevel !== prevProps.logLevel && this.props.logLevel) {
       NativeModules.KalturaVideo.SetLogLevel(this.props.logLevel)
     }
-
-    if (this.props.thumbnailInfoPosition != prevProps.thumbnailInfoPosition && this.props.thumbnailInfoPosition) {
-      NativeModules.KalturaVideo.RequestThumbnailInfo(this.props.thumbnailInfoPosition)
-    }
   }
 
   render() {
@@ -211,9 +207,5 @@ export default class KalturaVideo extends React.Component {
 
   getLiveSeekableRanges = () => {
     return this.videoRef.current.getLiveSeekableRanges()
-  };
-
-  requestThumbnailInfo = (position) => {
-    return this.videoRef.current.requestThumbnailInfo(position)
   };
 }
