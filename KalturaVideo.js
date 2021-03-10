@@ -129,10 +129,6 @@ export default class KalturaVideo extends React.Component {
       NativeModules.KalturaVideo.SelectVideoTrack(this.props.selectedVideoTrack);
     }
 
-    if (this.props.selectedImageTrack !== prevProps.selectedImageTrack) {
-      NativeModules.KalturaVideo.SelectImageTrack(this.props.selectedImageTrack);
-    }
-
     if (this.props.media !== prevProps.media && this.props.media) {
       this.loadMedia(this.props.media.id, this.props.media.asset);
     }
