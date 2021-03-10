@@ -327,9 +327,7 @@ public class PKPlayerWrapper {
         });
 
         player.addListener(self, PlayerEvent.seeking, event -> sendPlayerEvent("seeking", "{ \"targetPosition\": " + (event.targetPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
-        player.addListener(self, PlayerEvent.seeked, event -> {
-            sendPlayerEvent("seeked");
-        });
+        player.addListener(self, PlayerEvent.seeked, event -> sendPlayerEvent("seeked"));
         player.addListener(self, PlayerEvent.error, event -> {
             if (event.error.isFatal()) {
                 sendPlayerEvent("error", getErrorJson(event.error));
