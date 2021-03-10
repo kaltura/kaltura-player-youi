@@ -34,12 +34,7 @@ public:
     bool SelectVideoTrack_(uint32_t uID);
     std::vector<KalturaVideoPlayer::VideoTrackInfo> GetVideoTracks_() const;
     KalturaVideoPlayer::VideoTrackInfo GetActiveVideoTrack_() const;
-
-    bool SelectImageTrack_(uint32_t uID);
-    std::vector<KalturaVideoPlayer::ImageTrackInfo> GetImageTracks_() const;
-    KalturaVideoPlayer::ImageTrackInfo GetActiveImageTrack_() const;
-    void RequestThumbnailInfo_(uint64_t position);
-    
+  
     void Emit_(const std::string &event, const folly::dynamic &content);
 
     void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle);
@@ -107,7 +102,6 @@ private:
     jmethodID setFrameMethodID = 0;
     jmethodID setVolumeMethodID = 0;
     jmethodID setLogLevelMethodID = 0;
-    jmethodID requestThumbnailInfoMethodID = 0;
 #endif
 };
 
