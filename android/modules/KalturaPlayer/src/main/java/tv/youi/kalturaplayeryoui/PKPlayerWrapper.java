@@ -52,7 +52,6 @@ import tv.youi.kalturaplayeryoui.model.WrapperIMAConfig;
 import tv.youi.kalturaplayeryoui.model.WrapperPhoenixAnalyticsConfig;
 import tv.youi.kalturaplayeryoui.model.WrapperYouboraConfig;
 import tv.youi.kalturaplayeryoui.model.tracks.AudioTrack;
-import tv.youi.kalturaplayeryoui.model.tracks.ImageTrack;
 import tv.youi.kalturaplayeryoui.model.tracks.TextTrack;
 import tv.youi.kalturaplayeryoui.model.tracks.TracksInfo;
 import tv.youi.kalturaplayeryoui.model.tracks.VideoTrack;
