@@ -400,32 +400,10 @@ public class PKPlayerWrapper {
             textTrackIndex++;
         }
 
-        int imageTrackIndex = 0;
-        for (com.kaltura.playkit.player.ImageTrack imageTrack : pkTracksInfo.getImageTracks()) {
-
-            imageTracksInfo.add(new ImageTrack(imageTrack.getUniqueId(),
-                    imageTrack.getLabel(),
-                    imageTrack.getImageTemplateUrl(),
-                    imageTrack.getTilesHorizontal(),
-                    imageTrack.getTilesVertical(),
-                    imageTrack.getSegmentDuration(),
-                    imageTrack.getPresentationTimeOffset(),
-                    imageTrack.getTimeScale(),
-                    imageTrack.getStartNumber(),
-                    imageTrack.getEndNumber(),
-                    imageTrack.getBitrate(),
-                    imageTrack.getWidth(),
-                    imageTrack.getHeight(),
-                    pkTracksInfo.getDefaultImageTrackIndex() == imageTrackIndex));
-            imageTrackIndex++;
-        }
-
-
         TracksInfo tracksInfo = new TracksInfo();
         tracksInfo.setVideoTracks(videoTracksInfo);
         tracksInfo.setAudioTracks(audioTracksInfo);
         tracksInfo.setTextTracks(textTracksInfo);
-        tracksInfo.setImageTracks(imageTracksInfo);
         return tracksInfo;
     }
 
