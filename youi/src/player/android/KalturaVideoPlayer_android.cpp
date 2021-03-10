@@ -402,34 +402,6 @@ CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayerPriv::GetActiv
     return CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo();
 }
 
-bool KalturaVideoPlayerPriv::SelectImageTrack_(uint32_t uID)
-{
-    if (!playerWrapperBridgeClass)
-    {
-        return false;
-    }
-
-    const auto &track = m_pPub->m_imageTracks[uID];
-    jstring jUniqueId = GetEnv_KalturaPlayer()->NewStringUTF(track.uniqueId.GetData());
-    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, changeTrackMethodID, jUniqueId);
-    return true;
-}
-
-std::vector<KalturaVideoPlayer::ImageTrackInfo> KalturaVideoPlayerPriv::GetImageTracks_() const
-{
-    return m_pPub->m_imageTracks;
-}
-
-KalturaVideoPlayer::ImageTrackInfo KalturaVideoPlayerPriv::GetActiveImageTrack_() const
-{
-    if (m_pPub->m_selectedVideoTrack >= 0)
-    {
-        return m_pPub->m_imageTracks[m_pPub->m_selectedImageTrack];
-    }
-
-    return KalturaVideoPlayer::ImageTrackInfo();
-}
-
 void KalturaVideoPlayerPriv::Mute_(bool bMute)
 {
     float volume = 1.0;
