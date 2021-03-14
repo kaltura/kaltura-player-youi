@@ -457,14 +457,14 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     
     [self.kalturaPlayer addObserver:self events:@[OttEvent.bookmarkError] block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"bookmarkError" payload:@{@"errorMessage": event.ottEventMessage,
-                                                         @"errorCode":  [ @(event.error.code) stringValue ],
+                                                         @"errorCode":  [@(event.error.code) stringValue],
                                                          @"errorType": @"BOOKMARK_ERROR"
         }];
     }];
     
     [self.kalturaPlayer addObserver:self events:@[OttEvent.concurrency] block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"concurrencyError" payload:@{@"errorMessage": event.ottEventMessage,
-                                                            @"errorCode": [ @(event.error.code) stringValue ],
+                                                            @"errorCode": [@(event.error.code) stringValue],
                                                             @"errorType": @"CONCURRENCY_ERROR"
         }];
     }];
