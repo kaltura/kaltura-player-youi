@@ -641,12 +641,14 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         CYIAbstractVideoPlayer::Error error;
         error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
         error.message = JSONFromDynamic(content).c_str();
-
-        CYIString errorType = content["errorCode"].asString();
-        error.nativePlayerErrorCode = errorType;
+        if (content.find("errorCode") != content.items().end() && !content["errorCode"].isNull()) {
+            CYIString errorType = content["errorCode"].asString();
+            error.nativePlayerErrorCode = errorType;
+        }
 
         ErrorOccurred.Emit(error);
-        m_pStateManager->TransitionToMediaUnloaded();
+        //if unload is done player has to be destroyed
+        //m_pStateManager->TransitionToMediaUnloaded();
     }
     else if (name.Compare(concurrencyErrorEvent) == 0)
     {
@@ -655,12 +657,14 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         CYIAbstractVideoPlayer::Error error;
         error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
         error.message = JSONFromDynamic(content).c_str();
-
-        CYIString errorType = content["errorMessage"].asString();
-        error.nativePlayerErrorCode = errorType;
+        if (content.find("errorMessage") != content.items().end() && !content["errorMessage"].isNull()) {
+            CYIString errorType = content["errorMessage"].asString();
+            error.nativePlayerErrorCode = errorType;
+        }
 
         ErrorOccurred.Emit(error);
-        m_pStateManager->TransitionToMediaUnloaded();
+        //if unload is done player has to be destroyed
+        //m_pStateManager->TransitionToMediaUnloaded();
     }
     else if (name.Compare(adProgressEvent) == 0)
     {

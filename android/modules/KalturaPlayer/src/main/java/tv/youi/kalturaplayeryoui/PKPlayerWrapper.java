@@ -273,7 +273,7 @@ public class PKPlayerWrapper {
                 String timeUpdatePayload = "\"position\": " + (event.position / Consts.MILLISECONDS_MULTIPLIER_FLOAT) +
                         ", \"bufferPosition\": " + (event.bufferPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT);
 
-                if (player.isLive() &&  player.getCurrentProgramTime() > 0) {
+                if (player != null && player.isLive() &&  player.getCurrentProgramTime() > 0) {
                     timeUpdatePayload = "{ " + timeUpdatePayload +
                             ", \"currentProgramTime\": " + player.getCurrentProgramTime() +
                             " }";
@@ -334,8 +334,18 @@ public class PKPlayerWrapper {
             }
         });
 
-        player.addListener(self, PhoenixAnalyticsEvent.bookmarkError, event -> sendPlayerEvent("bookmarkError", "{ \"errorMessage\": \"" + event.errorMessage + "\" }"));
-        player.addListener(self, PhoenixAnalyticsEvent.concurrencyError, event -> sendPlayerEvent("concurrencyError", "{ \"errorMessage\": \"" + event.errorMessage + "\" }"));
+        player.addListener(self, PhoenixAnalyticsEvent.bookmarkError, event -> {
+            sendPlayerEvent("bookmarkError", "{ \"errorMessage\": \"" + event.errorMessage + "\" " +
+                                  ", \"errorCode\": \"" + event.errorCode + "\" " +
+                                  ", \"errorType\": \"" + event.type + "\" " +
+                    " }");
+        });
+        player.addListener(self, PhoenixAnalyticsEvent.concurrencyError, event -> {
+            sendPlayerEvent("concurrencyError", "{ \"errorMessage\": \"" + event.errorMessage + "\" " +
+                                  ", \"errorCode\": \"" + event.errorCode + "\" " +
+                                  ", \"errorType\": \"" + event.type + "\" " +
+                    " }");
+        });
 
         player.addListener(self, BroadpeakEvent.error, event -> {
             PKError bpError = new PKError(PKPlayerErrorType.SOURCE_ERROR, PKError.Severity.Fatal, "BroadpeakError:" + event.errorCode + "-" + event.errorMessage, null);
