@@ -302,8 +302,12 @@ void KalturaVideoPlayerPriv::Seek_(uint64_t uSeekPositionMs)
         return;
     }
 
-    double seekTime = static_cast<double>(uSeekPositionMs) / 1000.f;
-    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, seekToMethodID, (float)seekTime);
+    if (m_pPub->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready)
+    {
+        double seekTime = static_cast<double>(uSeekPositionMs) / 1000.f;
+        GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, seekToMethodID,(float) seekTime);
+    }
+
 }
 
 void KalturaVideoPlayerPriv::SetMaxBitrate_(uint64_t uMaxBitrate)
