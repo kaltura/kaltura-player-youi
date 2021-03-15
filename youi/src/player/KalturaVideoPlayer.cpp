@@ -647,8 +647,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         }
 
         ErrorOccurred.Emit(error);
-        //if unload is done player has to be destroyed
-        //m_pStateManager->TransitionToMediaUnloaded();
     }
     else if (name.Compare(concurrencyErrorEvent) == 0)
     {
@@ -663,8 +661,6 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         }
 
         ErrorOccurred.Emit(error);
-        //if unload is done player has to be destroyed
-        //m_pStateManager->TransitionToMediaUnloaded();
     }
     else if (name.Compare(adProgressEvent) == 0)
     {
