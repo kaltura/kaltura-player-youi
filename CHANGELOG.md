@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.1.1](https://www.github.com/kaltura/kaltura-player-youi/compare/v1.1.0...v1.1.1) (2021-03-15)
+
+
+### Bug Fixes
+
+* **FEC-11083:** handle parsing exception in bookmark and concurrency error ([#52](https://www.github.com/kaltura/kaltura-player-youi/issues/52)) ([31d2531](https://www.github.com/kaltura/kaltura-player-youi/commit/31d2531a5ab90393d6faa4dda1bc914cae47fae8))
+
 ## [1.1.0](https://www.github.com/kaltura/kaltura-player-youi/compare/v1.0.1...v1.1.0) (2021-03-10)
 
 
