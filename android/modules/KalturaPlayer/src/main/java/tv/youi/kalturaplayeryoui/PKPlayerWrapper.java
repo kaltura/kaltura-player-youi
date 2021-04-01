@@ -811,7 +811,7 @@ public class PKPlayerWrapper {
     @SuppressWarnings("unused") // Called from C++
     public static void setFrame(int playerViewWidth, int playerViewHeight, int playerViewPosX, int playerViewPosY) {
 
-        log.d("setFrame " + playerViewWidth + "/" + playerViewHeight + " " + playerViewPosX + "/" + playerViewPosY);
+        //log.d("setFrame " + playerViewWidth + "/" + playerViewHeight + " " + playerViewPosX + "/" + playerViewPosY);
 
         if (player != null && player.getPlayerView() != null) {
             runOnUiThread(() -> {

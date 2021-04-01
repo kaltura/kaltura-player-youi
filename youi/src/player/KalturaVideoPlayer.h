@@ -90,6 +90,7 @@ public:
     bool SelectVideoTrack(uint32_t uID);
     std::vector<VideoTrackInfo> GetVideoTracks();
     VideoTrackInfo GetActiveVideoTrack();
+    bool isValidJsonKey(folly::dynamic content, const CYIString &keyName);
 
     CYISignal<> PlayerReplayEvent;
     CYISignal<> PlayerStoppedEvent;
