@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 
-## usage: Example - ./uploadKalturaPlayerYouiFramworks.sh <fileName> <path in S3 prebuilt>
-## ./uploadKalturaPlayerYouiFramworks.sh KalturaPlayerYouiFrameworks-v1.0.1.zip kux/ios/v1.0.1
+## usage: Example - ./uploadKalturaPlayerYouiFrameworks.sh <fileName> <path in S3 prebuilt>
+## ./uploadKalturaPlayerYouiFrameworks.sh KalturaPlayerYouiFrameworks-v1.0.1.zip kux/ios/v1.0.1
 
 ## download Example:
 ## curl -L -o KalturaPlayerYouiFrameworks-v1.0.1.zip "https://playkit.s3.amazonaws.com/prebuilt/kux/ios/v1.0.1/KalturaPlayerYouiFrameworks-v1.0.1.zip"  
