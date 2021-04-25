@@ -9,3 +9,4 @@ public class Plugins {
     public WrapperPhoenixAnalyticsConfig ottAnalytics;
     public WrapperBroadpeakConfig broadpeak;
 }
+
