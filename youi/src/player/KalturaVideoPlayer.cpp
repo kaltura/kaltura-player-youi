@@ -82,10 +82,10 @@ void KalturaVideoPlayer::Setup(int32_t partnerId, folly::dynamic options)
     uint64_t videoSurfaceWidth = 1920;
     uint64_t videoSurfaceHeight = 1080;
 
-    if (options.find("videoSurfaceWidth") != options.items().end() && !options["videoSurfaceWidth"].isNull()) {
+    if (isValidJsonKey(options, "videoSurfaceWidth")) {
         videoSurfaceWidth = static_cast<uint64_t>(options["videoSurfaceWidth"].asInt());
     }
-    if (options.find("videoSurfaceHeight") != options.items().end() && !options["videoSurfaceHeight"].isNull()) {
+    if (isValidJsonKey(options, "videoSurfaceHeight")) {
         videoSurfaceHeight = static_cast<uint64_t>(options["videoSurfaceHeight"].asInt());
     }
     YI_LOGD(TAG, "videoSurfaceWidth - %" PRIu64, videoSurfaceWidth);
@@ -93,7 +93,7 @@ void KalturaVideoPlayer::Setup(int32_t partnerId, folly::dynamic options)
 
     SetVideoSurfaceSize(glm::ivec2(videoSurfaceWidth,videoSurfaceHeight));
 
-    if (options.find("manageKeepScreenOnInternally") != options.items().end() && !options["manageKeepScreenOnInternally"].isNull()) {
+    if (isValidJsonKey(options, "manageKeepScreenOnInternally")) {
         m_manageKeepScreenOnInternally = options["manageKeepScreenOnInternally"].asBool();
     }
     m_pPriv->Setup_(partnerId, options);
@@ -193,7 +193,7 @@ void KalturaVideoPlayer::SetVideoRectangle(const YI_RECT_REL &rVideoRectangle)
 
 void KalturaVideoPlayer::BringToFront()
 {
-   YI_LOGD(TAG, "BringToFront");
+    YI_LOGD(TAG, "BringToFront");
     m_pPriv->BringToFront_();
 }
 
@@ -284,6 +284,13 @@ bool KalturaVideoPlayer::IsMuted_() const
     return m_isMuted;
 }
 
+bool KalturaVideoPlayer::isValidJsonKey(folly::dynamic content, const CYIString &keyName)
+{
+    bool isValid = (content.find(keyName.GetData()) != content.items().end() && !content[keyName.GetData()].isNull());
+    //YI_LOGD(TAG, "isValidJsonKey key = %s, valid = %d", keyName.GetData(), isValid);
+    return isValid;
+}
+
 void KalturaVideoPlayer::Mute_(bool bMute)
 {
     YI_LOGD(TAG, "Mute_  = %d", bMute);
@@ -291,7 +298,7 @@ void KalturaVideoPlayer::Mute_(bool bMute)
     if (bMute == m_isMuted) {
         return;
     }
-    
+
     m_pPriv->Mute_(bMute);
     float volume;
     if (bMute) {
@@ -301,7 +308,7 @@ void KalturaVideoPlayer::Mute_(bool bMute)
         m_isMuted = false;
         volume = 1.0f;
     }
-    
+
     if (m_devicOSName.Contains("iOS") || m_devicOSName.Contains("tvOS"))
     {
         YI_LOGD(TAG, "%s VolumeChanged isMuted = %d", m_devicOSName.GetData(), m_isMuted);
@@ -323,8 +330,10 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     }
     else if (name.Compare(loadMediaSuccessEvent) == 0)
     {
-        const CYIString id = content["id"].asString();
-        YI_LOGD(TAG, "loadMediaSuccessEvent id = %s", id.GetData());
+        if (isValidJsonKey(content, "id")) {
+            const CYIString id = content["id"].asString();
+            YI_LOGD(TAG, "loadMediaSuccessEvent id = %s", id.GetData());
+        }
         LoadMediaSuccess.Emit(content);
         m_pStateManager->TransitionToMediaReady();
     }
@@ -339,10 +348,10 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         CYIString message = "Unknown";
 
         if (!content.isNull()) {
-            if (content.find("code") != content.items().end() && !content["code"].isNull()) {
+            if (isValidJsonKey(content, "code")) {
                 code = content["code"].asString();
             }
-            if (content.find("message") != content.items().end() && !content["message"].isNull()) {
+            if (isValidJsonKey(content, "message")) {
                 message = content["message"].asString();
             }
         }
@@ -365,12 +374,13 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     }
     else if (name.Compare(stateChangedEvent) == 0)
     {
-        const CYIString &state = content["newState"].asString();
-        YI_LOGD(TAG, "stateChangedEvent %s", state.GetData());
+        if (isValidJsonKey(content, "newState")) {
+            const CYIString &state = content["newState"].asString();
+            YI_LOGD(TAG, "stateChangedEvent %s", state.GetData());
 
-        if (state == "BUFFERING")
-        {
-            m_pStateManager->TransitionToPlaybackBuffering();
+            if (state == "BUFFERING") {
+                m_pStateManager->TransitionToPlaybackBuffering();
+            }
         }
     }
     else if (name.Compare(playEvent) == 0)
@@ -386,23 +396,29 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(durationChangedEvent) == 0)
     {
         YI_LOGD(TAG, "durationChangedEvent");
-        const auto duration = content["duration"].asDouble();
-        m_durationMs = static_cast<uint64_t>(duration * 1000);
-        DurationChanged.Emit(m_durationMs);
+        if (isValidJsonKey(content, "duration")) {
+            const auto duration = content["duration"].asDouble();
+            m_durationMs = static_cast<uint64_t>(duration * 1000);
+            DurationChanged.Emit(m_durationMs);
+        }
     }
     else if (name.Compare(timeUpdateEvent) == 0)
     {
-        const auto currentTime = content["position"].asDouble();
-        m_currentTimeMs = static_cast<uint64_t>(currentTime * 1000);
-       // YI_LOGE(TAG, "timeUpdateEvent - %" PRIu64, m_currentTimeMs);
-        CurrentTimeUpdated.Emit(m_currentTimeMs);
+        if (isValidJsonKey(content, "position")) {
+            const auto currentTime = content["position"].asDouble();
+            m_currentTimeMs = static_cast<uint64_t>(currentTime * 1000);
+            // YI_LOGE(TAG, "timeUpdateEvent - %" PRIu64, m_currentTimeMs);
+            CurrentTimeUpdated.Emit(m_currentTimeMs);
+        }
 
-        const auto currentBufferTime = content["bufferPosition"].asDouble();
-        uint64_t currentBufferTimeMs = static_cast<uint64_t>(currentBufferTime * 1000);
-        //YI_LOGE(TAG, "bufferPosition - %" PRIu64, currentBufferTimeMs);
-        CurrentBufferTimeUpdated.Emit(currentBufferTimeMs);
+        if (isValidJsonKey(content, "bufferPosition")) {
+            const auto currentBufferTime = content["bufferPosition"].asDouble();
+            uint64_t currentBufferTimeMs = static_cast<uint64_t>(currentBufferTime * 1000);
+            //YI_LOGE(TAG, "bufferPosition - %" PRIu64, currentBufferTimeMs);
+            CurrentBufferTimeUpdated.Emit(currentBufferTimeMs);
+        }
 
-        if (!content["currentProgramTime"].isNull()) {
+        if (isValidJsonKey(content, "currentProgramTime")) {
             const auto currentProgramTime = content["currentProgramTime"].asDouble();
             uint64_t currentProgramTimeLong = static_cast<uint64_t>(currentProgramTime);
             //YI_LOGE(TAG, "currentProgramTime - %" PRIu64, currentProgramTimeLong);
@@ -442,8 +458,10 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     }
     else if (name.Compare(playbackRateChangedEvent) == 0)
     {
-        float playbackRate = static_cast<float>(content["playbackRate"].asDouble());
-        YI_LOGD(TAG, "playbackRateChangedEvent %f", playbackRate);
+        if (isValidJsonKey(content, "playbackRate")) {
+            float playbackRate = static_cast<float>(content["playbackRate"].asDouble());
+            YI_LOGD(TAG, "playbackRateChangedEvent %f", playbackRate);
+        }
     }
     else if (name.Compare(tracksAvailableEvent) == 0)
     {
@@ -485,13 +503,13 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
                 const CYIString uniqueId = track["id"].asString();
 
                 CYIString label;
-                if (track.find("label") != track.items().end() && !track["label"].isNull())
+                if (isValidJsonKey(track, "label"))
                 {
                     label = track["label"].asString();
                 }
 
                 CYIString language;
-                if (track.find("language") != track.items().end() && !track["language"].isNull())
+                if (isValidJsonKey(track, "language"))
                 {
                     language = track["language"].asString();
                 }
@@ -515,13 +533,13 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
                 const CYIString uniqueId = track["id"].asString();
 
                 CYIString label;
-                if (track.find("label") != track.items().end() && !track["label"].isNull())
+                if (isValidJsonKey(track, "label"))
                 {
                     label = track["label"].asString();
                 }
 
                 CYIString language;
-                if (track.find("language") != track.items().end() && !track["language"].isNull())
+                if (isValidJsonKey(track, "language"))
                 {
                     language = track["language"].asString();
                 }
@@ -553,19 +571,19 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(playbackInfoUpdatedEvent) == 0)
     {
         YI_LOGD(TAG, "playbackInfoUpdatedEvent");
-        if (content.find("videoBitrate") != content.items().end() && !content["videoBitrate"].isNull()) {
+        if (isValidJsonKey(content, "videoBitrate")) {
             const auto videoBitrate = content["videoBitrate"].asDouble();
             float currentVideoBitrate = static_cast<float>(videoBitrate);
             VideoBitrateChanged.Emit(currentVideoBitrate);
         }
-        if (content.find("audioBitrate") != content.items().end() && !content["audioBitrate"].isNull()) {
+        if (isValidJsonKey(content, "audioBitrate")) {
             const auto audioBitrate = content["audioBitrate"].asDouble();
             float currentAudioBitrate = static_cast<float>(audioBitrate);
             AudioBitrateChanged.Emit(currentAudioBitrate);
         }
 
         //For iOS - only totalBitrate value is sent
-        if (content.find("totalBitrate") != content.items().end() && !content["totalBitrate"].isNull()) {
+        if (isValidJsonKey(content, "totalBitrate")) {
             const auto totalBitrate = content["totalBitrate"].asDouble();
             float currentTotalBitrate = static_cast<float>(totalBitrate);
             TotalBitrateChanged.Emit(currentTotalBitrate);
@@ -574,9 +592,11 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(seekingEvent) == 0)
     {
         YI_LOGD(TAG, "seekingEvent");
-        const auto targetPosition = content["targetPosition"].asDouble();
-        uint64_t targetPositionMs = static_cast<uint64_t>(targetPosition * 1000);
-        PlayerSeekingEvent.Emit(targetPositionMs);
+        if (isValidJsonKey(content, "targetPosition")) {
+            const auto targetPosition = content["targetPosition"].asDouble();
+            uint64_t targetPositionMs = static_cast<uint64_t>(targetPosition * 1000);
+            PlayerSeekingEvent.Emit(targetPositionMs);
+        }
     }
     else if (name.Compare(seekedEvent) == 0)
     {
@@ -584,36 +604,38 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         PlayerSeekedEvent.Emit();
     }
     else if (name.Compare(volumeChangedEvent) == 0) {
-            YI_LOGD(TAG, "volumeChangedEvent");
-            if (!content["volume"].isNull()) {
-                const auto currentVolume = content["volume"].asDouble();
-                float volume = static_cast<float>(currentVolume);
+        YI_LOGD(TAG, "volumeChangedEvent");
+        if (isValidJsonKey(content, "volume")) {
+            const auto currentVolume = content["volume"].asDouble();
+            float volume = static_cast<float>(currentVolume);
 
-                if (volume <= 0.0f) {
-                    m_isMuted = true;
-                } else {
-                    m_isMuted = false;
-                }
-                YI_LOGD(TAG, "%s VolumeChanged isMuted = %d", m_devicOSName.GetData(), m_isMuted);
-                VolumeChanged.Emit(volume);
+            if (volume <= 0.0f) {
+                m_isMuted = true;
+            } else {
+                m_isMuted = false;
             }
+            YI_LOGD(TAG, "%s VolumeChanged isMuted = %d", m_devicOSName.GetData(), m_isMuted);
+            VolumeChanged.Emit(volume);
+        }
     }
     else if (name.Compare(loadedTimeRangesEvent) == 0)
     {
         YI_LOGD(TAG, "loadedTimeRangesEvent - %s", JSONFromDynamic(content).c_str());
 
-        if (!content["timeRanges"].isNull()) {
+        if (isValidJsonKey(content, "timeRanges")) {
             m_liveSeekableRanges.clear();
             auto timeRanges = content["timeRanges"];
             for (auto& timeRange : timeRanges)
             {
-               const auto start = timeRange["start"].asDouble();
-               uint64_t startSeek = static_cast<uint64_t>(start * 1000);
-               const auto end = timeRange["end"].asDouble();
-               uint64_t endSeek = static_cast<uint64_t>(end * 1000);
-               YI_LOGD(TAG, "loadedTimeRangesEvent %f %f", start, end);
-               CYIAbstractVideoPlayer::SeekableRange seekableRange = CYIAbstractVideoPlayer::SeekableRange(startSeek,endSeek);
-               m_liveSeekableRanges.push_back(seekableRange);
+                if (isValidJsonKey(timeRange, "start") && isValidJsonKey(timeRange, "end")) {
+                    const auto start = timeRange["start"].asDouble();
+                    uint64_t startSeek = static_cast<uint64_t>(start * 1000);
+                    const auto end = timeRange["end"].asDouble();
+                    uint64_t endSeek = static_cast<uint64_t>(end * 1000);
+                    YI_LOGD(TAG, "loadedTimeRangesEvent %f %f", start, end);
+                    CYIAbstractVideoPlayer::SeekableRange seekableRange = CYIAbstractVideoPlayer::SeekableRange(startSeek, endSeek);
+                    m_liveSeekableRanges.push_back(seekableRange);
+                }
             }
         }
     }
@@ -624,14 +646,15 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         CYIAbstractVideoPlayer::Error error;
         error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
         error.message = JSONFromDynamic(content).c_str();
-
-        CYIString errorType = content["errorType"].asString();
-        CYIString errorSeverity = content["errorSeverity"].asString();
-        error.nativePlayerErrorCode = errorType;
-        ErrorOccurred.Emit(error);
-        if (errorSeverity == FATAL) {
-            YI_LOGD(TAG, "errorEvent fatal");
-            m_pStateManager->TransitionToMediaUnloaded();
+        if (isValidJsonKey(content, "errorType") && isValidJsonKey(content, "errorSeverity")) {
+            CYIString errorType = content["errorType"].asString();
+            CYIString errorSeverity = content["errorSeverity"].asString();
+            error.nativePlayerErrorCode = errorType;
+            ErrorOccurred.Emit(error);
+            if (errorSeverity == FATAL) {
+                YI_LOGD(TAG, "errorEvent fatal");
+                m_pStateManager->TransitionToMediaUnloaded();
+            }
         }
     }
     else if (name.Compare(bookmarkErrorEvent) == 0)
@@ -641,7 +664,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         CYIAbstractVideoPlayer::Error error;
         error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
         error.message = JSONFromDynamic(content).c_str();
-        if (content.find("errorCode") != content.items().end() && !content["errorCode"].isNull()) {
+        if (isValidJsonKey(content, "errorCode")) {
             CYIString errorType = content["errorCode"].asString();
             error.nativePlayerErrorCode = errorType;
         }
@@ -655,7 +678,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         CYIAbstractVideoPlayer::Error error;
         error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
         error.message = JSONFromDynamic(content).c_str();
-        if (content.find("errorMessage") != content.items().end() && !content["errorMessage"].isNull()) {
+        if (isValidJsonKey(content, "errorMessage")) {
             CYIString errorType = content["errorMessage"].asString();
             error.nativePlayerErrorCode = errorType;
         }
@@ -731,10 +754,10 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         CYIAbstractVideoPlayer::Error error;
         error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
         error.message = JSONFromDynamic(content).c_str();
-
-        CYIString errorType = content["errorType"].asString();
-        error.nativePlayerErrorCode = errorType;
-
+        if (isValidJsonKey(content, "errorType")) {
+            CYIString errorType = content["errorType"].asString();
+            error.nativePlayerErrorCode = errorType;
+        }
         ErrorOccurred.Emit(error);
     }
     else
@@ -742,5 +765,3 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         YI_LOGW(TAG, "Unhandled event received - <%s>", name.GetData());
     }
 }
-
-
