@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.1.2](https://www.github.com/kaltura/kaltura-player-youi/compare/v1.1.1...v1.1.2) (2021-04-25)
+
+
+### Bug Fixes
+
+* **FEC-11086:** add json parsing error protection ([#54](https://www.github.com/kaltura/kaltura-player-youi/issues/54)) ([2612565](https://www.github.com/kaltura/kaltura-player-youi/commit/261256587168d68f313081974db81f84c956951f))
+
 ### [1.1.1](https://www.github.com/kaltura/kaltura-player-youi/compare/v1.1.0...v1.1.1) (2021-03-15)
 
 
