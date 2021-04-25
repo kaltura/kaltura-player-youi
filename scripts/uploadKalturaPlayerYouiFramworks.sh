@@ -10,12 +10,12 @@
 set -e
 
 if [[ -z "${AWS_ACCESS_KEY_ID}" ]]; then
-   echo "ERROR AWS_ACCESS_KEY_ID is undefined"
+   echo "ERROR AWS_ACCESS_KEY_ID env is undefined"
    exit 1;
 fi
 
 if [[ -z "${AWS_SECRET_ACCESS_KEY}" ]]; then
-   echo "ERROR AWS_SECRET_ACCESS_KEY is undefined"
+   echo "ERROR AWS_SECRET_ACCESS_KEY env is undefined"
    exit 1;
 fi
 
@@ -29,12 +29,12 @@ file="$1"
 path="$2"
 
 if [[ -z "${file}" ]]; then
-   echo "ERROR <file name> is undefined"
+   echo "ERROR first argument <file name> is undefined"
    exit 1;
 fi
 
 if [[ -z "${path}" ]]; then
-   echo "ERROR <path> is undefined"
+   echo "ERROR second argument <path> is undefined"
    exit 1;
 fi
 
