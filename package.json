@@ -5,6 +5,6 @@
   "description": "Kaltura Player Video component for You.i",
   "author": "Kaltura Inc.",
   "scripts": {
-    "postinstall": " ./scripts/downloadKalturaPlayerYouiFramworks.sh $PWD"
+    "postinstall": " ./scripts/downloadKalturaPlayerYouiFrameworks.sh $PWD"
   }
 }

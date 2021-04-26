@@ -6,7 +6,8 @@ VERSION=$(grep frameworksversion package.json  | awk -F" " '{ print $2 }' | sed 
 VER="v${VERSION}"
 cd $1
 
-curl -L -o KalturaPlayerYouiFrameworks-${VER}.zip "https://bintray.com/kaltura/ios-prebuilt/download_file?file_path=kaltura%2Fios-prebuilt%2FKalturaPlayerYouiFrameworks%2F${VER}%2FKalturaPlayerYouiFrameworks-${VER}.zip"
+curl -L -o KalturaPlayerYouiFrameworks-${VER}.zip "https://playkit.s3.amazonaws.com/prebuilt/kux/ios/${VER}/KalturaPlayerYouiFrameworks-${VER}.zip"
+
 
 unzip -oq KalturaPlayerYouiFrameworks-${VER}.zip
 rm KalturaPlayerYouiFrameworks-${VER}.zip
