@@ -34,6 +34,7 @@ import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsConfig;
 import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsPlugin;
 import com.kaltura.playkit.plugins.ott.PhoenixAnalyticsEvent;
 import com.kaltura.playkit.plugins.youbora.YouboraPlugin;
+import com.kaltura.playkit.plugins.youbora.pluginconfig.YouboraConfig;
 import com.kaltura.playkit.utils.Consts;
 import com.kaltura.tvplayer.KalturaOttPlayer;
 import com.kaltura.tvplayer.KalturaPlayer;
@@ -50,7 +51,6 @@ import tv.youi.kalturaplayeryoui.model.MediaAsset;
 import tv.youi.kalturaplayeryoui.model.NetworkSettings;
 import tv.youi.kalturaplayeryoui.model.WrapperIMAConfig;
 import tv.youi.kalturaplayeryoui.model.WrapperPhoenixAnalyticsConfig;
-import tv.youi.kalturaplayeryoui.model.WrapperYouboraConfig;
 import tv.youi.kalturaplayeryoui.model.tracks.AudioTrack;
 import tv.youi.kalturaplayeryoui.model.tracks.TextTrack;
 import tv.youi.kalturaplayeryoui.model.tracks.TracksInfo;
@@ -58,16 +58,6 @@ import tv.youi.kalturaplayeryoui.model.tracks.VideoTrack;
 import tv.youi.youiengine.CYIActivity;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static com.kaltura.playkit.plugins.youbora.pluginconfig.YouboraConfig.KEY_HOUSEHOLD_ID;
-import static com.npaw.youbora.lib6.plugin.Options.KEY_ACCOUNT_CODE;
-import static com.npaw.youbora.lib6.plugin.Options.KEY_APP_NAME;
-import static com.npaw.youbora.lib6.plugin.Options.KEY_APP_RELEASE_VERSION;
-import static com.npaw.youbora.lib6.plugin.Options.KEY_CUSTOM_DIMENSION_1;
-import static com.npaw.youbora.lib6.plugin.Options.KEY_CUSTOM_DIMENSION_2;
-import static com.npaw.youbora.lib6.plugin.Options.KEY_ENABLED;
-import static com.npaw.youbora.lib6.plugin.Options.KEY_USERNAME;
-import static com.npaw.youbora.lib6.plugin.Options.KEY_USER_EMAIL;
-import static com.npaw.youbora.lib6.plugin.Options.KEY_USER_TYPE;
 
 @SuppressWarnings("unused")
 public class PKPlayerWrapper {
@@ -143,72 +133,76 @@ public class PKPlayerWrapper {
             PKHttpClientManager.warmUp((initOptionsModel.warmupUrls).toArray((new String[0])));
         }
 
+
+
+        // load the player and put it in the main frame
+        KalturaOttPlayer.initialize(context, partnerId, initOptionsModel.serverUrl);
+        PKPluginConfigs pluginConfigs = new PKPluginConfigs();
+        if (initOptionsModel.plugins != null) {
+            if (initOptionsModel.plugins.ima != null) {
+                createIMAPlugin(pluginConfigs, initOptionsModel.plugins.ima); //DEFAULT
+            }
+
+            if (initOptionsModel.plugins.youbora != null) {
+                JsonObject youboraConfigJson = initOptionsModel.plugins.youbora;
+                if (youboraConfigJson.has(YOUBORA_ACCOUNT_CODE) && youboraConfigJson.get(YOUBORA_ACCOUNT_CODE) != null) {
+                    YouboraConfig youboraConfig = gson.fromJson(youboraConfigJson, YouboraConfig.class);
+                    if (youboraConfig != null) {
+                        createYouboraPlugin(pluginConfigs, youboraConfig);
+                    }                }
+            }
+
+            if (initOptionsModel.plugins.ottAnalytics != null) {
+                createPhoenixAnalyticsPlugin(pluginConfigs, initOptionsModel.plugins.ottAnalytics); //DEFAULT
+            }
+
+            if (initOptionsModel.plugins.broadpeak != null) {
+                JsonObject broadpeakJsonObject = initOptionsModel.plugins.broadpeak;
+
+                BroadpeakConfig broadpeakConfig = new Gson().fromJson(broadpeakJsonObject.toString(), BroadpeakConfig.class);
+                createBroadpeakPlugin(pluginConfigs, broadpeakConfig);
+            }
+        }
+
+        final PlayerInitOptions initOptions = new PlayerInitOptions(partnerId);
+        initOptions.setAutoPlay(initOptionsModel.autoplay);
+        initOptions.setPreload(initOptionsModel.preload);
+        initOptions.setAllowCrossProtocolEnabled(initOptionsModel.allowCrossProtocolRedirect);
+        initOptions.setKs(initOptionsModel.ks);
+        initOptions.setReferrer(initOptionsModel.referrer);
+        initOptions.setAbrSettings(initOptionsModel.abrSettings);
+        initOptions.setPreferredMediaFormat(initOptionsModel.preferredMediaFormat);
+        initOptions.setSecureSurface(initOptionsModel.secureSurface);
+        initOptions.setAspectRatioResizeMode(initOptionsModel.aspectRatioResizeMode);
+        initOptions.setAllowClearLead(initOptionsModel.allowClearLead);
+        initOptions.setEnableDecoderFallback(initOptionsModel.enableDecoderFallback);
+        initOptions.setAdAutoPlayOnResume(initOptionsModel.adAutoPlayOnResume);
+        initOptions.setIsVideoViewHidden(initOptionsModel.isVideoViewHidden);
+        initOptions.forceSinglePlayerEngine(initOptionsModel.forceSinglePlayerEngine);
+        initOptions.setTunneledAudioPlayback(initOptionsModel.isTunneledAudioPlayback);
+        initOptions.setMaxAudioBitrate(initOptionsModel.maxAudioBitrate);
+        initOptions.setMaxAudioChannelCount(initOptionsModel.maxAudioChannelCount);
+        initOptions.setMaxVideoBitrate(initOptionsModel.maxVideoBitrate);
+        initOptions.setMaxVideoSize(initOptionsModel.maxVideoSize);
+        initOptions.setHandleAudioBecomingNoisy(initOptionsModel.handleAudioBecomingNoisyEnabled);
+
+        NetworkSettings networkSettings = initOptionsModel.networkSettings;
+        if (initOptionsModel.networkSettings != null && initOptionsModel.networkSettings.preferredForwardBufferDuration > 0) {
+            initOptions.setLoadControlBuffers(new LoadControlBuffers().setMaxPlayerBufferMs(initOptionsModel.networkSettings.preferredForwardBufferDuration));
+        }
+
+        if (initOptionsModel.trackSelection != null && initOptionsModel.trackSelection.audioLanguage != null && initOptionsModel.trackSelection.audioMode != null) {
+            initOptions.setAudioLanguage(initOptionsModel.trackSelection.audioLanguage, initOptionsModel.trackSelection.audioMode);
+        }
+        if (initOptionsModel.trackSelection != null && initOptionsModel.trackSelection.textLanguage != null && initOptionsModel.trackSelection.textMode != null) {
+            initOptions.setTextLanguage(initOptionsModel.trackSelection.textLanguage, initOptionsModel.trackSelection.textMode);
+        }
+
+        //initOptions.setVideoCodecSettings(appPlayerInitConfig.videoCodecSettings)
+        //initOptions.setAudioCodecSettings(appPlayerInitConfig.audioCodecSettings)
+        initOptions.setPluginConfigs(pluginConfigs);
+
         runOnUiThread(() -> {
-
-            // load the player and put it in the main frame
-            KalturaOttPlayer.initialize(context, partnerId, initOptionsModel.serverUrl);
-            PKPluginConfigs pluginConfigs = new PKPluginConfigs();
-            if (initOptionsModel.plugins != null) {
-                if (initOptionsModel.plugins.ima != null) {
-                    createIMAPlugin(pluginConfigs, initOptionsModel.plugins.ima); //DEFAULT
-                }
-
-                if (initOptionsModel.plugins.youbora != null) {
-                    JsonObject accountCode = initOptionsModel.plugins.youbora;
-                    if (accountCode.has(YOUBORA_ACCOUNT_CODE) && accountCode.get(YOUBORA_ACCOUNT_CODE) != null) {
-                        createYouboraPlugin(pluginConfigs, new WrapperYouboraConfig().setAccountCode(accountCode.get(YOUBORA_ACCOUNT_CODE).getAsString()));
-                    }
-                }
-
-                if (initOptionsModel.plugins.ottAnalytics != null) {
-                    createPhoenixAnalyticsPlugin(pluginConfigs, initOptionsModel.plugins.ottAnalytics); //DEFAULT
-                }
-
-                if (initOptionsModel.plugins.broadpeak != null) {
-                    JsonObject broadpeakJsonObject = initOptionsModel.plugins.broadpeak;
-
-                    BroadpeakConfig broadpeakConfig = new Gson().fromJson(broadpeakJsonObject.toString(), BroadpeakConfig.class);
-                    createBroadpeakPlugin(pluginConfigs, broadpeakConfig);
-                }
-            }
-
-            final PlayerInitOptions initOptions = new PlayerInitOptions(partnerId);
-            initOptions.setAutoPlay(initOptionsModel.autoplay);
-            initOptions.setPreload(initOptionsModel.preload);
-            initOptions.setAllowCrossProtocolEnabled(initOptionsModel.allowCrossProtocolRedirect);
-            initOptions.setKs(initOptionsModel.ks);
-            initOptions.setReferrer(initOptionsModel.referrer);
-            initOptions.setAbrSettings(initOptionsModel.abrSettings);
-            initOptions.setPreferredMediaFormat(initOptionsModel.preferredMediaFormat);
-            initOptions.setSecureSurface(initOptionsModel.secureSurface);
-            initOptions.setAspectRatioResizeMode(initOptionsModel.aspectRatioResizeMode);
-            initOptions.setAllowClearLead(initOptionsModel.allowClearLead);
-            initOptions.setEnableDecoderFallback(initOptionsModel.enableDecoderFallback);
-            initOptions.setAdAutoPlayOnResume(initOptionsModel.adAutoPlayOnResume);
-            initOptions.setIsVideoViewHidden(initOptionsModel.isVideoViewHidden);
-            initOptions.forceSinglePlayerEngine(initOptionsModel.forceSinglePlayerEngine);
-            initOptions.setTunneledAudioPlayback(initOptionsModel.isTunneledAudioPlayback);
-            initOptions.setMaxAudioBitrate(initOptionsModel.maxAudioBitrate);
-            initOptions.setMaxAudioChannelCount(initOptionsModel.maxAudioChannelCount);
-            initOptions.setMaxVideoBitrate(initOptionsModel.maxVideoBitrate);
-            initOptions.setMaxVideoSize(initOptionsModel.maxVideoSize);
-            initOptions.setHandleAudioBecomingNoisy(initOptionsModel.handleAudioBecomingNoisyEnabled);
-
-            NetworkSettings networkSettings = initOptionsModel.networkSettings;
-            if (initOptionsModel.networkSettings != null && initOptionsModel.networkSettings.preferredForwardBufferDuration > 0) {
-                initOptions.setLoadControlBuffers(new LoadControlBuffers().setMaxPlayerBufferMs(initOptionsModel.networkSettings.preferredForwardBufferDuration));
-            }
-
-            if (initOptionsModel.trackSelection != null && initOptionsModel.trackSelection.audioLanguage != null && initOptionsModel.trackSelection.audioMode != null) {
-                initOptions.setAudioLanguage(initOptionsModel.trackSelection.audioLanguage, initOptionsModel.trackSelection.audioMode);
-            }
-            if (initOptionsModel.trackSelection != null && initOptionsModel.trackSelection.textLanguage != null && initOptionsModel.trackSelection.textMode != null) {
-                initOptions.setTextLanguage(initOptionsModel.trackSelection.textLanguage, initOptionsModel.trackSelection.textMode);
-            }
-
-            //initOptions.setVideoCodecSettings(appPlayerInitConfig.videoCodecSettings)
-            //initOptions.setAudioCodecSettings(appPlayerInitConfig.audioCodecSettings)
-            initOptions.setPluginConfigs(pluginConfigs);
 
             player = KalturaOttPlayer.create(context, initOptions);
 
@@ -336,14 +330,14 @@ public class PKPlayerWrapper {
 
         player.addListener(self, PhoenixAnalyticsEvent.bookmarkError, event -> {
             sendPlayerEvent("bookmarkError", "{ \"errorMessage\": \"" + event.errorMessage + "\" " +
-                                  ", \"errorCode\": \"" + event.errorCode + "\" " +
-                                  ", \"errorType\": \"" + event.type + "\" " +
+                    ", \"errorCode\": \"" + event.errorCode + "\" " +
+                    ", \"errorType\": \"" + event.type + "\" " +
                     " }");
         });
         player.addListener(self, PhoenixAnalyticsEvent.concurrencyError, event -> {
             sendPlayerEvent("concurrencyError", "{ \"errorMessage\": \"" + event.errorMessage + "\" " +
-                                  ", \"errorCode\": \"" + event.errorCode + "\" " +
-                                  ", \"errorType\": \"" + event.type + "\" " +
+                    ", \"errorCode\": \"" + event.errorCode + "\" " +
+                    ", \"errorType\": \"" + event.type + "\" " +
                     " }");
         });
 
@@ -570,9 +564,9 @@ public class PKPlayerWrapper {
         }
     }
 
-    private static void updateYouboraPlugin(WrapperYouboraConfig wrapperYouboraConfig) {
+    private static void updateYouboraPlugin(YouboraConfig youboraConfig) {
         if (player != null) {
-            runOnUiThread(() -> player.updatePluginConfig(YouboraPlugin.factory.getName(), getYouboraBundle(wrapperYouboraConfig)));
+            runOnUiThread(() -> player.updatePluginConfig(YouboraPlugin.factory.getName(), youboraConfig));
         }
     }
 
@@ -612,46 +606,12 @@ public class PKPlayerWrapper {
         return imaConfig;
     }
 
-    private static void createYouboraPlugin(PKPluginConfigs pluginConfigs, WrapperYouboraConfig wrapperYouboraConfig) {
+    private static void createYouboraPlugin(PKPluginConfigs pluginConfigs, YouboraConfig youboraConfig) {
 
         PlayKitManager.registerPlugins(activity, YouboraPlugin.factory);
         if (pluginConfigs != null) {
-            pluginConfigs.setPluginConfig(YouboraPlugin.factory.getName(), getYouboraBundle(wrapperYouboraConfig));
+            pluginConfigs.setPluginConfig(YouboraPlugin.factory.getName(), youboraConfig);
         }
-    }
-
-    private static Bundle getYouboraBundle(WrapperYouboraConfig wrapperYouboraConfig) {
-        Bundle optBundle = new Bundle();
-        if (wrapperYouboraConfig != null) {
-            //Youbora config bundle. Main config goes here.
-            optBundle.putString(KEY_ACCOUNT_CODE, wrapperYouboraConfig.getAccountCode());
-            if (wrapperYouboraConfig.getUsername() != null) {
-                optBundle.putString(KEY_USERNAME, wrapperYouboraConfig.getUsername());
-            }
-            if (wrapperYouboraConfig.getUserEmail() != null) {
-                optBundle.putString(KEY_USER_EMAIL, wrapperYouboraConfig.getUserEmail());
-            }
-            if (wrapperYouboraConfig.getUserType() != null) {
-                optBundle.putString(KEY_USER_TYPE, wrapperYouboraConfig.getUserType());
-            }
-            if (wrapperYouboraConfig.getAppName() != null) {
-                optBundle.putString(KEY_APP_NAME, wrapperYouboraConfig.getAppName());
-            }
-            if (wrapperYouboraConfig.getAppReleaseVersion() != null) {
-                optBundle.putString(KEY_APP_RELEASE_VERSION, wrapperYouboraConfig.getAppReleaseVersion());
-            }
-            if (wrapperYouboraConfig.getHouseHoldId() != null) {
-                optBundle.putString(KEY_HOUSEHOLD_ID, wrapperYouboraConfig.getHouseHoldId());
-            }
-            if (wrapperYouboraConfig.getExtraParam1() != null) {
-                optBundle.putString(KEY_CUSTOM_DIMENSION_1, wrapperYouboraConfig.getExtraParam1());
-            }
-            if (wrapperYouboraConfig.getExtraParam2() != null) {
-                optBundle.putString(KEY_CUSTOM_DIMENSION_2, wrapperYouboraConfig.getExtraParam2());
-            }
-            optBundle.putBoolean(KEY_ENABLED, true);
-        }
-        return optBundle;
     }
 
     private static void createBroadpeakPlugin(PKPluginConfigs pluginConfigs, BroadpeakConfig broadpeakConfig) {
