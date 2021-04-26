@@ -329,8 +329,11 @@ void KalturaVideoPlayerPriv::Seek_(uint64_t uSeekPositionMs)
 {
     if (m_player)
     {
-        double seekTime = static_cast<double>(uSeekPositionMs) / 1000.f;
-        [m_player seekTo:seekTime];
+        if (m_pPub->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready)
+        {
+            double seekTime = static_cast<double>(uSeekPositionMs) / 1000.f;
+            [m_player seekTo:seekTime];
+        }
     }
 }
 

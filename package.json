@@ -1,10 +1,10 @@
 {
   "name": "@ykaltura-player-youi/video-component",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "frameworksversion": "1.0.0",
   "description": "Kaltura Player Video component for You.i",
   "author": "Kaltura Inc.",
   "scripts": {
-    "postinstall": " ./scripts/downloadKalturaPlayerYouiFramworks.sh $PWD"
+    "postinstall": " ./scripts/downloadKalturaPlayerYouiFrameworks.sh $PWD"
   }
 }
