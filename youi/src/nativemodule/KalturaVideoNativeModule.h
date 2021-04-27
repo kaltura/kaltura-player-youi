@@ -27,7 +27,7 @@ public:
     YI_RN_EXPORT_METHOD(KeepDeviceScreenOn)(bool keepOn);
     YI_RN_EXPORT_METHOD(SelectVideoTrack)(uint32_t trackId);
     YI_RN_EXPORT_METHOD(SelectImageTrack)(uint32_t trackId);
-    YI_RN_EXPORT_METHOD(RequestThumbnailInfo)(uint64_t position);
+    YI_RN_EXPORT_METHOD(RequestThumbnailInfo)(uint64_t positionMs);
 
   private:
     void EmitEventPriv(const std::string& event, const folly::dynamic &value);
