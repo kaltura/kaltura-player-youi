@@ -88,18 +88,6 @@ public:
       //       "rows": 20
       //     }
 
-
-    public String id;
-    public String label;
-    public long bitrate;
-    public float width;
-    public float height;
-    public int cols;
-    public int rows;
-    public long duration;
-    public String url;
-    public boolean isSelected;
-    
     struct ImageTrackInfo
     {
         uint32_t id = 0;
@@ -112,7 +100,7 @@ public:
         uint32_t rows;
         uint64_t duration;
         CYIString url;
-        isSelected
+        bool isSelected
 
         ImageTrackInfo()
         {
@@ -126,7 +114,8 @@ public:
                        uint32_t cols,
                        uint32_t rows,
                        uint64_t duration, 
-                       const CYIString &url)
+                       const CYIString &url,
+                       bool isSelected)
                 
                 : id(id)
                 , uniqueId(uID)
