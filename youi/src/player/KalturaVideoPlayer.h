@@ -75,67 +75,70 @@ public:
         }
     };
 
-//    {
-//                "id": "Image:3,3,0",
-//                "tilesHorizontal": 1,
-//                "tilesVertical": 1,
-//                "bitrate": 10000,
-//                "startNumber": 0,
-//                "endNumber": -1,
-//                "width": 160,
-//                "height": 120,
-//                "imageTemplateUrl": "https://pf5.broadpeak-vcdn.com/bpk-tv/tvr/default/dash/thumbnails/tvr-thumbnail-$Number$.jpeg?deviceType=32&subscriptionType=34111&ip=87.71.182.209&primaryToken=9503692259590c20_5153b317cbc2fbbe7532f2a9f66076b6",
-//                "label": "thumbnail",
-//                "presentationTimeOffset": 0,
-//                "segmentDuration": 5000,
-//                "timeScale": 1,
-//                "isSelected": true
-//    }
+      //     {
+      //       "bitrate": 12000,
+      //       "isSelected": true,
+      //       "id": "Image:3,3,0",
+      //       "cols": 10,
+      //       "width": 1024,
+      //       "duration": 635000,
+      //       "url": "http://dash.edgesuite.net/akamai/bbb_30fps/thumbnails_102x58/tile_$Number$.jpg",
+      //       "height": 1152,
+      //       "label": "thumbnails_102x58",
+      //       "rows": 20
+      //     }
 
+
+    public String id;
+    public String label;
+    public long bitrate;
+    public float width;
+    public float height;
+    public int cols;
+    public int rows;
+    public long duration;
+    public String url;
+    public boolean isSelected;
+    
     struct ImageTrackInfo
     {
         uint32_t id = 0;
         CYIString uniqueId;
         CYIString label;
-        CYIString imageTemplateUrl;
-
-        uint32_t tilesHorizontal;
-        uint32_t tilesVertical;
-
-        uint64_t segmentDuration;
-        uint64_t presentationTimeOffset;
-        uint64_t timeScale;
-        uint64_t startNumber;
-        uint64_t endNumber;
         uint64_t bitrate;
-
         float width;
         float height;
+        uint32_t cols;
+        uint32_t rows;
+        uint64_t duration;
+        CYIString url;
+        isSelected
 
         ImageTrackInfo()
         {
         }
 
-        ImageTrackInfo(uint32_t id, const CYIString &uID, const CYIString &label, const CYIString &imageTemplateUrl,
-                       uint32_t tilesHorizontal, uint32_t tilesVertical,
-                       uint64_t segmentDuration, uint64_t presentationTimeOffset,
-                       uint64_t timeScale,uint64_t startNumber, uint64_t endNumber,
-                       uint64_t bitrate, float width, float height)
+        ImageTrackInfo(uint32_t id, const CYIString &uID,
+                       const CYIString &label,
+                       uint64_t bitrate,
+                       float width,
+                       float height,                 
+                       uint32_t cols,
+                       uint32_t rows,
+                       uint64_t duration, 
+                       const CYIString &url)
+                
                 : id(id)
                 , uniqueId(uID)
                 , label(label)
-                , imageTemplateUrl(imageTemplateUrl)
-                , tilesHorizontal(tilesHorizontal)
-                , tilesVertical(tilesVertical)
-                , segmentDuration(segmentDuration)
-                , presentationTimeOffset(presentationTimeOffset)
-                , timeScale(timeScale)
-                , startNumber(startNumber)
-                , endNumber(endNumber)
                 , bitrate(bitrate)
                 , width(width)
                 , height(height)
-
+                , cols(cols)
+                , rows(rows)
+                , duration(duration)
+                , url(url)
+                ,isSelected(isSelected)
         {
         }
 
@@ -145,20 +148,14 @@ public:
                     ("id", id)
                     ("uniqueId", uniqueId.GetData())
                     ("label", label.GetData())
-                    ("imageTemplateUrl", imageTemplateUrl.GetData())
-
-                    ("tilesHorizontal", tilesHorizontal)
-                    ("tilesVertical", tilesVertical)
-
-                    ("segmentDuration", segmentDuration)
-                    ("presentationTimeOffset", presentationTimeOffset)
-                    ("timeScale", timeScale)
-                    ("startNumber", startNumber)
-                    ("endNumber", endNumber)
                     ("bitrate", bitrate)
                     ("width", width)
-                    ("height", height);
-
+                    ("height", height)
+                    ("cols", cols)
+                    ("rows", rows)
+                    ("url", url.GetData())
+                    ("isSelected", isSelected);
+                    
             return object;
         }
     };
@@ -225,7 +222,7 @@ public:
     bool SelectImageTrack(uint32_t uID);
     std::vector<ImageTrackInfo> GetImageTracks();
     ImageTrackInfo GetActiveImageTrack();
-    void RequestThumbnailInfo(uint64_t position);
+    void RequestThumbnailInfo(uint64_t positionMs);
 
     CYISignal<> PlayerReplayEvent;
     CYISignal<> PlayerStoppedEvent;
