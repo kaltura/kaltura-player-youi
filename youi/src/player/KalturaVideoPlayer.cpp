@@ -584,32 +584,36 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             for (const auto& track : imageTracks)
             {
                 const CYIString uniqueId = track["id"].asString();
-                const CYIString label = track["label"].asString();
-                const CYIString imageTemplateUrl = track["imageTemplateUrl"].asString();
-
-                auto tilesHorizontal = static_cast<float>(track["tilesHorizontal"].asDouble());
-                auto tilesVertical = static_cast<float>(track["tilesVertical"].asDouble());
-
-                auto segmentDuration = static_cast<uint64_t>(track["segmentDuration"].asInt());
-                auto presentationTimeOffset = static_cast<uint64_t>(track["presentationTimeOffset"].asInt());
-                auto timeScale = static_cast<uint64_t>(track["timeScale"].asInt());
-                auto startNumber = static_cast<uint64_t>(track["startNumber"].asInt());
-                auto endNumber = static_cast<uint64_t>(track["endNumber"].asInt());
-
+                
+                CYIString label;
+                if (isValidJsonKey(track, "label"))
+                {
+                    label = track["label"].asString();
+                }
+                
                 auto bitrate = static_cast<uint64_t>(track["bitrate"].asInt());
                 auto width = static_cast<uint32_t>(track["width"].asInt());
                 auto height = static_cast<uint32_t>(track["height"].asInt());
-
+                auto clos = static_cast<float>(track["clos"].asDouble());
+                auto row = static_cast<float>(track["rows"].asDouble());
+                auto duration = static_cast<uint64_t>(track["duration"].asInt());
+                
+                CYIString url;
+                if (isValidJsonKey(track, "url"))
+                {
+                    url = track["url"].asString();
+                }
+               
                 bool isSelected = track["isSelected"].asBool();
                 if (isSelected)
                 {
                     m_selectedImageTrack = static_cast<int32_t>(m_imageTracks.size());
                 }
 
-                m_imageTracks.emplace_back(m_imageTracks.size(), uniqueId, label, imageTemplateUrl,
-                                           tilesHorizontal, tilesVertical,
-                                           segmentDuration, presentationTimeOffset, timeScale, startNumber, endNumber,
-                                           bitrate, width, height);
+                m_imageTracks.emplace_back(m_imageTracks.size(), uniqueId, label, bitrate,
+                                           width, height,
+                                           cols, rows,
+                                           duration, url);
             }
 
             if (m_imageTracks.size() > 0)
