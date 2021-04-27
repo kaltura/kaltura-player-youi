@@ -243,11 +243,11 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SelectImageTrack)(uint32_t 
     }
 }
 
-YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, RequestThumbnailInfo)(uint64_t position)
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, RequestThumbnailInfo)(uint64_t positionMs)
 {
     if (m_pPlayer)
     {
-        m_pPlayer->RequestThumbnailInfo(position);
+        m_pPlayer->RequestThumbnailInfo(positionMs);
     }
 }
 
