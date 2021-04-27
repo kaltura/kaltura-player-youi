@@ -178,10 +178,10 @@ KalturaVideoPlayer::ImageTrackInfo KalturaVideoPlayer::GetActiveImageTrack() {
     return m_pPriv->GetActiveImageTrack_();
 }
 
-void KalturaVideoPlayer::RequestThumbnailInfo(uint64_t position)
+void KalturaVideoPlayer::RequestThumbnailInfo(uint64_t positionMs)
 {
-    YI_LOGD(TAG, "timeUpdateEvent - %" PRIu64, position);
-    m_pPriv->RequestThumbnailInfo_(position);
+    YI_LOGD(TAG, "timeUpdateEvent - %" PRIu64, positionMs);
+    m_pPriv->RequestThumbnailInfo_(positionMs);
 }
 
 
