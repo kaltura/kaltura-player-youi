@@ -436,11 +436,11 @@ KalturaVideoPlayer::ImageTrackInfo KalturaVideoPlayerPriv::GetActiveImageTrack_(
     return KalturaVideoPlayer::ImageTrackInfo();
 }
 
-void KalturaVideoPlayerPriv::RequestThumbnailInfo_(uint64_t position)
+void KalturaVideoPlayerPriv::RequestThumbnailInfo_(uint64_t positionMs)
 {
-    if (position >= 0)
+    if (positionMs >= 0)
     {
-        GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, requestThumbnailInfoMethodID, position);
+        GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, requestThumbnailInfoMethodID, positionMs);
     }
 }
 
