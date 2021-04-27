@@ -3,54 +3,37 @@ package tv.youi.kalturaplayeryoui.model.tracks;
 public class ImageTrack {
     public String id;
     public String label;
-    public String imageTemplateUrl;
-
-    public int tilesHorizontal;
-    public int tilesVertical;
-
-    public long segmentDuration;
-    public long presentationTimeOffset;
-    public long timeScale;
-    public long startNumber;
-    public long endNumber;
     public long bitrate;
-
     public float width;
     public float height;
-
+    public int cols;
+    public int rows;
+    public long duration;
+    public String url;
     public boolean isSelected;
 
 
     public ImageTrack(String id,
-                      String label,
-                      String imageTemplateUrl,
-                      int tilesHorizontal,
-                      int tilesVertical,
-                      long segmentDuration,
-                      long presentationTimeOffset,
-                      long timeScale,
-                      long startNumber,
-                      long endNumber,
-                       long bitrate,
-                      float width,
-                      float height,
-                      boolean isSelected) {
+               String label,
+               long bitrate,
+               float width,
+               float height,
+               int cols,
+               int rows,
+               long duration,
+               String url,
+               boolean isSelected
+
+    ) {
         this.id = id;
         this.label = label;
-        this.imageTemplateUrl = imageTemplateUrl;
-
-        this.tilesVertical = tilesVertical;
-        this.tilesHorizontal = tilesHorizontal;
-
-        this.segmentDuration = segmentDuration;
-        this.presentationTimeOffset = presentationTimeOffset;
-        this.timeScale = timeScale;
-        this.startNumber = startNumber;
-        this.endNumber = endNumber;
-
         this.bitrate = bitrate;
         this.width = width;
         this.height = height;
+        this.cols = cols;
+        this.rows = rows;
+        this.duration = duration;
+        this.url = url;
         this.isSelected = isSelected;
     }
 }
