@@ -313,24 +313,21 @@ public class PKPlayerWrapper {
         });
 
         player.addListener(self, PlayerEvent.imageTrackChanged, event -> {
-            final com.kaltura.playkit.player.ImageTrack newTrack = event.newTrack;
-            ImageTrack textTrack = new ImageTrack(newTrack.getUniqueId(), newTrack.getLabel(),
-                    newTrack.getImageTemplateUrl(),
-                    newTrack.getTilesHorizontal(),
-                    newTrack.getTilesVertical(),
-                    newTrack.getSegmentDuration(),
-                    newTrack.getPresentationTimeOffset(),
-                    newTrack.getTimeScale(),
-                    newTrack.getStartNumber(),
-                    newTrack.getEndNumber(),
-                    newTrack.getBitrate(),
-                    newTrack.getWidth(),
-                    newTrack.getHeight(),
+            final com.kaltura.playkit.player.ImageTrack newImageTrack = event.newTrack;
+
+            ImageTrack imageTrack = new ImageTrack(newImageTrack.getUniqueId(), newImageTrack.getLabel(),
+                    newImageTrack.getBitrate(),
+                    newImageTrack.getWidth(),
+                    newImageTrack.getHeight(),
+                    newImageTrack.getCols(),
+                    newImageTrack.getRows(),
+                    newImageTrack.getDuration(),
+                    newImageTrack.getUrl(),
                     true);
 
-            sendPlayerEvent("imageTrackChanged", new Gson().toJson(textTrack));
+            sendPlayerEvent("imageTrackChanged", new Gson().toJson(imageTrack));
         });
-
+       
         player.addListener(self, PlayerEvent.playbackInfoUpdated, event -> {
             long videoBitrate = (event.playbackInfo.getVideoBitrate() > 0) ? event.playbackInfo.getVideoBitrate() : 0;
             long audioBitrate = (event.playbackInfo.getAudioBitrate() > 0) ? event.playbackInfo.getAudioBitrate() : 0;
@@ -431,18 +428,14 @@ public class PKPlayerWrapper {
 
             imageTracksInfo.add(new ImageTrack(imageTrack.getUniqueId(),
                     imageTrack.getLabel(),
-                    imageTrack.getImageTemplateUrl(),
-                    imageTrack.getTilesHorizontal(),
-                    imageTrack.getTilesVertical(),
-                    imageTrack.getSegmentDuration(),
-                    imageTrack.getPresentationTimeOffset(),
-                    imageTrack.getTimeScale(),
-                    imageTrack.getStartNumber(),
-                    imageTrack.getEndNumber(),
                     imageTrack.getBitrate(),
                     imageTrack.getWidth(),
                     imageTrack.getHeight(),
-                    pkTracksInfo.getDefaultImageTrackIndex() == imageTrackIndex));
+                    imageTrack.getCols(),
+                    imageTrack.getRows(),
+                    imageTrack.getDuration(),
+                    imageTrack.getUrl(),
+                    (imageTrackIndex == 0) ? true : false));
             imageTrackIndex++;
         }
 
