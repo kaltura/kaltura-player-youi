@@ -313,6 +313,8 @@ public class PKPlayerWrapper {
         });
 
         player.addListener(self, PlayerEvent.imageTrackChanged, event -> {
+            log.d("imageTrackChangedEvent");
+
             final com.kaltura.playkit.player.ImageTrack newImageTrack = event.newTrack;
 
             ImageTrack imageTrack = new ImageTrack(newImageTrack.getUniqueId(), newImageTrack.getLabel(),
@@ -807,12 +809,12 @@ public class PKPlayerWrapper {
         }
     }
 
-    public static void requestThumbnailInfo(long position) {
+    public static void requestThumbnailInfo(float position) {
         log.d("requestThumbnailInfo position:" + position);
 
         if (player != null) {
             runOnUiThread(() -> {
-                 ThumbnailInfo thumbnailInfo = player.getThumbnailInfo(position);
+                 ThumbnailInfo thumbnailInfo = player.getThumbnailInfo((long) position);
                  String thumbnailInfoJson = "{ \"position\": " + position + ", \"thumbnailInfo\": " + new Gson().toJson(thumbnailInfo) + " }";
                  sendPlayerEvent("thumbnailInfoResponse", thumbnailInfoJson);
             });

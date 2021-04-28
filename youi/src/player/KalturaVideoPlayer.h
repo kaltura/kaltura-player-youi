@@ -100,7 +100,7 @@ public:
         uint32_t rows;
         uint64_t duration;
         CYIString url;
-        bool isSelected
+        bool isSelected;
 
         ImageTrackInfo()
         {
@@ -211,7 +211,7 @@ public:
     bool SelectImageTrack(uint32_t uID);
     std::vector<ImageTrackInfo> GetImageTracks();
     ImageTrackInfo GetActiveImageTrack();
-    void RequestThumbnailInfo(uint64_t positionMs);
+    void RequestThumbnailInfo(float positionMs);
 
     CYISignal<> PlayerReplayEvent;
     CYISignal<> PlayerStoppedEvent;

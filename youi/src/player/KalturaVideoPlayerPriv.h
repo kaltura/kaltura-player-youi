@@ -38,7 +38,7 @@ public:
     bool SelectImageTrack_(uint32_t uID);
     std::vector<KalturaVideoPlayer::ImageTrackInfo> GetImageTracks_() const;
     KalturaVideoPlayer::ImageTrackInfo GetActiveImageTrack_() const;
-    void RequestThumbnailInfo_(uint64_t positionMs);
+    void RequestThumbnailInfo_(float positionMs);
     
     void Emit_(const std::string &event, const folly::dynamic &content);
 

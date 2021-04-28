@@ -167,6 +167,8 @@ KalturaVideoPlayer::VideoTrackInfo KalturaVideoPlayer::GetActiveVideoTrack() {
 }
 
 bool KalturaVideoPlayer::SelectImageTrack(uint32_t uID) {
+    //YI_LOGD(TAG, "SelectImageTrack %d", uID);
+
     return m_pPriv->SelectImageTrack_(uID);
 }
 
@@ -178,9 +180,9 @@ KalturaVideoPlayer::ImageTrackInfo KalturaVideoPlayer::GetActiveImageTrack() {
     return m_pPriv->GetActiveImageTrack_();
 }
 
-void KalturaVideoPlayer::RequestThumbnailInfo(uint64_t positionMs)
+void KalturaVideoPlayer::RequestThumbnailInfo(float positionMs)
 {
-    YI_LOGD(TAG, "timeUpdateEvent - %" PRIu64, positionMs);
+    YI_LOGD(TAG, "RequestThumbnailInfo - %f", positionMs);
     m_pPriv->RequestThumbnailInfo_(positionMs);
 }
 
@@ -495,12 +497,36 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             for (const auto& track : videoTracks)
             {
                 const CYIString uniqueId = track["id"].asString();
-                auto bitrate = static_cast<uint64_t>(track["bitrate"].asInt());
-                auto width = static_cast<uint32_t>(track["width"].asInt());
-                auto height = static_cast<uint32_t>(track["height"].asInt());
-                bool isAdaptive = track["isAdaptive"].asBool();
-                bool isSelected = track["isSelected"].asBool();
 
+                auto bitrate = false;
+                if (isValidJsonKey(track, "bitrate"))
+                {
+                    bitrate = static_cast<uint64_t>(track["bitrate"].asInt());
+                }
+                
+                auto width = 0;
+                if (isValidJsonKey(track, "width"))
+                {
+                    width = static_cast<uint32_t>(track["width"].asInt());
+                }
+
+                auto height = 0;
+                if (isValidJsonKey(track, "height"))
+                {
+                    height = static_cast<uint32_t>(track["height"].asInt());
+                }
+
+                bool isAdaptive = false;
+                if (isValidJsonKey(track, "height"))
+                {
+                    isAdaptive = track["isAdaptive"].asBool();
+                }
+
+                bool isSelected = false;
+                if (isValidJsonKey(track, "isSelected"))
+                {
+                    isSelected = track["isSelected"].asBool();
+                }
                 if (isSelected)
                 {
                     m_selectedVideoTrack = static_cast<int32_t>(m_videoTracks.size());
@@ -537,8 +563,11 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
 
                 m_audioTracks.emplace_back(m_audioTracks.size(), uniqueId, label, language);
 
-                bool isSelected = track["isSelected"].asBool();
-                if (isSelected)
+                bool isSelected = false;
+                if (isValidJsonKey(track, "isSelected"))
+                {
+                    isSelected = track["isSelected"].asBool();
+                }                if (isSelected)
                 {
                     m_selectedAudioTrack = static_cast<int32_t>(m_audioTracks.size());
                 }
@@ -568,7 +597,11 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
                 m_closedCaptionsTracks.emplace_back(
                         m_closedCaptionsTracks.size(), uniqueId, label, language);
 
-                bool isSelected = track["isSelected"].asBool();
+                bool isSelected = false;
+                if (isValidJsonKey(track, "isSelected"))
+                {
+                    isSelected = track["isSelected"].asBool();
+                }
                 if (isSelected)
                 {
                     m_selectedClosedCaptionTrack
@@ -590,21 +623,54 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
                 {
                     label = track["label"].asString();
                 }
-                
-                auto bitrate = static_cast<uint64_t>(track["bitrate"].asInt());
-                auto width = static_cast<uint32_t>(track["width"].asInt());
-                auto height = static_cast<uint32_t>(track["height"].asInt());
-                auto clos = static_cast<float>(track["clos"].asDouble());
-                auto row = static_cast<float>(track["rows"].asDouble());
-                auto duration = static_cast<uint64_t>(track["duration"].asInt());
-                
+
+                uint64_t bitrate = 0;
+                if (isValidJsonKey(track, "bitrate"))
+                {
+                    bitrate = static_cast<uint64_t>(track["bitrate"].asInt());
+                }
+
+                auto width = 0;
+                if (isValidJsonKey(track, "width"))
+                {
+                    width = static_cast<uint32_t>(track["width"].asInt());
+                }
+
+                auto height = 0;
+                if (isValidJsonKey(track, "height"))
+                {
+                    height = static_cast<uint32_t>(track["height"].asInt());
+                }
+
+                auto cols = 0;
+                if (isValidJsonKey(track, "cols"))
+                {
+                    cols = static_cast<float>(track["cols"].asDouble());
+                }
+
+                auto rows = 0;
+                if (isValidJsonKey(track, "rows"))
+                {
+                    rows = static_cast<float>(track["rows"].asDouble());
+                }
+
+                uint64_t duration = 0;
+                if (isValidJsonKey(track, "duration"))
+                {
+                    duration = static_cast<uint64_t>(track["duration"].asInt());
+                }
+
                 CYIString url;
                 if (isValidJsonKey(track, "url"))
                 {
                     url = track["url"].asString();
                 }
-               
-                bool isSelected = track["isSelected"].asBool();
+
+                bool isSelected = false;
+                if (isValidJsonKey(track, "isSelected"))
+                {
+                    isSelected = track["isSelected"].asBool();
+                }
                 if (isSelected)
                 {
                     m_selectedImageTrack = static_cast<int32_t>(m_imageTracks.size());
@@ -613,7 +679,7 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
                 m_imageTracks.emplace_back(m_imageTracks.size(), uniqueId, label, bitrate,
                                            width, height,
                                            cols, rows,
-                                           duration, url);
+                                           duration, url, isSelected);
             }
 
             if (m_imageTracks.size() > 0)

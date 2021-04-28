@@ -21,7 +21,7 @@ export default class KalturaVideo extends React.Component {
   componentDidMount() {
     // Must be called before any other method on the native module
     NativeModules.KalturaVideo.ConnectToPlayer(findNodeHandle(this.videoRef.current));
-
+    
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_REPLAY_EVENT', () => {
       if (this.props.onReplayEvent) {
         this.props.onReplayEvent();
@@ -33,7 +33,7 @@ export default class KalturaVideo extends React.Component {
         this.props.onStoppedEvent();
       }
     })
-
+    
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_PLAYBACK_RATE_CHANGED_EVENT', (rate) => {
       if (this.props.onPlaybackRateChangedEvent) {
         this.props.onPlaybackRateChangedEvent(rate);
@@ -71,9 +71,9 @@ export default class KalturaVideo extends React.Component {
     })
 
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_AVAILABLE_IMAGE_TRACKS_CHANGED', (event) => {
-       if (this.props.onAvailableImageTracksChanged) {
-            this.props.onAvailableImageTracksChanged(event);
-       }
+      if (this.props.onAvailableImageTracksChanged) {
+        this.props.onAvailableImageTracksChanged(event);
+      }
     })
 
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_THUMBNAIL_INFO_RESPONSE', (event) => {
@@ -81,13 +81,13 @@ export default class KalturaVideo extends React.Component {
         this.props.onThumbnailInfoResponse(event);
       }
     })
-
+    
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_CURRENT_PROGRAM_TIME_UPDATED', (currentProgramTimeUpdated) => {
       if (this.props.onCurrentProgramTimeUpdated) {
         this.props.onCurrentProgramTimeUpdated(currentProgramTimeUpdated);
       }
     })
-      
+
     this.eventEmitter = PlayerEventEmitter.addListener('KALTURA_BUFFER_TIME_UPDATED', (bufferPosition) => {
       if (this.props.onBufferTimeUpdated) {
         this.props.onBufferTimeUpdated(bufferPosition);
@@ -105,14 +105,14 @@ export default class KalturaVideo extends React.Component {
         name: playerInformation.name,
         version: playerInformation.version
       })
-    })
-
+     })
+     
     if (this.props.logLevel) {
-       NativeModules.KalturaVideo.SetLogLevel(this.props.logLevel)
+       NativeModules.KalturaVideo.SetLogLevel(this.props.logLevel) 
     }
 
     NativeModules.KalturaVideo.Setup(this.props.ottPartnerId, this.props.initOptions)
-
+    
     if (this.props.media) {
       this.loadMedia(this.props.media.id, this.props.media.asset);
     } else if (this.props.source) {
@@ -126,7 +126,6 @@ export default class KalturaVideo extends React.Component {
     if (this.props.playerZIndex) {
       NativeModules.KalturaVideo.SetPlayerZIndex(this.props.playerZIndex)
     }
-
   }
 
   componentDidUpdate(prevProps) {
@@ -156,7 +155,7 @@ export default class KalturaVideo extends React.Component {
     if (this.props.playbackSpeed != prevProps.playbackSpeed && this.props.playbackSpeed) {
         NativeModules.KalturaVideo.ChangePlaybackRate(this.props.playbackSpeed)
     }
-
+    
     if (this.props.playerZIndex != prevProps.playerZIndex && this.props.playerZIndex) {
       NativeModules.KalturaVideo.SetPlayerZIndex(this.props.playerZIndex)
     }
@@ -168,6 +167,7 @@ export default class KalturaVideo extends React.Component {
     if (this.props.thumbnailInfoPosition != prevProps.thumbnailInfoPosition && this.props.thumbnailInfoPosition) {
       NativeModules.KalturaVideo.RequestThumbnailInfo(this.props.thumbnailInfoPosition)
     }
+
   }
 
   render() {
@@ -225,7 +225,7 @@ export default class KalturaVideo extends React.Component {
     return this.videoRef.current.getLiveSeekableRanges()
   };
 
-  requestThumbnailInfo = (position) => {
-    return this.videoRef.current.requestThumbnailInfo(position)
+  requestThumbnailInfo = (positionMs) => {
+    return this.videoRef.current.requestThumbnailInfo(positionMs)
   };
 }
