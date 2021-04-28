@@ -48,6 +48,20 @@ static AssetReferenceType getAssetReferenceType(NSString *str) {
     return AssetReferenceTypeUnset;
 }
 
+static NSString* getUrlType(NSString *str) {
+    if (str) {
+        return [str lowercaseString];
+    }
+    return str;
+}
+
+static NSString* getStreamerType(NSString *str) {
+    if (str) {
+        return [str lowercaseString];
+    }
+    return str;
+}
+
 static IMAConfig* getImaConfig(NSDictionary *dyn_config) {
     IMAConfig *config = [IMAConfig new];
     config.adTagUrl = dyn_config[@"adTagUrl"];
@@ -297,12 +311,26 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     [self.kalturaPlayer addObserver:self event:PlayerEvent.playheadUpdate block:^(PKEvent * _Nonnull event) {
         NSNumber *currentTime = event.currentTime;
         NSNumber *bufferedTime = [NSNumber numberWithDouble: weakSelf.bufferedTime];
+        
         if (bufferedTime.doubleValue < currentTime.doubleValue) {
             bufferedTime = currentTime;
         }
-        [weakSender sendEvent:@"timeUpdate" payload:@{@"position": currentTime,
-                                                      @"bufferPosition": bufferedTime
-        }];
+        
+        if(weakPlayer.isLive) {
+            NSDate *currentProgramTime = weakPlayer.currentProgramTime;
+            NSTimeInterval currentProgramTimeEpochSeconds = [currentProgramTime timeIntervalSince1970];
+            NSNumber *currentProgramTimeDouble = [NSNumber numberWithDouble:currentProgramTimeEpochSeconds];
+
+            [weakSender sendEvent:@"timeUpdate" payload:@{@"position": currentTime,
+                                                          @"bufferPosition": bufferedTime,
+                                                          @"currentProgramTime": currentProgramTimeDouble
+            }];
+        } else {
+            [weakSender sendEvent:@"timeUpdate" payload:@{@"position": currentTime,
+                                                          @"bufferPosition": bufferedTime
+        
+            }];
+        }
     }];
     
     [self.kalturaPlayer addObserver:self event:PlayerEvent.loadedTimeRanges block:^(PKEvent * _Nonnull event) {
@@ -428,11 +456,17 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
     }];
     
     [self.kalturaPlayer addObserver:self events:@[OttEvent.bookmarkError] block:^(PKEvent * _Nonnull event) {
-        [weakSender sendEvent:@"bookmarkError" payload:@{@"errorMessage": event.ottEventMessage}];
+        [weakSender sendEvent:@"bookmarkError" payload:@{@"errorMessage": event.ottEventMessage,
+                                                         @"errorCode":  [@(event.error.code) stringValue],
+                                                         @"errorType": @"BOOKMARK_ERROR"
+        }];
     }];
     
     [self.kalturaPlayer addObserver:self events:@[OttEvent.concurrency] block:^(PKEvent * _Nonnull event) {
-        [weakSender sendEvent:@"concurrencyError" payload:@{@"errorMessage": event.ottEventMessage}];
+        [weakSender sendEvent:@"concurrencyError" payload:@{@"errorMessage": event.ottEventMessage,
+                                                            @"errorCode": [@(event.error.code) stringValue],
+                                                            @"errorType": @"CONCURRENCY_ERROR"
+        }];
     }];
 
     [self.kalturaPlayer addObserver:self event:AdEvent.adDidProgressToTime block:^(PKEvent * _Nonnull event) {
@@ -520,7 +554,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         options.formats = @[format];
     }
     
-    NSString *urlType = dyn_options[@"urlType"];
+    NSString *urlType = getUrlType(dyn_options[@"urlType"]);
     if (urlType) {
         options.urlType = urlType;
     }
@@ -530,7 +564,7 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         options.fileIds = @[assetFileId];
     }
     
-    NSString *streamerType = dyn_options[@"streamerType"];
+    NSString *streamerType = getStreamerType(dyn_options[@"streamerType"]);
     if (streamerType) {
         options.streamerType = streamerType;
     }

@@ -52,7 +52,7 @@ public:
             return object;
         }
     };    
-    
+
     struct KalturaAudioTrack : public CYIAbstractVideoPlayer::AudioTrackInfo
     {
         CYIString uniqueId;
@@ -74,7 +74,7 @@ public:
         {
         }
     };
-    
+
     KalturaVideoPlayer();
     virtual ~KalturaVideoPlayer();
 
@@ -83,12 +83,14 @@ public:
     void SetMedia(const CYIUrl &videoURI);
     void Replay();
     void ChangePlaybackRate(float playbackRate);
+    void SetPlayerZIndex(float zIndex);
     void SetLogLevel(const CYIString &logLevel);
     void KeepDeviceScreenOn(bool keepOn);
 
     bool SelectVideoTrack(uint32_t uID);
     std::vector<VideoTrackInfo> GetVideoTracks();
     VideoTrackInfo GetActiveVideoTrack();
+    bool isValidJsonKey(folly::dynamic content, const CYIString &keyName);
 
     CYISignal<> PlayerReplayEvent;
     CYISignal<> PlayerStoppedEvent;
@@ -98,6 +100,9 @@ public:
     CYISignal<> PlayerSeekedEvent;
 
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
+  
+    CYISignal<uint64_t>  CurrentProgramTimeUpdated;
+
     CYISignal<folly::dynamic> LoadMediaSuccess;
     CYISignal<float> VolumeChanged;
     CYISignal<uint64_t> CurrentBufferTimeUpdated;
@@ -158,8 +163,6 @@ private:
     std::vector<KalturaClosedCaptionTrack> m_closedCaptionsTracks;
     int32_t m_selectedClosedCaptionTrack = -1;
     std::vector<CYIAbstractVideoPlayer::SeekableRange> m_liveSeekableRanges;
-    
-    YI_RECT_REL m_currentVideoRectangle;
 
     YI_TYPE_BASES(KalturaVideoPlayer, CYIAbstractVideoPlayer)
 };

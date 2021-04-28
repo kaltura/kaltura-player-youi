@@ -276,6 +276,15 @@ void KalturaVideoPlayerPriv::ChangePlaybackRate_(float playbackRate)
     GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, changePlaybackRateMethodID, playbackRate);
 }
 
+void KalturaVideoPlayerPriv::SetPlayerZIndex_(float zIndex)
+{
+    if (!playerWrapperBridgeClass)
+    {
+        return;
+    }
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, setZIndexMethodID, zIndex);
+}
+
 uint64_t KalturaVideoPlayerPriv::GetDurationMs_() const
 {
     return m_pPub->m_durationMs;
@@ -293,8 +302,12 @@ void KalturaVideoPlayerPriv::Seek_(uint64_t uSeekPositionMs)
         return;
     }
 
-    double seekTime = static_cast<double>(uSeekPositionMs) / 1000.f;
-    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, seekToMethodID, (float)seekTime);
+    if (m_pPub->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready)
+    {
+        double seekTime = static_cast<double>(uSeekPositionMs) / 1000.f;
+        GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, seekToMethodID,(float) seekTime);
+    }
+
 }
 
 void KalturaVideoPlayerPriv::SetMaxBitrate_(uint64_t uMaxBitrate)

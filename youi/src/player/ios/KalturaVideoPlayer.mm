@@ -307,6 +307,14 @@ void KalturaVideoPlayerPriv::ChangePlaybackRate_(float playbackRate)
     }
 }
 
+void KalturaVideoPlayerPriv::SetPlayerZIndex_(float zIndex)
+{
+    if (m_player)
+    {
+        [m_player setZIndex:zIndex];
+    }
+}
+
 uint64_t KalturaVideoPlayerPriv::GetDurationMs_() const
 {
     return m_pPub->m_durationMs;
@@ -321,8 +329,11 @@ void KalturaVideoPlayerPriv::Seek_(uint64_t uSeekPositionMs)
 {
     if (m_player)
     {
-        double seekTime = static_cast<double>(uSeekPositionMs) / 1000.f;
-        [m_player seekTo:seekTime];
+        if (m_pPub->GetPlayerState().mediaState == CYIAbstractVideoPlayer::MediaState::Ready)
+        {
+            double seekTime = static_cast<double>(uSeekPositionMs) / 1000.f;
+            [m_player seekTo:seekTime];
+        }
     }
 }
 

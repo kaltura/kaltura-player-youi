@@ -28,12 +28,13 @@ public:
     void SetMedia_(const CYIUrl &videoURI);
     void Replay_();
     void ChangePlaybackRate_(float playbackRate);
+    void SetPlayerZIndex_(float zIndex);
     void SetLogLevel_(const CYIString &logLevel);
 
     bool SelectVideoTrack_(uint32_t uID);
     std::vector<KalturaVideoPlayer::VideoTrackInfo> GetVideoTracks_() const;
     KalturaVideoPlayer::VideoTrackInfo GetActiveVideoTrack_() const;
-    
+  
     void Emit_(const std::string &event, const folly::dynamic &content);
 
     void SetVideoRectangle(const YI_RECT_REL &rVideoRectangle);

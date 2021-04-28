@@ -26,6 +26,8 @@ static const std::string KALTURA_PLAYBACK_RATE_CHANGED_EVENT = "KALTURA_PLAYBACK
 static const std::string KALTURA_SEEKING_EVENT = "KALTURA_SEEKING_EVENT";
 static const std::string KALTURA_SEEKED_EVENT = "KALTURA_SEEKED_EVENT";
 static const std::string KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED = "KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED";
+static const std::string KALTURA_CURRENT_PROGRAM_TIME_UPDATED = "KALTURA_CURRENT_PROGRAM_TIME_UPDATED";
+
 static const std::string KALTURA_LOAD_MEDIA_SUCCESS = "KALTURA_LOAD_MEDIA_SUCCESS";
 static const std::string KALTURA_VOLUME_CHANGED = "KALTURA_VOLUME_CHANGED";
 static const std::string KALTURA_BUFFER_TIME_UPDATED = "KALTURA_BUFFER_TIME_UPDATED";
@@ -42,6 +44,7 @@ KalturaVideoNativeModule::KalturaVideoNativeModule()
         KALTURA_SEEKED_EVENT,
         KALTURA_LOAD_MEDIA_SUCCESS,
         KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED,
+        KALTURA_CURRENT_PROGRAM_TIME_UPDATED,
         KALTURA_VOLUME_CHANGED,
         KALTURA_BUFFER_TIME_UPDATED,
         KALTURA_KEEP_SCREEN_ON_CHANGED
@@ -108,6 +111,10 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
 
                 auto tracksArray = ToDynamic(dynamicTracks);
                 this->EmitEventPriv(KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED, tracksArray);
+            });
+
+            m_pPlayer->CurrentProgramTimeUpdated.Connect(*this, [this](uint64_t currentProgramTime) {
+                this->EmitEventPriv(KALTURA_CURRENT_PROGRAM_TIME_UPDATED, currentProgramTime);
             });
 
             m_pPlayer->VolumeChanged.Connect(*this, [this](float volume) {
@@ -177,6 +184,14 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ChangePlaybackRate)(float p
     }
 }
 
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SetPlayerZIndex)(float zIndex)
+{
+    if (m_pPlayer)
+    {
+        m_pPlayer->SetPlayerZIndex(zIndex);
+    }
+}
+
 YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SetLogLevel)(std::string logLevel)
 {
     if (m_pPlayer)
@@ -200,3 +215,4 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SelectVideoTrack)(uint32_t 
         m_pPlayer->SelectVideoTrack(trackId);
     }
 }
+
