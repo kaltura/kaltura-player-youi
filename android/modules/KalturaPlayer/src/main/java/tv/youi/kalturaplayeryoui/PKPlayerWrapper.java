@@ -342,8 +342,10 @@ public class PKPlayerWrapper {
         });
 
         player.addListener(self, BroadpeakEvent.error, event -> {
-            PKError bpError = new PKError(PKPlayerErrorType.SOURCE_ERROR, PKError.Severity.Fatal, "BroadpeakError:" + event.errorCode + "-" + event.errorMessage, null);
-            sendPlayerEvent("error", getErrorJson(bpError));
+            sendPlayerEvent("broadpeakError", "{ \"errorMessage\": \"" + event.errorMessage + "\" " +
+                    ", \"errorCode\": \"" + event.errorCode + "\" " +
+                    ", \"errorType\": \"" + event.type + "\" " +
+                    " }");
         });
 
         player.addListener(self, AdEvent.adProgress, event -> sendPlayerEvent("adProgress", "{ \"currentAdPosition\": " + (event.currentAdPosition / Consts.MILLISECONDS_MULTIPLIER_FLOAT) + " }"));
