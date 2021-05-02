@@ -442,7 +442,7 @@ KalturaVideoPlayer::ImageTrackInfo KalturaVideoPlayerPriv::GetActiveImageTrack_(
     return KalturaVideoPlayer::ImageTrackInfo();
 }
 
-void KalturaVideoPlayerPriv::RequestThumbnailInfo_(float positionMs)
+void KalturaVideoPlayerPriv::RequestThumbnailInfo_(int64_t positionMs)
 {
 }
 

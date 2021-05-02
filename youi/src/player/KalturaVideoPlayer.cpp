@@ -180,9 +180,9 @@ KalturaVideoPlayer::ImageTrackInfo KalturaVideoPlayer::GetActiveImageTrack() {
     return m_pPriv->GetActiveImageTrack_();
 }
 
-void KalturaVideoPlayer::RequestThumbnailInfo(float positionMs)
+void KalturaVideoPlayer::RequestThumbnailInfo(int64_t positionMs)
 {
-    YI_LOGD(TAG, "RequestThumbnailInfo - %f", positionMs);
+    YI_LOGD(TAG, "RequestThumbnailInfo = %" PRIu64, positionMs);
     m_pPriv->RequestThumbnailInfo_(positionMs);
 }
 

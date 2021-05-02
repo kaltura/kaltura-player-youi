@@ -211,7 +211,7 @@ public:
     bool SelectImageTrack(uint32_t uID);
     std::vector<ImageTrackInfo> GetImageTracks();
     ImageTrackInfo GetActiveImageTrack();
-    void RequestThumbnailInfo(float positionMs);
+    void RequestThumbnailInfo(int64_t positionMs);
 
     CYISignal<> PlayerReplayEvent;
     CYISignal<> PlayerStoppedEvent;

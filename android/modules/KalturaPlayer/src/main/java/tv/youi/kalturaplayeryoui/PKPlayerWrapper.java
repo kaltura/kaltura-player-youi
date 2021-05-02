@@ -809,13 +809,17 @@ public class PKPlayerWrapper {
         }
     }
 
-    public static void requestThumbnailInfo(float position) {
+    public static void requestThumbnailInfo(long position) {
         log.d("requestThumbnailInfo position:" + position);
 
         if (player != null) {
             runOnUiThread(() -> {
-                 ThumbnailInfo thumbnailInfo = player.getThumbnailInfo((long) position);
-                 String thumbnailInfoJson = "{ \"position\": " + position + ", \"thumbnailInfo\": " + new Gson().toJson(thumbnailInfo) + " }";
+                long getThumbnailInfoPosition = position;
+                if (!player.isLive() && getThumbnailInfoPosition > player.getDuration()) {
+                    getThumbnailInfoPosition =  player.getDuration();
+                }
+                 ThumbnailInfo thumbnailInfo = player.getThumbnailInfo(getThumbnailInfoPosition);
+                 String thumbnailInfoJson = "{ \"position\": " + getThumbnailInfoPosition + ", \"thumbnailInfo\": " + new Gson().toJson(thumbnailInfo) + " }";
                  sendPlayerEvent("thumbnailInfoResponse", thumbnailInfoJson);
             });
         }

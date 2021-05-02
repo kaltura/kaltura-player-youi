@@ -238,6 +238,8 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SelectVideoTrack)(uint32_t 
 YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SelectImageTrack)(uint32_t trackId)
 {
     //YI_LOGD(TAG, "SelectImageTrack trackId = %d ", trackId);
+    YI_LOGD(TAG, "SelectImageTrack trackId = %" PRIu32, trackId);
+
 
     if (m_pPlayer)
     {
@@ -245,8 +247,10 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SelectImageTrack)(uint32_t 
     }
 }
 
-YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, RequestThumbnailInfo)(float positionMs)
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, RequestThumbnailInfo)(int64_t positionMs)
 {
+    YI_LOGD(TAG, "RequestThumbnailInfo = %" PRIu64, positionMs);
+
     if (m_pPlayer)
     {
         m_pPlayer->RequestThumbnailInfo(positionMs);

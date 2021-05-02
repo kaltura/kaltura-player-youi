@@ -110,7 +110,7 @@ void KalturaVideoPlayerPriv::LoadIDs()
     setFrameMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "setFrame", "(IIII)V");
     setVolumeMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "setVolume", "(F)V");
     setLogLevelMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "setLogLevel", "(Ljava/lang/String;)V");
-    requestThumbnailInfoMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "requestThumbnailInfo", "(F)V");
+    requestThumbnailInfoMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "requestThumbnailInfo", "(J)V");
 }
 
 void KalturaVideoPlayerPriv::Setup_(int32_t partnerId, folly::dynamic options)
@@ -437,9 +437,9 @@ KalturaVideoPlayer::ImageTrackInfo KalturaVideoPlayerPriv::GetActiveImageTrack_(
     return KalturaVideoPlayer::ImageTrackInfo();
 }
 
-void KalturaVideoPlayerPriv::RequestThumbnailInfo_(float positionMs)
+void KalturaVideoPlayerPriv::RequestThumbnailInfo_(int64_t positionMs)
 {
-    //YI_LOGD(TAG, "RequestThumbnailInfo_ uID = %f", positionMs);
+    //YI_LOGD(TAG, "RequestThumbnailInfo = %" PRIu64, positionMs);
     if (positionMs >= 0)
     {
         GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, requestThumbnailInfoMethodID, positionMs);
