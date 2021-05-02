@@ -29,6 +29,8 @@ static const char *tracksAvailableEvent = "tracksAvailable";
 static const char *videoTrackChangedEvent = "videoTrackChanged";
 static const char *audioTrackChangedEvent = "audioTrackChanged";
 static const char *textTrackChangedEvent = "textTrackChanged";
+static const char *imageTrackChangedEvent = "imageTrackChanged";
+static const char *thumbnailInfoResponseEvent = "thumbnailInfoResponse";
 static const char *playbackInfoUpdatedEvent = "playbackInfoUpdated";
 static const char *seekingEvent = "seeking";
 static const char *seekedEvent = "seeked";
@@ -163,6 +165,27 @@ std::vector<KalturaVideoPlayer::VideoTrackInfo> KalturaVideoPlayer::GetVideoTrac
 KalturaVideoPlayer::VideoTrackInfo KalturaVideoPlayer::GetActiveVideoTrack() {
     return m_pPriv->GetActiveVideoTrack_();
 }
+
+bool KalturaVideoPlayer::SelectImageTrack(uint32_t uID) {
+    //YI_LOGD(TAG, "SelectImageTrack %d", uID);
+
+    return m_pPriv->SelectImageTrack_(uID);
+}
+
+std::vector<KalturaVideoPlayer::ImageTrackInfo> KalturaVideoPlayer::GetImageTracks() {
+    return m_pPriv->GetImageTracks_();
+}
+
+KalturaVideoPlayer::ImageTrackInfo KalturaVideoPlayer::GetActiveImageTrack() {
+    return m_pPriv->GetActiveImageTrack_();
+}
+
+void KalturaVideoPlayer::RequestThumbnailInfo(float positionMs)
+{
+    YI_LOGD(TAG, "RequestThumbnailInfo - %f", positionMs);
+    m_pPriv->RequestThumbnailInfo_(positionMs);
+}
+
 
 CYIString KalturaVideoPlayer::GetName_() const
 {
@@ -474,12 +497,36 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
             for (const auto& track : videoTracks)
             {
                 const CYIString uniqueId = track["id"].asString();
-                auto bitrate = static_cast<uint64_t>(track["bitrate"].asInt());
-                auto width = static_cast<uint32_t>(track["width"].asInt());
-                auto height = static_cast<uint32_t>(track["height"].asInt());
-                bool isAdaptive = track["isAdaptive"].asBool();
-                bool isSelected = track["isSelected"].asBool();
 
+                auto bitrate = false;
+                if (isValidJsonKey(track, "bitrate"))
+                {
+                    bitrate = static_cast<uint64_t>(track["bitrate"].asInt());
+                }
+                
+                auto width = 0;
+                if (isValidJsonKey(track, "width"))
+                {
+                    width = static_cast<uint32_t>(track["width"].asInt());
+                }
+
+                auto height = 0;
+                if (isValidJsonKey(track, "height"))
+                {
+                    height = static_cast<uint32_t>(track["height"].asInt());
+                }
+
+                bool isAdaptive = false;
+                if (isValidJsonKey(track, "height"))
+                {
+                    isAdaptive = track["isAdaptive"].asBool();
+                }
+
+                bool isSelected = false;
+                if (isValidJsonKey(track, "isSelected"))
+                {
+                    isSelected = track["isSelected"].asBool();
+                }
                 if (isSelected)
                 {
                     m_selectedVideoTrack = static_cast<int32_t>(m_videoTracks.size());
@@ -516,8 +563,11 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
 
                 m_audioTracks.emplace_back(m_audioTracks.size(), uniqueId, label, language);
 
-                bool isSelected = track["isSelected"].asBool();
-                if (isSelected)
+                bool isSelected = false;
+                if (isValidJsonKey(track, "isSelected"))
+                {
+                    isSelected = track["isSelected"].asBool();
+                }                if (isSelected)
                 {
                     m_selectedAudioTrack = static_cast<int32_t>(m_audioTracks.size());
                 }
@@ -547,12 +597,94 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
                 m_closedCaptionsTracks.emplace_back(
                         m_closedCaptionsTracks.size(), uniqueId, label, language);
 
-                bool isSelected = track["isSelected"].asBool();
+                bool isSelected = false;
+                if (isValidJsonKey(track, "isSelected"))
+                {
+                    isSelected = track["isSelected"].asBool();
+                }
                 if (isSelected)
                 {
                     m_selectedClosedCaptionTrack
                             = static_cast<int32_t>(m_closedCaptionsTracks.size());
                 }
+            }
+        }
+
+        if (!content["image"].isNull())
+        {
+            auto imageTracks = content["image"];
+
+            for (const auto& track : imageTracks)
+            {
+                const CYIString uniqueId = track["id"].asString();
+                
+                CYIString label;
+                if (isValidJsonKey(track, "label"))
+                {
+                    label = track["label"].asString();
+                }
+
+                uint64_t bitrate = 0;
+                if (isValidJsonKey(track, "bitrate"))
+                {
+                    bitrate = static_cast<uint64_t>(track["bitrate"].asInt());
+                }
+
+                auto width = 0;
+                if (isValidJsonKey(track, "width"))
+                {
+                    width = static_cast<uint32_t>(track["width"].asInt());
+                }
+
+                auto height = 0;
+                if (isValidJsonKey(track, "height"))
+                {
+                    height = static_cast<uint32_t>(track["height"].asInt());
+                }
+
+                auto cols = 0;
+                if (isValidJsonKey(track, "cols"))
+                {
+                    cols = static_cast<float>(track["cols"].asDouble());
+                }
+
+                auto rows = 0;
+                if (isValidJsonKey(track, "rows"))
+                {
+                    rows = static_cast<float>(track["rows"].asDouble());
+                }
+
+                uint64_t duration = 0;
+                if (isValidJsonKey(track, "duration"))
+                {
+                    duration = static_cast<uint64_t>(track["duration"].asInt());
+                }
+
+                CYIString url;
+                if (isValidJsonKey(track, "url"))
+                {
+                    url = track["url"].asString();
+                }
+
+                bool isSelected = false;
+                if (isValidJsonKey(track, "isSelected"))
+                {
+                    isSelected = track["isSelected"].asBool();
+                }
+                if (isSelected)
+                {
+                    m_selectedImageTrack = static_cast<int32_t>(m_imageTracks.size());
+                }
+
+                m_imageTracks.emplace_back(m_imageTracks.size(), uniqueId, label, bitrate,
+                                           width, height,
+                                           cols, rows,
+                                           duration, url, isSelected);
+            }
+
+            if (m_imageTracks.size() > 0)
+            {
+                AvailableImageTracksChanged.Emit(m_imageTracks);
             }
         }
     }
@@ -567,6 +699,34 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
     else if (name.Compare(textTrackChangedEvent) == 0)
     {
         YI_LOGD(TAG, "textTrackChangedEvent");
+    }
+    else if (name.Compare(imageTrackChangedEvent) == 0)
+    {
+        YI_LOGD(TAG, "imageTrackChangedEvent");
+    }
+    else if (name.Compare(thumbnailInfoResponseEvent) == 0)
+    {
+        YI_LOGD(TAG, "thumbnailInfoResponseEvent - %s", JSONFromDynamic(content).c_str());
+        if (!content["position"].isNull() && !content["thumbnailInfo"].isNull()) {
+            auto position = static_cast<uint64_t>(content["position"].asInt());
+
+            auto thumbnailInfo = content["thumbnailInfo"];
+
+            const CYIString url = thumbnailInfo["url"].asString();
+            auto x = static_cast<float>(thumbnailInfo["x"].asDouble());
+            auto y = static_cast<float>(thumbnailInfo["y"].asDouble());
+            auto width = static_cast<float>(thumbnailInfo["width"].asDouble());
+            auto height = static_cast<float>(thumbnailInfo["height"].asDouble());
+
+            struct ThumbnailInfoResponse response;
+            response.positon = position;
+            response.url = url;
+            response.x = x;
+            response.y = y;
+            response.width = width;
+            response.height = height;
+            ThumbnailInfoResponse.Emit(response.ToDynamic());
+        }
     }
     else if (name.Compare(playbackInfoUpdatedEvent) == 0)
     {

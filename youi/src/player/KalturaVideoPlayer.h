@@ -75,6 +75,122 @@ public:
         }
     };
 
+      //     {
+      //       "bitrate": 12000,
+      //       "isSelected": true,
+      //       "id": "Image:3,3,0",
+      //       "cols": 10,
+      //       "width": 1024,
+      //       "duration": 635000,
+      //       "url": "http://dash.edgesuite.net/akamai/bbb_30fps/thumbnails_102x58/tile_$Number$.jpg",
+      //       "height": 1152,
+      //       "label": "thumbnails_102x58",
+      //       "rows": 20
+      //     }
+
+    struct ImageTrackInfo
+    {
+        uint32_t id = 0;
+        CYIString uniqueId;
+        CYIString label;
+        uint64_t bitrate;
+        float width;
+        float height;
+        uint32_t cols;
+        uint32_t rows;
+        uint64_t duration;
+        CYIString url;
+        bool isSelected;
+
+        ImageTrackInfo()
+        {
+        }
+
+        ImageTrackInfo(uint32_t id, const CYIString &uID,
+                       const CYIString &label,
+                       uint64_t bitrate,
+                       float width,
+                       float height,                 
+                       uint32_t cols,
+                       uint32_t rows,
+                       uint64_t duration, 
+                       const CYIString &url,
+                       bool isSelected)
+                
+                : id(id)
+                , uniqueId(uID)
+                , label(label)
+                , bitrate(bitrate)
+                , width(width)
+                , height(height)
+                , cols(cols)
+                , rows(rows)
+                , duration(duration)
+                , url(url)
+                ,isSelected(isSelected)
+        {
+        }
+
+        folly::dynamic ToDynamic() const
+        {
+            auto object = folly::dynamic::object
+                    ("id", id)
+                    ("uniqueId", uniqueId.GetData())
+                    ("label", label.GetData())
+                    ("bitrate", bitrate)
+                    ("width", width)
+                    ("height", height)
+                    ("cols", cols)
+                    ("rows", rows)
+                    ("url", url.GetData())
+                    ("isSelected", isSelected);
+                    
+            return object;
+        }
+    };
+
+    struct ThumbnailInfoResponse
+    {
+        uint64_t positon;
+        CYIString url;
+        float x;
+        float y;
+        float width;
+        float height;
+
+        ThumbnailInfoResponse()
+        {
+        }
+
+        ThumbnailInfoResponse(uint64_t positon, const CYIString &url,
+                              float x,
+                              float y,
+                              float width,
+                              float height)
+                : positon(positon)
+                , url(url)
+                , x(x)
+                , y(y)
+                , width(width)
+                , height(height)
+
+        {
+        }
+
+        folly::dynamic ToDynamic() const
+        {
+            auto object = folly::dynamic::object
+                    ("positon", positon)
+                    ("url", url.GetData())
+                    ("x", x)
+                    ("y", y)
+                    ("width", width)
+                    ("height", height);
+
+            return object;
+        }
+    };
+
     KalturaVideoPlayer();
     virtual ~KalturaVideoPlayer();
 
@@ -92,6 +208,11 @@ public:
     VideoTrackInfo GetActiveVideoTrack();
     bool isValidJsonKey(folly::dynamic content, const CYIString &keyName);
 
+    bool SelectImageTrack(uint32_t uID);
+    std::vector<ImageTrackInfo> GetImageTracks();
+    ImageTrackInfo GetActiveImageTrack();
+    void RequestThumbnailInfo(float positionMs);
+
     CYISignal<> PlayerReplayEvent;
     CYISignal<> PlayerStoppedEvent;
     CYISignal<float> PlaybackRateChangedEvent;
@@ -100,7 +221,9 @@ public:
     CYISignal<> PlayerSeekedEvent;
 
     CYISignal<std::vector<VideoTrackInfo>> AvailableVideoTracksChanged;
-  
+    CYISignal<std::vector<ImageTrackInfo>> AvailableImageTracksChanged;
+    CYISignal<folly::dynamic> ThumbnailInfoResponse;
+
     CYISignal<uint64_t>  CurrentProgramTimeUpdated;
 
     CYISignal<folly::dynamic> LoadMediaSuccess;
@@ -162,6 +285,10 @@ private:
 
     std::vector<KalturaClosedCaptionTrack> m_closedCaptionsTracks;
     int32_t m_selectedClosedCaptionTrack = -1;
+
+    std::vector<KalturaVideoPlayer::ImageTrackInfo> m_imageTracks;
+    int32_t m_selectedImageTrack = -1;
+
     std::vector<CYIAbstractVideoPlayer::SeekableRange> m_liveSeekableRanges;
 
     YI_TYPE_BASES(KalturaVideoPlayer, CYIAbstractVideoPlayer)
