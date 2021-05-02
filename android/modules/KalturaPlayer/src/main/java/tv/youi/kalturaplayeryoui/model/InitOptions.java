@@ -1,6 +1,7 @@
 package tv.youi.kalturaplayeryoui.model;
 
 import com.kaltura.playkit.PKMediaFormat;
+import com.kaltura.playkit.PKRequestConfiguration;
 import com.kaltura.playkit.player.ABRSettings;
 import com.kaltura.playkit.player.PKAspectRatioResizeMode;
 import com.kaltura.playkit.player.PKMaxVideoSize;
@@ -17,6 +18,7 @@ public class InitOptions {
     public List<String> warmupUrls;
     public String ks;
     public String referrer;
+    public PKRequestConfiguration requestConfiguration;
     public ABRSettings abrSettings;
     public NetworkSettings networkSettings;
     public TrackSelection trackSelection;

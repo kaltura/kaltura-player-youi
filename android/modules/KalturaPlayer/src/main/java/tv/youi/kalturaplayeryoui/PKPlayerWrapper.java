@@ -167,7 +167,11 @@ public class PKPlayerWrapper {
         final PlayerInitOptions initOptions = new PlayerInitOptions(partnerId);
         initOptions.setAutoPlay(initOptionsModel.autoplay);
         initOptions.setPreload(initOptionsModel.preload);
-        initOptions.setAllowCrossProtocolEnabled(initOptionsModel.allowCrossProtocolRedirect);
+        if (initOptionsModel.requestConfiguration != null) {
+            initOptions.setPKRequestConfig(initOptionsModel.requestConfiguration);
+        } else {
+            initOptions.setAllowCrossProtocolEnabled(initOptionsModel.allowCrossProtocolRedirect);
+        }
         initOptions.setKs(initOptionsModel.ks);
         initOptions.setReferrer(initOptionsModel.referrer);
         initOptions.setAbrSettings(initOptionsModel.abrSettings);
