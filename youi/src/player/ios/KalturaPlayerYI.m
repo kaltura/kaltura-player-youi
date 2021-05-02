@@ -469,6 +469,13 @@ static NSDictionary* entryToDict(PKMediaEntry *entry) {
         }];
     }];
 
+    [self.kalturaPlayer addObserver:self events:@[BroadpeakEvent.error] block:^(PKEvent * _Nonnull event) {
+        [weakSender sendEvent:@"broadpeakError" payload:@{@"errorMessage": event.broadpeakEventMessage,
+        @"errorCode": [@(event.error.code) stringValue],
+        @"errorType": @"BROADPEAK_ERROR"
+        }];
+    }];
+    
     [self.kalturaPlayer addObserver:self event:AdEvent.adDidProgressToTime block:^(PKEvent * _Nonnull event) {
         [weakSender sendEvent:@"adProgress" payload:@{@"currentAdPosition": event.adMediaTime}];
     }];

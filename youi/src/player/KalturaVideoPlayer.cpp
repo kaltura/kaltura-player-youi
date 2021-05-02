@@ -38,6 +38,7 @@ static const char *loadedTimeRangesEvent = "loadedTimeRanges";
 static const char *errorEvent = "error";
 static const char *bookmarkErrorEvent = "bookmarkError";
 static const char *concurrencyErrorEvent = "concurrencyError";
+static const char *broadpeakErrorEvent = "broadpeakError";
 
 static const char *adProgressEvent = "adProgress";
 static const char *adCuepointsChangedEvent = "adCuepointsChanged";
@@ -665,10 +666,13 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
         error.message = JSONFromDynamic(content).c_str();
         if (isValidJsonKey(content, "errorCode")) {
-            CYIString errorType = content["errorCode"].asString();
-            error.nativePlayerErrorCode = errorType;
+            CYIString errorCode = content["errorCode"].asString();
+            error.nativePlayerErrorCode = errorCode;
         }
-
+        if (isValidJsonKey(content, "errorMessage")) {
+            CYIString errorMessage = content["errorMessage"].asString();
+            error.message = errorMessage;
+        }
         ErrorOccurred.Emit(error);
     }
     else if (name.Compare(concurrencyErrorEvent) == 0)
@@ -679,8 +683,30 @@ void KalturaVideoPlayer::HandleEvent(const CYIString& name, folly::dynamic conte
         error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
         error.message = JSONFromDynamic(content).c_str();
         if (isValidJsonKey(content, "errorMessage")) {
-            CYIString errorType = content["errorMessage"].asString();
-            error.nativePlayerErrorCode = errorType;
+            CYIString errorMessage = content["errorMessage"].asString();
+            error.message = errorMessage;
+        }
+        if (isValidJsonKey(content, "errorCode")) {
+            CYIString errorCode = content["errorCode"].asString();
+            error.nativePlayerErrorCode = errorCode;
+        }
+
+        ErrorOccurred.Emit(error);
+    }
+    else if (name.Compare(broadpeakErrorEvent) == 0)
+    {
+        YI_LOGD(TAG, "broadpeakErrorEvent - %s", JSONFromDynamic(content).c_str());
+
+        CYIAbstractVideoPlayer::Error error;
+        error.errorCode = CYIAbstractVideoPlayer::ErrorCode::PlaybackError;
+        error.message = JSONFromDynamic(content).c_str();
+        if (isValidJsonKey(content, "errorMessage")) {
+            CYIString errorMessage = content["errorMessage"].asString();
+            error.message = errorMessage;
+        }
+        if (isValidJsonKey(content, "errorCode")) {
+            CYIString errorCode = content["errorCode"].asString();
+            error.nativePlayerErrorCode = errorCode;
         }
 
         ErrorOccurred.Emit(error);
