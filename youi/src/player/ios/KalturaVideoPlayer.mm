@@ -423,6 +423,29 @@ CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayerPriv::GetActiv
     return CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo();
 }
 
+bool KalturaVideoPlayerPriv::SelectImageTrack_(uint32_t uID)
+{
+    YI_UNUSED(uID);
+    YI_LOGW(TAG, "SelectImageTrack is not available on iOS");
+    return false;
+}
+
+std::vector<KalturaVideoPlayer::ImageTrackInfo> KalturaVideoPlayerPriv::GetImageTracks_() const
+{
+    YI_LOGW(TAG, "GetImageTracks is not available on iOS");
+    return std::vector<KalturaVideoPlayer::ImageTrackInfo>();
+}
+
+KalturaVideoPlayer::ImageTrackInfo KalturaVideoPlayerPriv::GetActiveImageTrack_() const
+{
+    YI_LOGW(TAG, "GetActiveImageTrack is not available on iOS");
+    return KalturaVideoPlayer::ImageTrackInfo();
+}
+
+void KalturaVideoPlayerPriv::RequestThumbnailInfo_(int64_t positionMs)
+{
+}
+
 void KalturaVideoPlayerPriv::Mute_(bool bMute)
 {
     if (bMute) {

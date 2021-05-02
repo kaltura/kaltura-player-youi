@@ -26,6 +26,8 @@ public:
     YI_RN_EXPORT_METHOD(SetLogLevel)(std::string logLevel);
     YI_RN_EXPORT_METHOD(KeepDeviceScreenOn)(bool keepOn);
     YI_RN_EXPORT_METHOD(SelectVideoTrack)(uint32_t trackId);
+    YI_RN_EXPORT_METHOD(SelectImageTrack)(uint32_t trackId);
+    YI_RN_EXPORT_METHOD(RequestThumbnailInfo)(int64_t positionMs);
 
   private:
     void EmitEventPriv(const std::string& event, const folly::dynamic &value);
