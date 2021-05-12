@@ -58,7 +58,7 @@ macro(yi_configure_platform)
     add_pk_tvos_framework(${FW_NAME})
     endforeach()
 
-    foreach(FW_NAME AFNetworking SmartLib_tvOS PlayKitBroadpeak)
+    foreach(FW_NAME AFNetworking SmartLib_tvOS SmartLibKaltura_tvOS PlayKitBroadpeak)
     add_pk_tvos_framework(${FW_NAME})
     endforeach()
 endmacro(yi_configure_platform)

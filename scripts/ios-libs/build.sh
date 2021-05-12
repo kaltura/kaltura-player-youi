@@ -34,3 +34,4 @@ rm -rf SmartLib-v3/Pod
 rm -rf SmartLib-v3/LICENSE.txt
 rm -rf SmartLib-v3/README.md
 mv SmartLib-v3 SmartLib
+mv SmartLib/kaltura SmartLibKaltura
