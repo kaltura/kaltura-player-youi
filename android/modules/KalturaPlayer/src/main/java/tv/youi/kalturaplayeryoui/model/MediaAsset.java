@@ -157,6 +157,8 @@ public class MediaAsset {
             return APIDefines.KalturaStreamerType.Url;
         } else if (APIDefines.KalturaStreamerType.Smothstreaming.value.toLowerCase().equals(streamerType.toLowerCase())) {
             return APIDefines.KalturaStreamerType.Smothstreaming;
+        } else if (APIDefines.KalturaStreamerType.Multicast.value.toLowerCase().equals(streamerType.toLowerCase())) {
+            return APIDefines.KalturaStreamerType.Multicast;
         } else if (APIDefines.KalturaStreamerType.None.value.toLowerCase().equals(streamerType.toLowerCase())) {
             return APIDefines.KalturaStreamerType.None;
         }
