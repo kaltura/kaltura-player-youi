@@ -26,8 +26,10 @@ static const std::string KALTURA_PLAYBACK_RATE_CHANGED_EVENT = "KALTURA_PLAYBACK
 static const std::string KALTURA_SEEKING_EVENT = "KALTURA_SEEKING_EVENT";
 static const std::string KALTURA_SEEKED_EVENT = "KALTURA_SEEKED_EVENT";
 static const std::string KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED = "KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED";
-static const std::string KALTURA_CURRENT_PROGRAM_TIME_UPDATED = "KALTURA_CURRENT_PROGRAM_TIME_UPDATED";
+static const std::string KALTURA_AVAILABLE_IMAGE_TRACKS_CHANGED = "KALTURA_AVAILABLE_IMAGE_TRACKS_CHANGED";
+static const std::string KALTURA_THUMBNAIL_INFO_RESPONSE = "KALTURA_THUMBNAIL_INFO_RESPONSE";
 
+static const std::string KALTURA_CURRENT_PROGRAM_TIME_UPDATED = "KALTURA_CURRENT_PROGRAM_TIME_UPDATED";
 static const std::string KALTURA_LOAD_MEDIA_SUCCESS = "KALTURA_LOAD_MEDIA_SUCCESS";
 static const std::string KALTURA_VOLUME_CHANGED = "KALTURA_VOLUME_CHANGED";
 static const std::string KALTURA_BUFFER_TIME_UPDATED = "KALTURA_BUFFER_TIME_UPDATED";
@@ -44,6 +46,8 @@ KalturaVideoNativeModule::KalturaVideoNativeModule()
         KALTURA_SEEKED_EVENT,
         KALTURA_LOAD_MEDIA_SUCCESS,
         KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED,
+        KALTURA_AVAILABLE_IMAGE_TRACKS_CHANGED,
+        KALTURA_THUMBNAIL_INFO_RESPONSE,
         KALTURA_CURRENT_PROGRAM_TIME_UPDATED,
         KALTURA_VOLUME_CHANGED,
         KALTURA_BUFFER_TIME_UPDATED,
@@ -113,6 +117,21 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, ConnectToPlayer)(uint64_t t
                 this->EmitEventPriv(KALTURA_AVAILABLE_VIDEO_TRACKS_CHANGED, tracksArray);
             });
 
+            m_pPlayer->AvailableImageTracksChanged.Connect(*this, [this](std::vector<KalturaVideoPlayer::ImageTrackInfo> tracks) {
+                std::vector<folly::dynamic> dynamicTracks;
+                for (const auto& track : tracks)
+                {
+                    dynamicTracks.push_back(track.ToDynamic());
+                }
+
+                auto tracksArray = ToDynamic(dynamicTracks);
+                this->EmitEventPriv(KALTURA_AVAILABLE_IMAGE_TRACKS_CHANGED, tracksArray);
+            });
+
+            m_pPlayer->ThumbnailInfoResponse.Connect(*this, [this](folly::dynamic data) {
+                this->EmitEventPriv(KALTURA_THUMBNAIL_INFO_RESPONSE, data);
+            });
+            
             m_pPlayer->CurrentProgramTimeUpdated.Connect(*this, [this](uint64_t currentProgramTime) {
                 this->EmitEventPriv(KALTURA_CURRENT_PROGRAM_TIME_UPDATED, currentProgramTime);
             });
@@ -213,6 +232,28 @@ YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SelectVideoTrack)(uint32_t 
     if (m_pPlayer)
     {
         m_pPlayer->SelectVideoTrack(trackId);
+    }
+}
+
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, SelectImageTrack)(uint32_t trackId)
+{
+    //YI_LOGD(TAG, "SelectImageTrack trackId = %d ", trackId);
+    YI_LOGD(TAG, "SelectImageTrack trackId = %" PRIu32, trackId);
+
+
+    if (m_pPlayer)
+    {
+        m_pPlayer->SelectImageTrack(trackId);
+    }
+}
+
+YI_RN_DEFINE_EXPORT_METHOD(KalturaVideoNativeModule, RequestThumbnailInfo)(int64_t positionMs)
+{
+    YI_LOGD(TAG, "RequestThumbnailInfo = %" PRIu64, positionMs);
+
+    if (m_pPlayer)
+    {
+        m_pPlayer->RequestThumbnailInfo(positionMs);
     }
 }
 

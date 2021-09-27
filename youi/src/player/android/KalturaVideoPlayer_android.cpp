@@ -79,6 +79,7 @@ KalturaVideoPlayerPriv::~KalturaVideoPlayerPriv()
     setFrameMethodID = 0;
     setVolumeMethodID = 0;
     setLogLevelMethodID = 0;
+    requestThumbnailInfoMethodID = 0;
 }
 
 void KalturaVideoPlayerPriv::LoadIDs()
@@ -109,6 +110,7 @@ void KalturaVideoPlayerPriv::LoadIDs()
     setFrameMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "setFrame", "(IIII)V");
     setVolumeMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "setVolume", "(F)V");
     setLogLevelMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "setLogLevel", "(Ljava/lang/String;)V");
+    requestThumbnailInfoMethodID = GetEnv_KalturaPlayer()->GetStaticMethodID(playerWrapperBridgeClass, "requestThumbnailInfo", "(J)V");
 }
 
 void KalturaVideoPlayerPriv::Setup_(int32_t partnerId, folly::dynamic options)
@@ -307,7 +309,6 @@ void KalturaVideoPlayerPriv::Seek_(uint64_t uSeekPositionMs)
         double seekTime = static_cast<double>(uSeekPositionMs) / 1000.f;
         GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, seekToMethodID,(float) seekTime);
     }
-
 }
 
 void KalturaVideoPlayerPriv::SetMaxBitrate_(uint64_t uMaxBitrate)
@@ -404,6 +405,45 @@ CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo KalturaVideoPlayerPriv::GetActiv
     }
 
     return CYIAbstractVideoPlayer::ClosedCaptionsTrackInfo();
+}
+
+bool KalturaVideoPlayerPriv::SelectImageTrack_(uint32_t uID)
+{
+
+    //YI_LOGD(TAG, "SelectImageTrack uID = %d", uID);
+    if (!playerWrapperBridgeClass)
+    {
+        return false;
+    }
+
+    const auto &track = m_pPub->m_imageTracks[uID];
+    jstring jUniqueId = GetEnv_KalturaPlayer()->NewStringUTF(track.uniqueId.GetData());
+    GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, changeTrackMethodID, jUniqueId);
+    return true;
+}
+
+std::vector<KalturaVideoPlayer::ImageTrackInfo> KalturaVideoPlayerPriv::GetImageTracks_() const
+{
+    return m_pPub->m_imageTracks;
+}
+
+KalturaVideoPlayer::ImageTrackInfo KalturaVideoPlayerPriv::GetActiveImageTrack_() const
+{
+    if (m_pPub->m_selectedVideoTrack >= 0)
+    {
+        return m_pPub->m_imageTracks[m_pPub->m_selectedImageTrack];
+    }
+
+    return KalturaVideoPlayer::ImageTrackInfo();
+}
+
+void KalturaVideoPlayerPriv::RequestThumbnailInfo_(int64_t positionMs)
+{
+    //YI_LOGD(TAG, "RequestThumbnailInfo = %" PRIu64, positionMs);
+    if (positionMs >= 0)
+    {
+        GetEnv_KalturaPlayer()->CallStaticVoidMethod(playerWrapperBridgeClass, requestThumbnailInfoMethodID, positionMs);
+    }
 }
 
 void KalturaVideoPlayerPriv::Mute_(bool bMute)
